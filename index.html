@@ -373,6 +373,9 @@
     box-shadow: 0 2px 6px rgba(139,69,19,0.2);
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    touch-action: none;
+    position: relative;
+    z-index: 20;
   }
   .canvas-scroll-btn:active { background: rgba(201,168,76,0.8); }
   /* 모서리 5장 꽃잎 장식 (JS로 삽입되는 SVG) */
@@ -2621,8 +2624,12 @@
     <div class="zoom-hint" style="font-size:1.066rem;letter-spacing:-0.1em;"><strong style="color:var(--accent);">두 손가락</strong>으로 캔버스를 확대 축소하면 따라 쓰기 쉬워져요!</div>
     <div class="canvas-wrapper" id="canvasWrapper">
       <div class="canvas-scroll-btns">
-        <button class="canvas-scroll-btn" id="scrollUpBtn" onpointerdown="startScroll(-1)" onpointerup="stopScroll()" onpointerleave="stopScroll()">▲</button>
-        <button class="canvas-scroll-btn" id="scrollDownBtn" onpointerdown="startScroll(1)" onpointerup="stopScroll()" onpointerleave="stopScroll()">▼</button>
+        <button class="canvas-scroll-btn" id="scrollUpBtn"
+          onpointerdown="startScroll(-1)" onpointerup="stopScroll()" onpointerleave="stopScroll()"
+          ontouchstart="startScroll(-1);event.preventDefault();" ontouchend="stopScroll()">▲</button>
+        <button class="canvas-scroll-btn" id="scrollDownBtn"
+          onpointerdown="startScroll(1)" onpointerup="stopScroll()" onpointerleave="stopScroll()"
+          ontouchstart="startScroll(1);event.preventDefault();" ontouchend="stopScroll()">▼</button>
       </div>
       <div class="canvas-guide"><span id="guideText"></span></div>
       <canvas id="drawCanvas"></canvas>
@@ -4283,7 +4290,9 @@ function stopScroll() {
 }
 function moveCanvas(dir) {
   const step = 40;
-  const minY = -(canvas.height * zoomScale - canvas.height);
+  // 줌 1배여도 최소 캔버스 높이만큼 이동 가능하게
+  const scaledH = canvas.height * Math.max(zoomScale, 1.5);
+  const minY = -(scaledH - canvas.height);
   zoomOffsetY = Math.min(0, Math.max(minY, zoomOffsetY - dir * step));
   applyZoomTransform();
 }
