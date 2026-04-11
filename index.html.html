@@ -1,0 +1,4865 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Gowun+Dodum&family=Nanum+Pen+Script&family=Cute+Font&family=Black+Han+Sans&family=Jua&family=Gaegu:wght@700&family=Yeon+Sung&family=Gugi&family=Single+Day&family=Kirang+Haerang&family=Hi+Melody&family=Do+Hyeon&family=Diphylleia&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --paper: #faf7f0;
+    --paper-warm: #f5efe3;
+    --accent: #8b4513;
+    --accent-light: #c8762b;
+    --sage: #6b7c6a;
+    --gold: #c9a84c;
+    --line: rgba(139,69,19,0.15);
+    --shadow: rgba(139,69,19,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    font-family: 'Gowun Dodum', serif;
+    color: var(--ink);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(201,168,76,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(139,69,19,0.06) 0%, transparent 50%);
+  }
+  .header {
+    text-align: center;
+    padding: 2rem 1rem 1.2rem;
+    position: relative;
+  }
+  .header::before {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 1rem;
+  }
+  .header-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    color: var(--sage);
+    border: 1px solid rgba(107,124,106,0.4);
+    padding: 0.25rem 0.8rem;
+    border-radius: 20px;
+    margin-bottom: 0.8rem;
+  }
+  .header h1 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .header h1 span { color: var(--accent); }
+  .header p {
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--sage);
+    letter-spacing: 0.04em;
+  }
+  .header::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 1rem auto 0;
+  }
+  .quote-card {
+    margin: 0.6rem 1rem 0;
+    background: var(--paper-warm);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 4px;
+    padding: 0.9rem 1rem 0.9rem;
+    position: relative;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+  .quote-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  .quote-label {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    text-transform: uppercase;
+    padding-left: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .quote-num-badge {
+    background: var(--accent);
+    color: #fff;
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 0.12rem 0.45rem;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+  .quote-nav-arrows {
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+  }
+  .quote-arrow-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(139,69,19,0.25);
+    background: var(--paper);
+    color: var(--accent);
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .quote-arrow-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  /* 글귀 선택 안내 */
+  .quote-select-hint {
+    font-size: 0.62rem;
+    color: var(--sage);
+    letter-spacing: 0.04em;
+    opacity: 0.75;
+    text-align: center;
+    margin: 0.4rem 1rem 0;
+  }
+  /* 네비 점 → 번호 칩으로 변경 */
+  .quote-nav {
+    margin: 0.5rem 1rem 0;
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nav-dot {
+    min-width: 26px;
+    height: 26px;
+    border-radius: 13px;
+    background: rgba(139,69,19,0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1.5px solid rgba(139,69,19,0.15);
+    font-size: 0.62rem;
+    font-family: 'Gowun Dodum', serif;
+    color: var(--sage);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.35rem;
+    font-weight: 700;
+  }
+  .nav-dot.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    transform: scale(1.15);
+    min-width: 30px;
+  }
+  .nav-dot.done {
+    background: rgba(201,168,76,0.25);
+    border-color: var(--gold);
+    color: var(--accent);
+  }
+  .nav-dot.done::after { content: '✓'; font-size: 0.55rem; margin-left: 1px; }
+  .quote-text {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.1rem;
+    line-height: 1.9;
+    color: var(--ink);
+    word-break: keep-all;
+  }
+  .quote-source {
+    text-align: right;
+    font-size: 0.75rem;
+    color: var(--accent-light);
+    margin-top: 0.6rem;
+    font-style: italic;
+  }
+  .progress-area {
+    margin: 0.8rem 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .progress-bar-wrap {
+    flex: 1;
+    height: 4px;
+    background: rgba(139,69,19,0.12);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--accent));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 0.75rem;
+    color: var(--sage);
+    white-space: nowrap;
+  }
+  .quote-nav {
+    margin: 0.8rem 1rem 0;
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(139,69,19,0.2);
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+  .nav-dot.active { background: var(--accent); transform: scale(1.3); }
+  .nav-dot.done { background: var(--gold); }
+  .mode-tabs {
+    margin: 1rem 1rem 0;
+    display: flex;
+    border: 1px solid rgba(139,69,19,0.2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .mode-tab {
+    flex: 1;
+    padding: 0.55rem;
+    border: none;
+    background: var(--paper-warm);
+    font-family: 'Jua', sans-serif;
+    font-size: 1.48rem;
+    color: var(--sage);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+  .mode-tab.active {
+    background: #d4763b;
+    color: #fff;
+  }
+  .canvas-section { margin: 0.2rem 0 0; display: block; }
+  .canvas-section.hidden { display: none; }
+  .canvas-header {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+    padding: 0.2rem 0.5rem 0;
+    flex-wrap: nowrap;
+  }
+  /* ── 툴바 카드 그룹 ── */
+  .tool-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    background: var(--paper-warm);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    padding: 0.4rem 0.35rem 0.45rem;
+    box-shadow: 0 1px 4px rgba(139,69,19,0.06);
+  }
+  .tool-group-label {
+    font-size: 0.8rem;
+    color: var(--sage);
+    font-family: 'Jua', sans-serif;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.05rem;
+  }
+  /* 글씨체 그룹은 가로로 */
+  .tool-group-font {
+    flex-direction: column;
+    align-items: center;
+    background: var(--paper-warm);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    padding: 0.4rem 0.6rem 0.45rem;
+    box-shadow: 0 1px 4px rgba(139,69,19,0.06);
+    margin: 0 0.5rem 0;
+  }
+  .pen-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(139,69,19,0.3);
+    background: var(--paper);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .pen-btn:hover { border-color: var(--accent); }
+  .pen-btn.active { background: #d4763b; border-color: #d4763b; }
+  .pen-dot { background: var(--ink); border-radius: 50%; pointer-events: none; }
+  .pen-btn.active .pen-dot { background: #fff; }
+  .color-swatch {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .color-swatch:hover { transform: scale(1.15); }
+  .color-swatch.active { border-color: var(--ink); transform: scale(1.1); }
+  .erase-btn {
+    font-size: 0.68rem;
+    padding: 0.22rem 0.55rem;
+    border: 1px solid rgba(107,124,106,0.35);
+    border-radius: 20px;
+    background: var(--paper);
+    color: var(--sage);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .erase-btn:hover { background: var(--paper-warm); color: #d4763b; border-color: #d4763b; }
+  .erase-btn.active { background: #d4763b; color: #fff; border-color: #d4763b; }
+  .erase-btn:active { background: #d4763b; color: #fff; border-color: #d4763b; }
+
+  /* ── 캔버스 래퍼: 줄 없는 예쁜 필사 캔버스 ── */
+  .canvas-wrapper {
+    position: relative;
+    margin: 0 1rem;
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(145deg, #fffdf7 0%, #fef9ee 40%, #fdf4e3 100%);
+    box-shadow:
+      0 4px 24px rgba(139,69,19,0.10),
+      inset 0 1px 0 rgba(255,255,255,0.9),
+      inset 0 -1px 0 rgba(139,69,19,0.06);
+    border: 1px solid rgba(201,168,76,0.25);
+  }
+  /* 캔버스 우측 이동 버튼 */
+  .canvas-scroll-btns {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 10;
+  }
+  .canvas-scroll-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(201,168,76,0.55);
+    color: #7c3410;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(139,69,19,0.2);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .canvas-scroll-btn:active { background: rgba(201,168,76,0.8); }
+  /* 모서리 5장 꽃잎 장식 (JS로 삽입되는 SVG) */
+  .canvas-flower {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0.38;
+  }
+  .canvas-flower.tl { top: 6px;    left: 6px;    transform: rotate(0deg); }
+  .canvas-flower.tr { top: 6px;    right: 6px;   transform: rotate(90deg); }
+  .canvas-flower.bl { bottom: 6px; left: 6px;    transform: rotate(270deg); }
+  .canvas-flower.br { bottom: 6px; right: 6px;   transform: rotate(180deg); }
+  canvas {
+    display: block;
+    touch-action: none;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4' fill='%238b4513' opacity='0.5'/%3E%3C/svg%3E") 12 12, crosshair;
+    position: relative;
+    z-index: 2;
+    background: transparent;
+  }
+  .canvas-guide {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0.6rem;
+  }
+  .canvas-guide span {
+    font-family: 'Jua', sans-serif;
+    font-size: 3.2rem;
+    font-weight: 400;
+    color: rgba(139,69,19,0.039);
+    letter-spacing: 0.05em;
+    text-align: center;
+    line-height: 2.2;
+    word-break: keep-all;
+    user-select: none;
+    width: 100%;
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+  .coverage-bar-wrap {
+    margin-top: 0.5rem;
+    padding: 0 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .coverage-track {
+    flex: 1;
+    height: 5px;
+    background: rgba(139,69,19,0.12);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .coverage-fill {
+    height: 100%;
+    background: #d85a30;
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.3s ease, background 0.3s ease;
+  }
+  .coverage-fill.ok { background: #639922; }
+  .coverage-label {
+    font-size: 0.68rem;
+    color: var(--sage);
+    white-space: nowrap;
+    min-width: 80px;
+    text-align: right;
+  }
+  .voice-section { margin: 0.7rem 1rem 0; display: block; }
+  .voice-section.hidden { display: none; }
+  .voice-box {
+    background: var(--paper-warm);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 4px;
+    padding: 1.2rem;
+    text-align: center;
+  }
+  .voice-prompt {
+    font-size: 0.78rem;
+    color: var(--sage);
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.04em;
+    word-break: keep-all;
+    line-height: 1.6;
+  }
+  .voice-target {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.0rem;
+    color: var(--ink);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    padding: 0.6rem 0.8rem;
+    background: rgba(255,255,255,0.6);
+    border-radius: 4px;
+    word-break: keep-all;
+  }
+  .btn-mic {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: var(--paper);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    transition: all 0.2s;
+    position: relative;
+    margin-bottom: 0.8rem;
+  }
+  .btn-mic:hover { background: var(--paper-warm); transform: scale(1.05); }
+  .btn-mic.listening {
+    background: #d4763b;
+    border-color: #d4763b;
+    animation: pulse-ring 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(212,118,59,0.4); }
+    60% { box-shadow: 0 0 0 14px rgba(212,118,59,0); }
+    100% { box-shadow: 0 0 0 0 rgba(212,118,59,0); }
+  }
+  .voice-status {
+    font-size: 0.78rem;
+    color: var(--sage);
+    margin-top: 0.4rem;
+    min-height: 1.2em;
+    line-height: 1.4;
+  }
+  .voice-result {
+    margin-top: 0.8rem;
+    padding: 0.6rem 0.8rem;
+    background: rgba(255,255,255,0.7);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--ink);
+    min-height: 2em;
+    text-align: left;
+    word-break: keep-all;
+    line-height: 1.6;
+  }
+  .voice-result.match { border-left: 3px solid #639922; color: #3b6d11; }
+  .voice-result.partial { border-left: 3px solid var(--gold); }
+  .voice-match-pct { font-size: 0.72rem; color: var(--sage); margin-top: 0.4rem; text-align: right; }
+  .match-words span { display: inline-block; padding: 1px 3px; margin: 1px; border-radius: 2px; font-size: 0.88rem; }
+  .match-words .hit { background: rgba(99,153,34,0.18); color: #3b6d11; }
+  .match-words .miss { background: rgba(232,75,74,0.1); color: #a32d2d; }
+  .action-area {
+    margin: 0.8rem 1rem 0;
+    display: flex;
+    gap: 0.5rem;
+  }
+  .btn-clear {
+    flex: 1;
+    padding: 0.7rem;
+    border: 1.5px solid rgba(139,69,19,0.25);
+    border-radius: 4px;
+    background: transparent;
+    font-family: 'Jua', sans-serif;
+    font-size: 1.48rem;
+    color: var(--sage);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-clear:hover { background: var(--paper-warm); color: var(--accent); border-color: var(--accent); }
+  .btn-complete {
+    flex: 2;
+    padding: 0.7rem;
+    border: none;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #d4763b, #e8956a);
+    font-family: 'Jua', sans-serif;
+    font-size: 1.48rem;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.06em;
+    box-shadow: 0 2px 8px rgba(139,69,19,0.25);
+    position: relative;
+  }
+  .btn-complete:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(139,69,19,0.3); }
+  .btn-complete:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn-complete:not(:disabled) { pointer-events: auto !important; touch-action: manipulation; }
+  .btn-complete .incomplete-hint { display: block; font-size: 0.68rem; opacity: 0.85; margin-top: 1px; letter-spacing: 0.02em; }
+
+  /* ══════════════════════════════════════════════════
+     수정 3: 축하 페이지 상단 헤더 — 더 작고 화사하게
+  ══════════════════════════════════════════════════ */
+  .celebrate-page {
+    display: none;
+    position: fixed; inset: 0;
+    background: var(--paper);
+    z-index: 300;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .celebrate-page.show { display: block; }
+
+  /* 레벨업 반복 애니메이션 */
+    20%  { opacity: 0.3; }
+    60%  { transform: rotate(15deg) scale(1.08);   opacity: 0.9; }
+    80%  { transform: rotate(-6deg) scale(0.97);   opacity: 1; }
+    92%  { transform: rotate(3deg)  scale(1.01);   opacity: 1; }
+    100% { transform: rotate(0deg)  scale(1);      opacity: 1; }
+  }
+  @keyframes waveFlow {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+  @keyframes headerGlow {
+    0%,100% { opacity: 0; }
+    45%      { opacity: 1; }
+  }
+  .cel-level-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    transform-origin: center center;
+  }
+  .cel-top-glow { display: none; }
+
+  /* 통합 헤더 (기존 cel-top + cel-level-card 합침) */
+  .cel-top {
+    background: linear-gradient(90deg,
+      rgba(249,168,212,0.7) 0%,
+      rgba(253,186,116,0.7) 25%,
+      rgba(134,239,172,0.7) 50%,
+      rgba(162,196,224,0.7) 75%,
+      rgba(249,168,212,0.7) 100%);
+    background-size: 200% 100%;
+    background-color: #fff9f5;
+    animation: waveFlow 3s linear infinite;
+    padding: 1.2rem 1.2rem 1.3rem;
+    text-align: center;
+    position: relative;
+    overflow: visible;
+  }
+  .cel-top::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.28) 0%, transparent 60%);
+  }
+  /* 레벨 배지 + 이름 한 줄 */
+  .cel-level-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.6rem;
+    margin-bottom: 0.55rem;
+    position: relative;
+  }
+  .cel-level-badge {
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    color: #fff;
+    font-family: 'Jua', 'Nanum Myeongjo', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.216rem 0.72rem;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    box-shadow: 0 1px 4px rgba(139,69,19,0.2);
+  }
+  .cel-level-name {
+    font-family: 'Jua', 'Nanum Myeongjo', sans-serif;
+    font-size: 1.26rem;
+    font-weight: 800;
+    color: #5c4a3a;
+    letter-spacing: 0.04em;
+    text-shadow: 0 1px 4px rgba(255,255,255,0.6);
+  }
+  /* 이모지 아트 */
+  @keyframes emojiSparkle {
+    0%,100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+    20%     { opacity: 0.3; transform: scale(0.85); filter: brightness(0.6); }
+    40%     { opacity: 1; transform: scale(1.15); filter: brightness(1.4); }
+    60%     { opacity: 0.6; transform: scale(0.95); filter: brightness(0.8); }
+    80%     { opacity: 1; transform: scale(1.08); filter: brightness(1.2); }
+  }
+  .cel-level-art {
+    font-size: 3.12rem;
+    line-height: 1.2;
+    margin: 0.2rem 0 0.45rem;
+    position: relative;
+    animation: emojiSparkle 4s ease-in-out infinite;
+  }
+  /* 제목 (훌륭해요!) */
+  .cel-title {
+    font-family: 'Jua', 'Nanum Myeongjo', sans-serif;
+    font-size: 0.936rem;
+    font-weight: 800;
+    color: #5c4a3a;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.15rem;
+    text-shadow: 0 1px 4px rgba(255,255,255,0.6);
+    position: relative;
+  }
+  /* 서브타이틀 */
+  .cel-subtitle {
+    font-family: 'Jua', 'Nanum Myeongjo', sans-serif;
+    font-size: 0.936rem;
+    font-weight: 800;
+    color: #5c4a3a;
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 4px rgba(255,255,255,0.6);
+    position: relative;
+    white-space: nowrap;
+  }
+  /* 레벨 메시지 */
+  .cel-level-msg {
+    font-size: 0.72rem;
+    color: #5c4a3a;
+    line-height: 1.6;
+    word-break: keep-all;
+    margin-top: 0.5rem;
+    padding: 0.45rem 0.7rem;
+    background: rgba(255,255,255,0.45);
+    border-radius: 8px;
+    position: relative;
+  }
+  @keyframes bounce {
+    0%   { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+    60%  { transform: scale(1.15) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  .cel-body { padding: 1rem 1.2rem 1.6rem; }
+
+  .cel-quote-wrap {
+    background: var(--paper-warm);
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 14px;
+    padding: 1.2rem 1.2rem 1rem;
+    margin-bottom: 0.8rem;
+    position: relative;
+    box-shadow: 0 3px 14px rgba(139,69,19,0.06);
+    text-align: center;
+  }
+  .cel-quote-wrap::before { display: none; }
+  .cel-quote-label {
+    font-family: 'Jua', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #f4784a;
+    margin-bottom: 0.5rem;
+    padding-left: 0;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+  .cel-quote-label::before, .cel-quote-label::after {
+    content: '🔖';
+    font-size: 0.9rem;
+  }
+  .cel-quote-text {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.1rem;
+    line-height: 1.75;
+    color: var(--ink);
+    word-break: keep-all;
+    margin-bottom: 0.3rem;
+    font-weight: 700;
+  }
+  .cel-quote-source {
+    text-align: right;
+    font-size: 0.65rem;
+    color: var(--accent-light);
+    font-style: italic;
+  }
+
+  /* 교육 메시지 박스 */
+  .cel-msg-title {
+    font-family: 'Jua', 'Nanum Myeongjo', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .cel-msg-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 0.75em;
+    background: var(--gold);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .cel-msg-box {
+    background: linear-gradient(135deg, rgba(139,69,19,0.06) 0%, rgba(201,168,76,0.08) 100%);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.6rem;
+  }
+  .cel-msg-box p {
+    font-size: 0.92rem;
+    color: var(--ink);
+    line-height: 1.8;
+    word-break: keep-all;
+  }
+
+  @keyframes stampIn {
+    0%   { transform: rotate(-8deg) scale(3.5); opacity: 0; filter: blur(6px); }
+    45%  { transform: rotate(-8deg) scale(0.85); opacity: 1; filter: blur(0); }
+    65%  { transform: rotate(-8deg) scale(1.06); }
+    80%  { transform: rotate(-8deg) scale(0.97); }
+    100% { transform: rotate(-8deg) scale(1); opacity: 1; }
+  }
+  @keyframes stampGlow {
+    0%   { box-shadow: 0 0 0 0 rgba(139,37,0,0.8); }
+    35%  { box-shadow: 0 0 28px 12px rgba(139,37,0,0.25); }
+    100% { box-shadow: none; }
+  }
+  .cel-stamp-row { text-align: center; margin-bottom: 1.8rem; transform: scale(0.8); transform-origin: center top; }
+  #celStamp { display: inline-block; opacity: 0; transform: rotate(-8deg) scale(1); }
+  #celStamp.stamp-fired, #doneStamp.stamp-fired {
+    animation: stampIn 0.55s cubic-bezier(.36,.07,.19,.97) forwards,
+               stampGlow 0.65s ease-out forwards;
+  }
+
+  .cel-progress {
+    background: var(--paper-warm);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.8rem;
+  }
+  .cel-progress-label {
+    font-size: 0.75rem;
+    color: var(--sage);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.06em;
+  }
+  .cel-progress-dots {
+    display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 0.5rem;
+  }
+  .cel-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: rgba(139,69,19,0.15);
+    border: none;
+    transition: all 0.3s;
+  }
+  .cel-dot.done { background: var(--gold); }
+  .cel-dot.current { background: var(--accent); transform: scale(1.25); }
+  .cel-progress-text {
+    text-align: center;
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 0.88rem;
+    color: var(--accent);
+  }
+
+  .cel-btns { display: flex; flex-direction: column; gap: 0.7rem; }
+  .cel-btn-main {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    color: #fff;
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    box-shadow: 0 4px 16px rgba(139,69,19,0.28);
+    transition: all 0.2s;
+  }
+  .cel-btn-main:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139,69,19,0.35); }
+  .cel-btn-sub {
+    width: 100%;
+    padding: 0.85rem;
+    border: 1.5px solid rgba(139,69,19,0.3);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--sage);
+    font-family: 'Gowun Dodum', serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cel-btn-sub:hover { background: var(--paper-warm); color: var(--accent); border-color: var(--accent); }
+  .done-screen { display: none; position: fixed; inset: 0; background: var(--paper); z-index: 300; overflow-y: auto; }
+  .done-screen.show { display: block; }
+
+
+  /* ── 미션 페이지 ── */
+  .mission-page {
+    display: none;
+    position: fixed; inset: 0;
+    background: var(--paper);
+    z-index: 300;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-direction: column;
+  }
+  .mission-page.show { display: flex; flex-direction: column; }
+  .mission-top {
+    background: linear-gradient(160deg, rgba(134,239,172,0.5) 0%, rgba(253,186,116,0.5) 50%, rgba(249,168,212,0.5) 100%);
+    background-color: #f0fff4;
+    padding: 1.1rem 1.2rem 1.2rem;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .mission-top::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 60% 40%, rgba(255,255,255,0.3) 0%, transparent 60%);
+  }
+  .mission-top-inner { position: relative; }
+  .mission-top-row { display: none; } /* 배지·타이틀 숨김 */
+  .mission-badge { display: none; }
+  .mission-top-title { display: none; }
+  /* 마음 한 줄 타이틀 3배 */
+  .mission-top-cop {
+    font-family: 'Jua', 'Nanum Myeongjo', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #2d4a35;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.03em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.28rem;
+    text-shadow: 0 1px 6px rgba(255,255,255,0.6);
+    text-align: center;
+  }
+  .mission-top-quote {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #2d4a35;
+    line-height: 1.75;
+    word-break: keep-all;
+    text-align: center;
+    margin-top: 0.6rem;
+    position: relative;
+  }
+  .mission-top-msg {
+    background: rgba(255,255,255,0.45);
+    border-left: 3px solid rgba(134,239,172,0.7);
+    border-radius: 0 8px 8px 0;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+    color: #2d4a35;
+    line-height: 1.75;
+    word-break: keep-all;
+    position: relative;
+    font-family: 'Gowun Dodum', serif;
+    text-align: center;
+  }
+  .mission-body {
+    padding: 1.2rem 1.3rem 1.6rem;
+    flex: 1;
+  }
+  /* 오늘의 글귀 미니 카드 */
+  .mission-quote-mini {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 0.82rem;
+    color: var(--sage);
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+  .mission-quote-mini span {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--accent-light);
+    margin-top: 0.25rem;
+    font-style: italic;
+  }
+  /* 꽃씨 카드 */
+  .mission-seed-card {
+    background: linear-gradient(135deg, rgba(134,239,172,0.2) 0%, rgba(253,230,138,0.2) 100%);
+    border: 1.5px solid rgba(134,239,172,0.4);
+    border-radius: 14px;
+    padding: 1.2rem 1.2rem 1rem;
+    margin-bottom: 1.1rem;
+    text-align: center;
+    box-shadow: 0 3px 14px rgba(52,168,83,0.08);
+  }
+  .mission-seed-label {
+    font-family: 'Jua', 'Nanum Myeongjo', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #2d5a38;
+    margin-bottom: 0.7rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+  .mission-seed-label::before, .mission-seed-label::after {
+    content: '🌱';
+    font-size: 0.9rem;
+  }
+  .mission-seed-text {
+    font-family: 'Nanum Pen Script', 'Gowun Dodum', cursive;
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: #1e6b9a;
+    line-height: 1.7;
+    word-break: keep-all;
+    margin-bottom: 0.3rem;
+  }
+  .mission-seed-desc {
+    font-size: 0.72rem;
+    color: #4a6741;
+    line-height: 1.55;
+  }
+  /* 음성 인식 섹션 */
+  .mission-voice-box {
+    background: var(--paper-warm);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .mission-voice-prompt {
+    font-size: 0.72rem;
+    color: var(--sage);
+    margin-bottom: 0.7rem;
+    line-height: 1.5;
+  }
+  .mission-voice-result {
+    margin-top: 0.7rem;
+    padding: 0.5rem 0.8rem;
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: var(--ink);
+    min-height: 1.8em;
+    text-align: left;
+    word-break: keep-all;
+    line-height: 1.55;
+  }
+  .mission-voice-result.match { border-left: 3px solid #34a853; color: #1e6b35; }
+  .mission-voice-result.partial { border-left: 3px solid var(--gold); }
+  .mission-voice-pct { font-size: 0.68rem; color: var(--sage); margin-top: 0.3rem; text-align: right; }
+  .mission-status { font-size: 0.72rem; color: var(--sage); margin-top: 0.4rem; min-height: 1.2em; }
+  .mission-step { }
+  .mission-step-label {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    margin-bottom: 0.7rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .mission-msg-card {
+    background: linear-gradient(135deg, rgba(139,69,19,0.05) 0%, rgba(201,168,76,0.08) 100%);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.9rem;
+    font-size: 0.88rem;
+    color: var(--ink);
+    line-height: 1.8;
+    word-break: keep-all;
+  }
+  /* 건너뛰기 버튼 */
+  .mission-skip-btn {
+    width: 100%;
+    padding: 0.65rem;
+    border: 1.5px solid rgba(139,69,19,0.2);
+    border-radius: 8px;
+    background: transparent;
+    font-family: 'Gowun Dodum', serif;
+    font-size: 0.78rem;
+    color: var(--sage);
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: all 0.2s;
+  }
+  .mission-skip-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--paper-warm); }
+  /* 미션 완료 버튼 */
+  .mission-done-btn {
+    width: 100%;
+    padding: 0.95rem;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #34a853 0%, #86efac 100%);
+    color: #fff;
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(52,168,83,0.3);
+    transition: all 0.2s;
+    margin-bottom: 0.5rem;
+  }
+  .mission-done-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .mission-done-btn:not(:disabled):hover { transform: translateY(-2px); }
+
+  /* ── 최종 완성 페이지 ── */
+  .done-top {
+    background-color: #fff9f5;
+    background-image: linear-gradient(90deg,
+      rgba(249,168,212,0.75) 0%,
+      rgba(253,186,116,0.75) 25%,
+      rgba(134,239,172,0.75) 50%,
+      rgba(162,196,224,0.75) 75%,
+      rgba(249,168,212,0.75) 100%);
+    background-size: 200% 100%;
+    animation: waveFlow 3s linear infinite;
+    padding: 2rem 1.4rem 1.6rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .done-top-inner { position: relative; }
+  .petal {
+    position: absolute;
+    top: -2rem;
+    font-size: 1.4rem;
+    animation: petalFall linear infinite;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .sakura-wrap { position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+  .sakura {
+    position: absolute; top: -20px; opacity: 0;
+    animation: sakuraFall linear infinite;
+  }
+  .sakura.type1 { border-radius: 50% 50% 30% 30% / 80% 80% 20% 20%; }
+  .sakura.type2 { border-radius: 30% 30% 50% 50% / 20% 20% 80% 80%; }
+  .sakura.type3 { border-radius: 50% 50% 50% 50% / 95% 95% 5% 5%; }
+  .sakura.type4 { border-radius: 90% 10% 90% 10% / 50% 50% 50% 50%; }
+  .sakura.type5 { border-radius: 50% 0% 50% 0% / 50% 0% 50% 0%; }
+  .sakura.type6 { border-radius: 80% 20% 60% 40% / 90% 10% 80% 20%; }
+  .sakura::after {
+    content:''; position:absolute; top:2px; left:3px;
+    width:18%; height:15%; background:rgba(255,255,255,0.05); border-radius:50%;
+  }
+  @keyframes sakuraFall {
+    0%   { transform: translateY(0) translateX(0) rotate(0deg) scale(1); opacity:0; }
+    5%   { opacity:0.9; }
+    50%  { transform: translateY(100px) translateX(18px) rotate(180deg) scale(0.95); opacity:0.85; }
+    90%  { opacity:0.6; }
+    100% { transform: translateY(220px) translateX(-12px) rotate(360deg) scale(0.7); opacity:0; }
+  }
+  @keyframes petalFall {
+    0%   { transform: translateY(0) rotate(0deg) scale(1);   opacity: 0; }
+    5%   { opacity: 1; }
+    90%  { opacity: 0.8; }
+    100% { transform: translateY(220px) rotate(360deg) scale(0.7); opacity: 0; }
+  }
+  .done-confetti {
+    font-size: 2.8rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    animation: intro-pop 0.6s cubic-bezier(.34,1.56,.64,1) both, emojiSparkle 4s ease-in-out 0.6s infinite;
+  }
+  .done-top-title {
+    font-family: 'Jua', 'Nanum Myeongjo', sans-serif;
+    font-size: 2.28rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #f472b6 0%, #fb7eb6 20%, #fb923c 60%, #ea580c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.4rem;
+    filter: drop-shadow(0 2px 6px rgba(255,255,255,0.9));
+  }
+  .done-top-sub {
+    font-size: 0.88rem;
+    color: #78350f;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+  .done-top-stars {
+    margin-top: 0.9rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.3em;
+    opacity: 0.75;
+  }
+  .done-body { padding: 1.4rem 1.3rem 1.6rem; }
+  .done-tree-wrap {
+    text-align: center;
+    background: var(--paper-warm);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 16px;
+    padding: 1.4rem 1rem;
+    margin-bottom: 1.4rem;
+    box-shadow: 0 4px 18px rgba(139,69,19,0.07);
+  }
+  .done-tree-art {
+    font-size: 5rem;
+    line-height: 1.1;
+    animation: intro-pop 0.7s cubic-bezier(.34,1.56,.64,1) both;
+    margin-bottom: 0.6rem;
+  }
+  .done-tree-title {
+    font-family: 'Jua', 'Nanum Myeongjo', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+  .done-tree-sub {
+    font-size: 0.82rem;
+    color: var(--sage);
+    line-height: 1.6;
+  }
+  .done-journey {
+    margin-bottom: 1.4rem;
+  }
+  .done-journey-title {
+    font-family: 'Jua', 'Nanum Myeongjo', sans-serif;
+    font-size: 1.275rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.7rem;
+    text-align: center;
+  }
+  .done-journey-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.35rem;
+  }
+  .done-journey-item {
+    background: var(--paper-warm);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 10px;
+    padding: 0.45rem 0.2rem 0;
+    text-align: center;
+    font-size: 1.3rem;
+    line-height: 1.2;
+    box-shadow: 0 1px 4px rgba(139,69,19,0.06);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .done-journey-item span {
+    display: block;
+    font-size: 0.52rem;
+    color: #4a3828;
+    font-weight: 700;
+    margin-top: 0.15rem;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+  }
+  .done-journey-date {
+    display: block; font-size: 0.42rem;
+    font-family: 'Nanum Myeongjo', serif; font-weight: 700;
+    color: #8a3020;
+    background: rgba(139,37,0,0.06);
+    border-top: 1px solid rgba(139,37,0,0.15);
+    padding: 0.18rem 0.1rem;
+    margin-top: auto;
+    letter-spacing: 0.03em; line-height: 1.3;
+  }
+  .done-journey-date.empty {
+    color: transparent;
+    background: rgba(139,37,0,0.02);
+  }
+  .done-msg-card {
+    background: linear-gradient(135deg, rgba(139,69,19,0.05) 0%, rgba(201,168,76,0.08) 100%);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 12px 12px 0;
+    padding: 1.1rem 1.2rem;
+    margin-bottom: 1.4rem;
+    font-size: 0.88rem;
+    color: var(--ink);
+    line-height: 1.85;
+    word-break: keep-all;
+    text-align: center;
+  }
+  .done-stamp {
+    display: inline-block;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    padding: 0.5rem 1.6rem;
+    border-radius: 4px;
+    font-family: 'Jua', 'Nanum Myeongjo', sans-serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    transform: rotate(-1.5deg);
+    box-shadow: 2px 2px 0 rgba(139,69,19,0.15);
+    margin-bottom: 1.4rem;
+  }
+  .done-restart-btn {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f9a8d4 0%, #fdba74 50%, #86efac 100%);
+    color: #5c4a3a;
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    box-shadow: 0 4px 16px rgba(249,168,212,0.4);
+    transition: all 0.2s;
+  }
+  .done-restart-btn:hover { transform: translateY(-2px); }
+  .main-app .header { display: none; }
+  /* 따옴표 제거 (이미 새 카드 헤더로 대체) */
+  /* hint 문구 */
+  .pen-type-selector {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0.4rem 1rem 0;
+  }
+  .stamp-pair {
+    display: flex;
+    gap: 0.05rem;
+  }
+  .stamp-pair .pen-type-btn {
+    padding: 0.1rem 0.35rem;
+    font-size: 0.62rem;
+    border-radius: 4px;
+  }
+  .stamp-pair .pen-type-btn:first-child {
+    border-radius: 20px 4px 4px 20px;
+  }
+  .stamp-pair .pen-type-btn:last-child {
+    border-radius: 4px 20px 20px 4px;
+  }
+  .stamp-pair .pen-type-btn:not(:first-child):not(:last-child) {
+    border-radius: 4px;
+  }
+  .pen-type-btn {
+    padding: 0.25rem 0.55rem;
+    border: 1.5px solid rgba(139,69,19,0.2);
+    border-radius: 20px;
+    background: var(--paper-warm);
+    color: var(--ink);
+    font-size: 0.68rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .pen-type-btn.active {
+    background: #d4763b;
+    color: #fff;
+    border-color: #d4763b;
+  }
+  .pen-type-btn:hover:not(.active) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .font-selector {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0.5rem 1rem 0.3rem;
+  }
+  .font-btn {
+    padding: 0.28rem 0.65rem;
+    border: 1.5px solid rgba(139,69,19,0.2);
+    border-radius: 20px;
+    background: var(--paper-warm);
+    color: var(--ink);
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .font-btn.active {
+    background: #d4763b;
+    color: #fff;
+    border-color: #d4763b;
+  }
+  .font-btn:hover:not(.active) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .save-btn {
+    font-family: 'Jua', sans-serif;
+    font-size: 0.78rem;
+    padding: 0.45rem 1.2rem;
+    border: 1.5px solid rgba(139,69,19,0.3);
+    border-radius: 20px;
+    background: var(--paper-warm);
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+  .save-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .zoom-hint {
+    text-align: center;
+    font-size: 0.82rem;
+    font-family: 'Gaegu', cursive;
+    color: var(--sage);
+    opacity: 0.7;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+    padding: 0 0.8rem;
+    letter-spacing: -0.03em;
+  }
+  .hint {
+    text-align: center;
+    font-size: 0.49rem;
+    color: var(--sage);
+    opacity: 0.6;
+    margin-top: 0.4rem;
+    padding: 0 0.8rem;
+    letter-spacing: 0.04em;
+  }
+  .hint.hidden { opacity: 0; transition: opacity 1s; }
+  /* 따라쓰기·축하 페이지 하단 footer — 시작페이지 intro-footer-note와 동일 */
+  .footer, .cel-footer {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 0.869rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 1.056rem 1.420rem;
+    background: linear-gradient(135deg, rgba(249,168,212,0.28) 0%, rgba(253,186,116,0.28) 50%, rgba(134,239,172,0.28) 100%);
+    border: none;
+    border-radius: 36px;
+    color: rgba(76,29,107,0.55);
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .footer-wrap, .cel-footer-wrap {
+    text-align: center;
+    margin-top: 0.9rem;
+    padding-bottom: 1rem;
+  }
+  .footer::before, .cel-footer::before {
+    content: '🌸';
+    margin-right: 0.32rem;
+    opacity: 0.75;
+  }
+  .footer::after, .cel-footer::after {
+    content: '🌸';
+    margin-left: 0.32rem;
+    opacity: 0.75;
+  }
+  /* ══════════════════════════════════════════════════
+     시작 페이지
+  ══════════════════════════════════════════════════ */
+  .intro-page {
+    position: fixed; inset: 0;
+    z-index: 150;
+    display: flex;
+    flex-direction: column;
+    background: var(--paper);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 70px;
+  }
+  .intro-page.hidden { display: none; }
+
+  /* 상단 그라디언트 배너 */
+  .intro-top {
+    background: linear-gradient(160deg, rgba(249,168,212,0.42) 0%, rgba(253,186,116,0.42) 35%, rgba(253,230,138,0.42) 60%, rgba(134,239,172,0.42) 100%);
+    background-color: #fff9f5;
+    padding: 0.7rem 0.6rem 0.7rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .intro-top::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,0.22) 0%, transparent 55%),
+      radial-gradient(circle at 80% 70%, rgba(255,255,255,0.15) 0%, transparent 50%);
+  }
+  .intro-badge {
+    display: inline-block;
+    background: rgba(139,69,19,0.12);
+    border: 1px solid rgba(139,69,19,0.25);
+    border-radius: 20px;
+    padding: 0.3rem 1rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: #7c3410;
+    margin-bottom: 1.2rem;
+    position: relative;
+  }
+  .intro-emblem {
+    font-size: 2.2rem;
+    display: block;
+    margin-top: -0.5rem;
+    margin-bottom: -0.5rem;
+    animation: intro-pop 0.7s cubic-bezier(.34,1.56,.64,1) both;
+    position: relative;
+  }
+  @keyframes intro-pop {
+    0%   { transform: scale(0.2); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+  .intro-title {
+    font-family: 'Jua', sans-serif;
+    font-weight: 900;
+    position: relative;
+    line-height: 1.3;
+    margin-top: 0.3rem;
+  }
+  .intro-title {
+    font-family: 'Jua', sans-serif;
+    font-weight: 900;
+    position: relative;
+    line-height: 1.3;
+    margin-top: 0.3rem;
+  }
+  .intro-title-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 110px;
+  }
+  /* 이모지 행 - SVG 글자 위에 정확히 배치 */
+  .intro-title-emojis {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    margin-top: -118px; /* SVG 높이만큼 올림 */
+    margin-bottom: 18px;
+    pointer-events: none;
+    position: relative;
+  }
+  .te {
+    font-size: 0.75rem;
+    opacity: 0.85;
+    display: inline-block;
+    width: 2.6rem;   /* 글자 한 칸 너비와 동일하게 */
+    text-align: center;
+    line-height: 1;
+  }
+  .te-gap-small {
+    display: inline-block;
+    width: 4.5rem;  /* '처럼 피어나는' 구간 공백 */
+  }
+  .intro-tagline {
+    margin-top: 0.15rem;
+    font-size: 0.82rem;
+    color: #78350f;
+    letter-spacing: 0.03em;
+    line-height: 1.65;
+    position: relative;
+  }
+  .intro-wave {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.4em;
+    opacity: 0.5;
+    color: #92400e;
+    position: relative;
+  }
+
+  /* 본문 */
+  .intro-body {
+    padding: 1rem 1.3rem 0;
+    flex: 1;
+  }
+
+  /* 인사말 카드 */
+  .intro-greeting {
+    background: linear-gradient(135deg, rgba(186,230,253,0.3) 0%, rgba(134,239,172,0.3) 35%, rgba(186,230,253,0.3) 65%, rgba(249,168,212,0.08) 100%);
+    border: 1.5px solid rgba(134,239,172,0.3);
+    border-radius: 16px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.85rem;
+    position: relative;
+    box-shadow: 0 4px 18px rgba(134,239,172,0.08);
+  }
+  .intro-greeting::before {
+    display: none;
+  }
+  .intro-greeting-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.7rem;
+    padding-top: 0.1rem;
+  }
+  .intro-greeting-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .intro-greeting-title {
+    font-family: 'Gaegu', cursive;
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: #0891b2;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+  }
+  }
+  .intro-greeting p {
+    font-family: 'Gaegu', cursive !important;
+    font-size: 0.92rem;
+    color: #1e3a5f;
+    line-height: 1.95;
+    word-break: keep-all;
+  }
+  .intro-greeting p strong {
+    color: #0891b2;
+    font-family: 'Gaegu', cursive;
+    font-size: 1.1rem;
+    letter-spacing: -0.04em;
+  }
+  .intro-greeting-sign {
+    text-align: right;
+    font-family: 'Gaegu', cursive;
+    font-size: 0.9rem;
+    color: #7ec8d8;
+    margin-top: 0.7rem;
+  }
+
+  /* 기능 소개 카드 3개 */
+  .intro-features {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    margin-bottom: 1.4rem;
+  }
+  .intro-feature {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 12px;
+    padding: 0.8rem 0.4rem;
+    box-shadow: 0 2px 8px rgba(139,69,19,0.05);
+    text-align: center;
+  }
+  .intro-feature-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  .intro-feature-text strong {
+    display: block;
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 0.72rem;
+    color: var(--ink);
+    word-break: keep-all;
+    line-height: 1.3;
+  }
+  .intro-feature-text span { display: none; }
+
+  /* 117 신고 배너 — 시작페이지용 삭제, 축하페이지용 소형 */
+  .cel-117 {
+    background: linear-gradient(135deg, rgba(249,168,212,0.35) 0%, rgba(253,186,116,0.35) 50%, rgba(253,230,138,0.35) 100%);
+    border-radius: 8px;
+    padding: 0.54rem 0.72rem;
+    display: flex;
+    align-items: center;
+    gap: 0.48rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow: 0 2px 7px rgba(249,168,212,0.22);
+  }
+  .cel-117-num {
+    font-family: 'Jua', 'Nanum Myeongjo', sans-serif;
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: #7c2d12;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .cel-117-text {
+    font-size: 0.47rem;
+    color: #7c2d12;
+    line-height: 1.55;
+    word-break: keep-all;
+  }
+  .cel-117-text strong { color: #9a3412; }
+
+  /* 117 신고 배너 */
+  .intro-117 {
+    background: linear-gradient(135deg, #f9a8d4 0%, #fdba74 50%, #fde68a 100%);
+    border-radius: 10px;
+    padding: 0.9rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.6rem;
+    box-shadow: 0 3px 12px rgba(249,168,212,0.35);
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+  .intro-117-num {
+    font-family: 'Jua', 'Nanum Myeongjo', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #7c2d12;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .intro-117-text {
+    font-size: 0.78rem;
+    color: #7c2d12;
+    line-height: 1.65;
+    word-break: keep-all;
+  }
+  .intro-117-text strong { color: #9a3412; }
+
+  .intro-magic {
+    background: linear-gradient(135deg, rgba(249,168,212,0.18) 0%, rgba(253,186,116,0.15) 50%, rgba(134,239,172,0.18) 100%);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 14px;
+    padding: 1rem 1.3rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    box-shadow: 0 3px 14px rgba(139,69,19,0.07);
+    position: relative;
+    overflow: hidden;
+  }
+  .intro-magic::before {
+    content: '🌈';
+    position: absolute;
+    font-size: 21rem;
+    opacity: 0.18;
+    bottom: -1rem;
+    left: 55%;
+    transform: translateX(-50%) rotate(43deg) scaleX(1.1);
+    pointer-events: none;
+    line-height: 1;
+    filter: brightness(1.4) saturate(0.8) blur(0.5px);
+  }
+  .intro-magic-title {
+    font-family: 'Jua', 'Black Han Sans', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, #e63946 0%, #f4791f 20%, #c4920a 40%, #3bb043 60%, #1e90ff 80%, #8b3fbe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.2));
+    letter-spacing: 0.05em;
+    margin-bottom: 0.8rem;
+    position: relative;
+  }
+  .magic-emoji {
+    -webkit-text-fill-color: initial;
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+  }
+  .intro-magic-body {
+    font-family: 'Jua', 'Black Han Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, #e63946 0%, #f4791f 20%, #c4920a 40%, #3bb043 60%, #1e90ff 80%, #8b3fbe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.2));
+    line-height: 1.95;
+    word-break: keep-all;
+    position: relative;
+  }
+
+  .intro-btn {
+    width: 100%;
+    padding: 1.05rem;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f9a8d4 0%, #fdba74 45%, #86efac 100%);
+    color: #7c2d12;
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(249,168,212,0.4);
+    border: 1px solid rgba(255,255,255,0.7);
+    transition: all 0.2s;
+  }
+  .intro-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(249,168,212,0.55); }
+  .intro-btn:active { transform: translateY(0); }
+  .intro-footer-note {
+    text-align: center;
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 0.869rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-top: 0.9rem;
+    padding: 1.056rem 1.420rem;
+    background: linear-gradient(135deg, rgba(249,168,212,0.28) 0%, rgba(253,186,116,0.28) 50%, rgba(134,239,172,0.28) 100%);
+    border: none;
+    border-radius: 36px;
+    color: rgba(76,29,107,0.55);
+    display: inline-block;
+  }
+  .intro-footer-note-wrap {
+    text-align: center;
+    margin-top: 0.9rem;
+  }
+
+  /* ── 앱 셸 & 탭 구조 ── */
+  #appShell {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-bottom: 68px;
+  }
+  #appShell.show { display: flex; }
+
+  /* 상단 고정 헤더 */
+  #appTopBar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: linear-gradient(160deg, rgba(249,168,212,0.42) 0%, rgba(253,186,116,0.42) 35%, rgba(253,230,138,0.42) 60%, rgba(134,239,172,0.42) 100%);
+    background-color: #fff9f5;
+    border-bottom: 1px solid rgba(249,168,212,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 12px rgba(249,168,212,0.15);
+    min-height: 64px;
+  }
+  #appTopBar .header-svg {
+    width: 100%;
+    max-width: 320px;
+    height: 52px;
+    display: block;
+  }
+
+  /* 미션뷰 헤더 (동일 스타일) */
+  .page-top-header {
+    background: linear-gradient(160deg, rgba(249,168,212,0.42) 0%, rgba(253,186,116,0.42) 35%, rgba(253,230,138,0.42) 60%, rgba(134,239,172,0.42) 100%);
+    background-color: #fff9f5;
+    border-bottom: 1px solid rgba(249,168,212,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    flex-shrink: 0;
+    min-height: 64px;
+  }
+  .page-top-header .header-svg {
+    width: 100%;
+    max-width: 320px;
+    height: 52px;
+    display: block;
+  }
+
+  /* 탭 페이지 */
+  .tab-page { display: none; flex: 1; }
+  .tab-page.active { display: block; }
+
+  /* 하단 고정 네비게이션 */
+  #bottomNav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 400;
+    background: rgba(250,247,240,0.97);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(139,69,19,0.12);
+    display: flex;
+    height: 62px;
+    box-shadow: 0 -2px 12px rgba(139,69,19,0.08);
+  }
+  .nav-tab-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.18rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Gowun Dodum', serif;
+    color: var(--sage);
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    transition: all 0.18s;
+    padding: 0.3rem 0;
+    position: relative;
+  }
+  .nav-tab-btn .nav-icon { font-size: 1.3rem; line-height: 1; }
+  .nav-tab-btn.active {
+    color: var(--accent);
+  }
+  .nav-tab-btn.active::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 20%; right: 20%;
+    height: 2.5px;
+    background: linear-gradient(90deg, var(--accent-light), var(--accent));
+    border-radius: 0 0 3px 3px;
+  }
+  .nav-tab-btn:active { opacity: 0.7; }
+
+  /* ── 나의 필사 갤러리 탭 ── */
+  #tabGallery {
+    padding: 1rem;
+  }
+  .gallery-header {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .gallery-header h2 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .gallery-header p {
+    font-size: 0.75rem;
+    color: var(--sage);
+    margin-top: 0.2rem;
+  }
+  .gallery-progress-pill {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(249,168,212,0.3), rgba(253,186,116,0.3));
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 20px;
+    padding: 0.25rem 0.9rem;
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 700;
+    margin-top: 0.4rem;
+  }
+  .gallery-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--sage);
+    font-size: 0.8rem;
+    line-height: 1.8;
+  }
+  .gallery-empty .empty-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  .gallery-item {
+    background: var(--paper-warm);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .gallery-item img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+  }
+  .gallery-item-info {
+    padding: 0.4rem 0.5rem 0.45rem;
+  }
+  .gallery-item-num {
+    font-size: 0.58rem;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .gallery-item-text {
+    font-size: 0.65rem;
+    color: var(--ink);
+    line-height: 1.45;
+    margin-top: 0.1rem;
+    word-break: keep-all;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .gallery-item-date {
+    font-size: 0.58rem;
+    color: var(--sage);
+    margin-top: 0.15rem;
+  }
+
+  /* ── 나의 기록 탭 ── */
+  #tabRecords {
+    padding: 1rem;
+  }
+  .records-header {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .records-header h2 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .records-progress-card {
+    background: linear-gradient(135deg, rgba(249,168,212,0.2), rgba(253,186,116,0.2), rgba(134,239,172,0.2));
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 14px;
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .records-count {
+    font-family: 'Jua', sans-serif;
+    font-size: 2.4rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .records-count span { font-size: 0.8rem; color: var(--sage); }
+  .records-subtitle { font-size: 0.75rem; color: var(--sage); margin-top: 0.3rem; }
+  .records-bar-wrap { margin: 0.7rem 0 0.2rem; }
+  .records-bar-track {
+    background: rgba(139,69,19,0.1);
+    border-radius: 99px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .records-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-light), var(--accent));
+    border-radius: 99px;
+    transition: width 0.6s ease;
+  }
+  .records-list-title {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+    padding-left: 0.2rem;
+  }
+  .records-list { display: flex; flex-direction: column; gap: 0.45rem; }
+  .records-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.5rem 0.7rem;
+  }
+  .records-item-num {
+    font-family: 'Jua', sans-serif;
+    font-size: 0.75rem;
+    color: var(--accent);
+    min-width: 28px;
+    text-align: center;
+    background: rgba(139,69,19,0.08);
+    border-radius: 6px;
+    padding: 0.15rem 0.25rem;
+  }
+  .records-item-body { flex: 1; }
+  .records-item-text {
+    font-size: 0.72rem;
+    color: var(--ink);
+    line-height: 1.4;
+    word-break: keep-all;
+  }
+  .records-item-date { font-size: 0.6rem; color: var(--sage); margin-top: 0.1rem; }
+  .records-item-check { font-size: 0.8rem; }
+  .records-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--sage);
+    font-size: 0.82rem;
+    line-height: 1.8;
+  }
+  .records-117 {
+    background: linear-gradient(135deg,rgba(249,168,212,0.25),rgba(253,186,116,0.25));
+    border-radius: 10px;
+    padding: 0.7rem 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 1rem;
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+
+  /* ══════════════════════════════════
+     오늘의 필사 홈뷰 - 소프트 파스텔 카와이
+     컬러: 민트 #86efac / 피치 #fdba74 / 라벤더 #c4b5fd / 스카이 #7dd3fc
+  ══════════════════════════════════ */
+  :root {
+    --mint: #86efac;
+    --mint-deep: #34d399;
+    --peach: #fdba74;
+    --peach-deep: #fb923c;
+    --lavender: #c4b5fd;
+    --sky: #bae6fd;
+    --bubble: rgba(255,255,255,0.7);
+  }
+
+  #writingHome {
+    padding: 1rem 1rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: linear-gradient(160deg,
+      rgba(134,239,172,0.12) 0%,
+      rgba(253,186,116,0.10) 50%,
+      rgba(196,181,253,0.10) 100%);
+  }
+  #writingHome.hidden { display: none; }
+
+  /* ── 상단 라벨 ── */
+  /* ── 네비게이터+글귀 통합 카드 ── */
+  .wh-navigator { display: none; } /* 기존 navigator 숨김 */
+
+  .wh-nav-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
+  }
+
+  .wh-nav-btn {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, var(--mint), var(--peach));
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(134,239,172,0.4);
+    flex-shrink: 0;
+    transition: transform 0.12s, box-shadow 0.12s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wh-nav-btn:active {
+    transform: scale(0.88);
+    box-shadow: 0 1px 5px rgba(134,239,172,0.3);
+  }
+
+  .wh-nav-info {
+    flex: 1;
+    text-align: center;
+  }
+  .wh-nav-label-big {
+    font-family: 'Jua', sans-serif;
+    font-size: 0.8rem;
+    color: var(--mint-deep);
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .wh-nav-count {
+    font-family: 'Jua', sans-serif;
+    font-size: 0.8rem;
+    color: var(--mint-deep);
+    display: block;
+  }
+
+  /* 점 인디케이터 */
+  .wh-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    max-width: 100%;
+    padding: 0 0.2rem;
+  }
+  .wh-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(134,239,172,0.25);
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.18s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wh-dot.active {
+    background: linear-gradient(135deg, var(--mint-deep), var(--peach-deep));
+    transform: scale(1.45);
+    box-shadow: 0 1px 5px rgba(52,211,153,0.45);
+  }
+  .wh-dot.done { background: var(--mint); }
+
+  /* ── 통합 글귀 카드 ── */
+  .wh-quote-card {
+    background: white;
+    border-radius: 22px;
+    padding: 1.2rem 1.3rem 1.2rem;
+    box-shadow: 0 4px 20px rgba(253,186,116,0.2), 0 0 0 2px rgba(253,186,116,0.25);
+    position: relative;
+  }
+  .wh-quote-deco {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.7rem;
+  }
+  .wh-quote-deco-line {
+    flex: 1;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, rgba(253,186,116,0.5), transparent);
+  }
+  .wh-quote-deco-line.right {
+    background: linear-gradient(270deg, rgba(253,186,116,0.5), transparent);
+  }
+  .wh-quote-deco span {
+    font-size: 1.1rem;
+    font-family: 'Jua', sans-serif;
+    color: var(--peach-deep);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .wh-quote-text {
+    font-family: 'Gaegu', cursive;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #2d2d2d;
+    line-height: 1.85;
+    word-break: keep-all;
+    text-align: center;
+    letter-spacing: -0.04em;
+  }
+  .wh-quote-source {
+    font-family: 'Gaegu', cursive;
+    font-size: 0.8rem;
+    color: #aaa;
+    text-align: right;
+    margin-top: 0.75rem;
+  }
+
+  /* ── 마음 한 줄 카드 ── */
+  .wh-mission-card {
+    background: white;
+    border-radius: 22px;
+    padding: 2.2rem 1.2rem;
+    box-shadow: 0 4px 20px rgba(134,239,172,0.2), 0 0 0 2px rgba(134,239,172,0.25);
+    position: relative;
+  }
+  .wh-mission-card::after { display: none; }
+  .wh-mission-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: linear-gradient(135deg, rgba(134,239,172,0.35), rgba(253,186,116,0.35));
+    border-radius: 26px;
+    padding: 0.286rem 0.975rem;
+    font-family: 'Jua', sans-serif;
+    font-size: 1.7rem;
+    color: #1a7a4a;
+    letter-spacing: 0.2em;
+    margin-bottom: 1.4rem;
+    margin-top: 0rem;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+  }
+  .wh-mission-text {
+    font-size: 1.5rem;
+    line-height: 1.8;
+    word-break: keep-all;
+    text-align: center;
+  }
+
+  /* ── 필사하러 가기 버튼 ── */
+  .wh-start-btn {
+    width: 100%;
+    padding: 1.05rem;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--mint-deep) 0%, var(--peach-deep) 100%);
+    color: white;
+    font-family: 'Jua', sans-serif;
+    font-size: 4rem;
+    letter-spacing: 0.7rem;
+    cursor: pointer;
+    box-shadow: 0 5px 18px rgba(52,211,153,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wh-start-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(52,211,153,0.25);
+  }
+
+  /* ══════════════════════════════════════════════════
+     모바일 반응형 (max-width: 768px)
+  ══════════════════════════════════════════════════ */
+  @media (max-width: 768px) {
+
+    /* 따라쓰기/따라읽기 탭 */
+    .mode-tab { font-size: 0.95rem; padding: 0.45rem; }
+
+    /* 뒤로가기 / 완성했어요 버튼 */
+    .btn-clear, .btn-complete { font-size: 0.95rem; padding: 0.6rem; }
+
+    /* 네비게이터 버튼 */
+    .wh-nav-btn { width: 42px; height: 42px; font-size: 1.2rem; }
+    .wh-nav-label-big { font-size: 0.75rem; }
+    .wh-nav-count { font-size: 0.85rem; }
+
+    /* 오늘의 글귀 텍스트 */
+    .wh-quote-text { font-size: 1.55rem; }
+    .wh-quote-deco span { font-size: 0.9rem; }
+
+    /* 학교전담경찰관 카드 */
+    .wh-mission-label { font-size: 0.82rem; }
+    .wh-mission-text { font-size: 1rem; }
+
+    /* 필사하러 가기 버튼 */
+    .wh-start-btn { font-size: 0.92rem; padding: 0.85rem; }
+
+    /* 툴카드 라벨 */
+    .tool-group-label { font-size: 0.65rem; }
+
+    /* 지우개/뒤로/첫시작 버튼 */
+    .erase-btn { font-size: 0.58rem; padding: 0.18rem 0.42rem; }
+
+    /* 펜종류 버튼 */
+    .pen-type-btn { font-size: 0.55rem; padding: 0.18rem 0.42rem; }
+
+    /* 글씨체 버튼 */
+    .font-btn { font-size: 0.55rem; padding: 0.16rem 0.36rem; }
+
+    /* 안내문구 */
+    .zoom-hint { font-size: 0.72rem; }
+
+    /* 앱 상단바 */
+    #appTopBar { min-height: 52px; }
+    #appTopBar .header-svg { height: 44px; }
+    .page-top-header .header-svg { height: 44px; }
+
+    /* 홈뷰 여백 */
+    #writingHome { padding: 0.7rem 0.7rem 1.5rem; gap: 0.75rem; }
+
+    /* 미션 카드 */
+    .wh-mission-card { padding: 1.1rem 1rem; }
+
+    /* 갤러리 그리드 */
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+
+    /* 나의 기록 */
+    .records-count { font-size: 1.8rem; }
+
+    /* 하단 네비바 */
+    .nav-tab-btn { font-size: 0.6rem; }
+    .nav-tab-btn .nav-icon { font-size: 1.1rem; }
+
+    /* 시작페이지 */
+    .intro-greeting p { font-size: 0.78rem; }
+    .intro-greeting-title { font-size: 1.1rem; }
+    .intro-magic-title { font-size: 1rem; }
+    .intro-magic-body { font-size: 0.82rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     시작 페이지
+══════════════════════════════════════════════════ -->
+<div class="intro-page" id="introPage">
+  <div class="intro-top">
+    <div class="intro-footer-note" style="margin-top:0; margin-bottom:0.6rem; font-size:0.8rem; padding:0.930rem 1.250rem; border-radius:32px;">🌸 은평경찰서 언어폭력예방 필사캠페인 🌸</div>
+    <span class="intro-emblem">✍️</span>
+    <div class="intro-title" style="margin-top:-1.2rem;margin-bottom:-0.2rem;">
+      <svg class="intro-title-svg" viewBox="0 0 320 90" xmlns="http://www.w3.org/2000/svg" aria-label="꽃처럼 피어나는 말 쓰기">
+        <defs>
+          <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#f9a8d4"/>
+            <stop offset="45%"  stop-color="#fdba74"/>
+            <stop offset="100%" stop-color="#fb923c"/>
+          </linearGradient>
+        </defs>
+        <!-- 꽃 이모지 -->
+        <text x="50"  y="33" text-anchor="middle" font-size="11" opacity="0.85">🌸</text>
+        <text x="200" y="33" text-anchor="middle" font-size="11" opacity="0.85">🌸</text>
+        <text x="242" y="33" text-anchor="middle" font-size="11" opacity="0.85">🌸</text>
+        <text x="278" y="33" text-anchor="middle" font-size="11" opacity="0.85">🌸</text>
+        <!-- 글자 -->
+        <text x="50%" y="70" text-anchor="middle" fill="url(#titleGrad)"
+          font-family="Jua, sans-serif" font-weight="900">
+          <tspan font-size="36">꽃</tspan><tspan font-size="22" dy="0">처럼 피어나는</tspan><tspan font-size="36" dy="0"> 말 쓰기</tspan>
+        </text>
+      </svg>
+    </div>
+    <div class="intro-tagline">좋은 글귀를 따라 쓰고 읽다보면<br>나의 손 끝과 입술 위에도 꽃이 피어납니다.</div>
+  </div>
+
+  <div class="intro-body">
+    <!-- 인사말 카드 -->
+    <div class="intro-greeting">
+      <div class="intro-greeting-header">
+        <span class="intro-greeting-icon">🚔</span>
+        <div class="intro-greeting-title">들어가면서.....</div>
+      </div>
+      <p>
+        우리가 매일 주고 받는 말들은 씨앗과 같습니다.
+        따뜻한 말 한마디는 누군가의 마음에 꽃을 피우고,
+        차갑고 거친 말은 폭력이 되어 오래도록 아물지 않는 상처를 남깁니다.<br><br>
+        <span style="letter-spacing:-0.06em;"><strong>은평경찰서와 함께하는 「꽃말쓰기」</strong>는 좋은 말을 직접 써보고 소리 내어 읽으면서</span>
+        아름다운 언어 습관을 키워가는 프로그램입니다.<br><br>
+        <strong style="letter-spacing:-0.13em;white-space:nowrap;">말이 씨가 된다면 우리 함께 꽃씨를 심어볼까요?</strong><br>
+        <span style="letter-spacing:-0.06em;">오늘 여러분이 쓰는 한 글자 한 글자가</span>
+        <strong>더 따뜻하고 안전한 학교</strong>를 만드는 첫걸음이 될 거예요. 🌱
+      </p>
+      <div class="intro-greeting-sign">— 은평경찰서 학교전담경찰관 일동</div>
+    </div>
+
+    <!-- 21일의 마법 -->
+    <div class="intro-magic">
+      <div class="intro-magic-body" style="font-size:1rem;line-height:1.5;">
+        새로운 습관을 우리 몸이 인식하는데<br>필요한 시간, <span style="font-size:1.5rem;">21일</span><br>
+        하루 한 줄의 필사가 쌓여 내 언어가 바뀌는 시간
+      </div>
+    </div>
+    <div style="height:4px;"></div>
+  </div>
+</div>
+
+<!-- ══════════ 앱 셸 ══════════ -->
+<div id="appShell">
+  <div id="appTopBar">
+    <svg class="header-svg" viewBox="0 0 320 52" xmlns="http://www.w3.org/2000/svg" aria-label="꽃처럼 피어나는 말 쓰기">
+      <defs>
+        <linearGradient id="headerTitleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="#f9a8d4"/>
+          <stop offset="45%"  stop-color="#fdba74"/>
+          <stop offset="100%" stop-color="#fb923c"/>
+        </linearGradient>
+      </defs>
+      <text x="50%" y="40" text-anchor="middle" dominant-baseline="auto" fill="url(#headerTitleGrad)"
+        font-family="Jua, sans-serif" font-weight="900">
+        <tspan font-size="33">꽃</tspan><tspan font-size="17" dy="0">처럼 피어나는</tspan><tspan font-size="33" dy="0"> 말 쓰기</tspan>
+      </text>
+    </svg>
+  </div>
+
+  <!-- 탭1: 오늘의 필사 -->
+  <div class="tab-page active" id="tabWriting">
+
+  <!-- 홈뷰: 오늘의 글귀 + 마음 한 줄 -->
+  <div id="writingHome">
+
+    <!-- 통합 카드: 네비게이터 + 글귀 -->
+    <div class="wh-quote-card">
+      <!-- 상단: 문구 + 번호 + 화살표 -->
+      <div class="wh-nav-row">
+        <button class="wh-nav-btn" onclick="whMovePrev()">‹</button>
+        <div class="wh-nav-info">
+          <span class="wh-nav-label-big">오늘의 글귀를 골라보세요</span>
+          <span class="wh-nav-count" id="whQuoteNum">1 / 21</span>
+        </div>
+        <button class="wh-nav-btn" onclick="whMoveNext()">›</button>
+      </div>
+      <!-- 점 인디케이터 -->
+      <div class="wh-dots" id="whDots"></div>
+      <!-- 구분선 -->
+      <div class="wh-quote-deco" style="margin-top:0.8rem;">
+        <div class="wh-quote-deco-line"></div>
+        <span>오늘의 글귀</span>
+        <div class="wh-quote-deco-line right"></div>
+      </div>
+      <!-- 글귀 내용 -->
+      <div class="wh-quote-text" id="whQuoteText"></div>
+      <div class="wh-quote-source" id="whQuoteSource"></div>
+    </div>
+
+    <!-- 마음 한 줄 -->
+    <div class="wh-mission-card">
+      <div class="wh-mission-label">🚔 학교전담경찰관의 마음 한 줄 🚔</div>
+      <div class="wh-mission-text" id="whMissionText"></div>
+    </div>
+
+    <button class="wh-start-btn" onclick="goToCanvas()">
+      ✏️ 필사하러 가기
+    </button>
+  </div>
+  <!-- 필사뷰: 기존 캔버스 페이지 -->
+<div class="main-app" id="mainApp" style="display:none;">
+  <div class="header" style="display:none;">
+    <div class="header-badge">청소년 언어문화 개선 프로그램</div>
+    <h1>마음 <span>글씨</span></h1>
+    <p>좋은 말을 손으로 쓰면, 마음에 새겨집니다</p>
+  </div>
+
+  <div class="quote-card" id="quoteCard">
+    <div class="quote-card-header">
+      <div class="quote-label">
+        오늘의 글귀
+        <span class="quote-num-badge" id="quoteNumBadge">1 / 21</span>
+      </div>
+      <div class="quote-nav-arrows">
+        <button class="quote-arrow-btn" onclick="movePrevQuote()" title="이전 글귀">‹</button>
+        <button class="quote-arrow-btn" onclick="moveNextQuote()" title="다음 글귀">›</button>
+      </div>
+    </div>
+    <div class="quote-text" id="quoteText"></div>
+    <div class="quote-source" id="quoteSource"></div>
+  </div>
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="tabWrite" onclick="switchMode('write')">✏️ 따라 쓰기</button>
+    <button class="mode-tab" id="tabVoice" onclick="switchMode('voice')">🎤 따라 읽기</button>
+  </div>
+
+  <!-- SVG 필터: 거친 도장 잉크 효과 -->
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <filter id="roughStamp" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="4" seed="8" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="canvas-section" id="canvasSection">
+
+    <!-- 가이드 글씨체 카드 (최상단) -->
+    <div class="tool-group-font" style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:0.35rem;margin:0.5rem 0.5rem 0.2rem;overflow-x:auto;flex-wrap:nowrap;">
+      <div class="tool-group-label" style="white-space:nowrap;flex-shrink:0;font-size:0.65rem;">글씨체 선택</div>
+      <div style="display:flex;gap:0.1rem;flex-wrap:nowrap;">
+        <button class="font-btn" style="font-family:'Gaegu',cursive;font-size:0.52rem;padding:0.15rem 0.3rem;" onclick="setGuideFont('Gaegu')" id="fontGaegu">가에구</button>
+        <button class="font-btn" style="font-family:'Nanum Pen Script',cursive;font-size:0.52rem;padding:0.15rem 0.3rem;" onclick="setGuideFont('Nanum Pen Script')" id="fontPen">펜글씨</button>
+        <button class="font-btn" style="font-family:'Yeon Sung',cursive;font-size:0.52rem;padding:0.15rem 0.3rem;" onclick="setGuideFont('Yeon Sung')" id="fontYeon">연성</button>
+        <button class="font-btn" style="font-family:'Gugi',cursive;font-size:0.52rem;padding:0.15rem 0.3rem;" onclick="setGuideFont('Gugi')" id="fontGugi">구기</button>
+        <button class="font-btn" style="font-family:'Kirang Haerang',cursive;font-size:0.52rem;padding:0.15rem 0.3rem;" onclick="setGuideFont('Kirang Haerang')" id="fontKirang">키랑해랑</button>
+        <button class="font-btn" style="font-family:'Hi Melody',cursive;font-size:0.52rem;padding:0.15rem 0.3rem;" onclick="setGuideFont('Hi Melody')" id="fontMelody">하이멜로디</button>
+        <button class="font-btn" style="font-family:'Diphylleia',cursive;font-size:0.52rem;padding:0.15rem 0.3rem;" onclick="setGuideFont('Diphylleia')" id="fontDiphylleia">디필레이아</button>
+      </div>
+    </div>
+
+    <div class="canvas-header">
+
+      <!-- 색상 카드 -->
+      <div class="tool-group" style="flex:3;">
+        <div class="tool-group-label">색상</div>
+        <div style="display:grid;grid-template-columns:repeat(7,16px);gap:0.15rem;">
+          <div class="color-swatch active" style="background:linear-gradient(135deg,#f9a8d4,#fdba74,#86efac);" onclick="setGradient('pastel',this)" title="파스텔 그라디언트"></div>
+          <div class="color-swatch" style="background:linear-gradient(135deg,#e63946,#f7c325,#3bb043,#1e90ff,#8b3fbe);" onclick="setGradient('rainbow',this)" title="무지개 그라디언트"></div>
+          <div class="color-swatch" style="background:#2d2d2d;" onclick="setColor('#2d2d2d',this)" title="먹색"></div>
+          <div class="color-swatch" style="background:#8b4513;" onclick="setColor('#8b4513',this)" title="브라운"></div>
+          <div class="color-swatch" style="background:#d94f7c;" onclick="setColor('#d94f7c',this)" title="딥 핑크"></div>
+          <div class="color-swatch" style="background:#3a8c6e;" onclick="setColor('#3a8c6e',this)" title="딥 민트"></div>
+          <div class="color-swatch" style="background:#5b7fc4;" onclick="setColor('#5b7fc4',this)" title="딥 블루"></div>
+          <div class="color-swatch" style="background:#f4a7b9;" onclick="setColor('#f4a7b9',this)" title="파스텔 핑크"></div>
+          <div class="color-swatch" style="background:#f7b89c;" onclick="setColor('#f7b89c',this)" title="파스텔 피치"></div>
+          <div class="color-swatch" style="background:#f9c97c;" onclick="setColor('#f9c97c',this)" title="파스텔 옐로"></div>
+          <div class="color-swatch" style="background:#a8d8a8;" onclick="setColor('#a8d8a8',this)" title="파스텔 그린"></div>
+          <div class="color-swatch" style="background:#b5ead7;" onclick="setColor('#b5ead7',this)" title="파스텔 민트"></div>
+          <div class="color-swatch" style="background:#a2c4e0;" onclick="setColor('#a2c4e0',this)" title="파스텔 블루"></div>
+          <div class="color-swatch" style="background:#c9b1d9;" onclick="setColor('#c9b1d9',this)" title="파스텔 라벤더"></div>
+          <div class="color-swatch" style="background:#e63946;" onclick="setColor('#e63946',this)" title="빨강"></div>
+          <div class="color-swatch" style="background:#f4791f;" onclick="setColor('#f4791f',this)" title="주황"></div>
+          <div class="color-swatch" style="background:#f7c325;" onclick="setColor('#f7c325',this)" title="노랑"></div>
+          <div class="color-swatch" style="background:#3bb043;" onclick="setColor('#3bb043',this)" title="초록"></div>
+          <div class="color-swatch" style="background:#1e90ff;" onclick="setColor('#1e90ff',this)" title="파랑"></div>
+          <div class="color-swatch" style="background:#4169e1;" onclick="setColor('#4169e1',this)" title="남색"></div>
+          <div class="color-swatch" style="background:#8b3fbe;" onclick="setColor('#8b3fbe',this)" title="보라"></div>
+        </div>
+        <div class="stamp-pair" style="margin-top:0.15rem;">
+          <button class="erase-btn" id="eraseBtn" onclick="toggleErase()">지우개</button>
+          <button class="erase-btn" onclick="undoLastStroke()">뒤로</button>
+          <button class="erase-btn" id="topClearBtn" onclick="handleClear()">첫시작</button>
+        </div>
+      </div>
+
+      <!-- 펜굵기 + 펜종류 카드 -->
+      <div class="tool-group" style="flex:2;gap:0.12rem;">
+        <div class="tool-group-label">펜&지우개 굵기</div>
+        <div style="display:flex;gap:0.2rem;align-items:center;">
+          <button class="pen-btn" id="pb1" onclick="setPenSize(1,this)" title="극세 펜"><div class="pen-dot" style="width:2px;height:2px;"></div></button>
+          <button class="pen-btn" id="pb2" onclick="setPenSize(2,this)" title="아주 가는 펜"><div class="pen-dot" style="width:3px;height:3px;"></div></button>
+          <button class="pen-btn active" id="pb3" onclick="setPenSize(4,this)" title="가는 펜"><div class="pen-dot" style="width:5px;height:5px;"></div></button>
+          <button class="pen-btn" id="pb4" onclick="setPenSize(5.5,this)" title="중간-가는 펜"><div class="pen-dot" style="width:7px;height:7px;"></div></button>
+          <button class="pen-btn" id="pb5" onclick="setPenSize(7,this)" title="중간 펜"><div class="pen-dot" style="width:9px;height:9px;"></div></button>
+        </div>
+        <div style="height:0.1rem;"></div>
+        <div style="display:flex;flex-wrap:wrap;gap:0.18rem;justify-content:center;margin-top:0.25rem;">
+          <div class="stamp-pair">
+            <button class="pen-type-btn" style="font-size:0.61rem;padding:0.22rem 0.5rem;" id="pt-normal" class="active" onclick="setPenType('normal',this)">일반펜</button>
+            <button class="pen-type-btn" style="font-size:0.61rem;padding:0.22rem 0.5rem;" id="pt-brush" onclick="setPenType('brush',this)">붓펜</button>
+            <button class="pen-type-btn" style="font-size:0.61rem;padding:0.22rem 0.5rem;" id="pt-marker" onclick="setPenType('marker',this)">형광펜</button>
+          </div>
+          <div class="stamp-pair">
+            <button class="pen-type-btn" style="font-size:0.61rem;padding:0.22rem 0.5rem;" id="pt-crayon" onclick="setPenType('crayon',this)">크레파스</button>
+            <button class="pen-type-btn" style="font-size:0.61rem;padding:0.22rem 0.5rem;" id="pt-pencil" onclick="setPenType('pencil',this)">색연필</button>
+            <button class="pen-type-btn" style="font-size:0.61rem;padding:0.22rem 0.5rem;" id="pt-chalk" onclick="setPenType('chalk',this)">분필</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 도장 카드 -->
+      <div class="tool-group" style="flex:1.2;gap:0.1rem;">
+        <div class="tool-group-label">도장</div>
+        <div class="stamp-pair">
+          <button class="pen-type-btn" id="pt-heart" onclick="setPenType('heart',this)">❤️</button>
+          <button class="pen-type-btn" id="pt-colorheart" onclick="setPenType('colorheart',this)" title="색상 하트" style="font-size:0.68rem;">♡</button>
+        </div>
+        <div class="stamp-pair">
+          <button class="pen-type-btn" id="pt-flower" onclick="setPenType('flower',this)">🌸</button>
+          <button class="pen-type-btn" id="pt-leaf" onclick="setPenType('leaf',this)">🍃</button>
+        </div>
+        <div class="stamp-pair">
+          <button class="pen-type-btn" id="pt-moon" onclick="setPenType('moon',this)">🌙</button>
+          <button class="pen-type-btn" id="pt-star" onclick="setPenType('star',this)" style="font-size:0.68rem;">☆</button>
+        </div>
+        <div class="stamp-pair">
+          <button class="pen-type-btn" id="pt-autumn" onclick="setPenType('autumn',this)">🍂</button>
+          <button class="pen-type-btn" id="pt-snow" onclick="setPenType('snow',this)">❄️</button>
+        </div>
+      </div>
+
+    </div><!-- /canvas-header -->
+    <div class="zoom-hint" style="font-size:1.066rem;letter-spacing:-0.1em;"><strong style="color:var(--accent);">두 손가락</strong>으로 캔버스를 확대 축소하면 따라 쓰기 쉬워져요!</div>
+    <div class="canvas-wrapper" id="canvasWrapper">
+      <div class="canvas-scroll-btns">
+        <button class="canvas-scroll-btn" id="scrollUpBtn" onpointerdown="startScroll(-1)" onpointerup="stopScroll()" onpointerleave="stopScroll()">▲</button>
+        <button class="canvas-scroll-btn" id="scrollDownBtn" onpointerdown="startScroll(1)" onpointerup="stopScroll()" onpointerleave="stopScroll()">▼</button>
+      </div>
+      <div class="canvas-guide"><span id="guideText"></span></div>
+      <canvas id="drawCanvas"></canvas>
+    </div>
+    <div class="coverage-bar-wrap">
+      <div class="coverage-track"><div class="coverage-fill" id="coverageFill"></div></div>
+      <div class="coverage-label" id="coverageLabel">필사량: 0%</div>
+    </div>
+
+    <div style="text-align:center;margin-top:0.5rem;">
+      
+    </div>
+  </div>
+
+  <div class="voice-section hidden" id="voiceSection">
+    <div class="voice-box">
+      <div class="voice-prompt">마이크 버튼을 누르고 아래 글귀를 큰 소리로 읽어보세요</div>
+      <div class="voice-target" id="voiceTarget"></div>
+      <div>
+        <button class="btn-mic" id="micBtn" onclick="toggleMic()">🎤</button>
+      </div>
+      <div class="voice-status" id="voiceStatus">버튼을 눌러 시작하세요</div>
+      <div class="voice-result" id="voiceResult"></div>
+      <div class="voice-match-pct" id="matchPct"></div>
+    </div>
+  </div>
+
+  <div class="action-area">
+    <button class="btn-clear" id="clearBtn" onclick="goToIntro()">← 뒤로가기</button>
+    <button class="btn-complete" id="completeBtn" onclick="tryComplete()">
+      완성했어요 ✓
+      <span class="incomplete-hint" id="completeHint">조금 더 써보세요</span>
+    </button>
+  </div>
+
+  <div class="footer-wrap"><div class="footer">은평경찰서 언어폭력예방 필사캠페인</div></div>
+</div><!-- /mainApp -->
+  </div><!-- /tabWriting -->
+
+  <!-- 탭2: 나의 필사 갤러리 -->
+  <div class="tab-page" id="tabGallery">
+    <div class="gallery-header">
+      <h2>🖼️ 나의 필사</h2>
+      <p>내가 직접 쓴 글귀들을 모아봤어요</p>
+      <div class="gallery-progress-pill" id="galleryProgressPill">0 / 21 완료</div>
+    </div>
+    <div id="galleryContent">
+      <div class="gallery-empty">
+        <div class="empty-icon">✍️</div>
+        <p>아직 완성한 필사가 없어요<br>오늘의 필사 탭에서 첫 글귀를 써보세요!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 탭3: 나의 기록 -->
+  <div class="tab-page" id="tabRecords">
+    <div class="records-header">
+      <h2>📋 나의 기록</h2>
+    </div>
+    <div class="records-progress-card">
+      <div class="records-count" id="recordsCount">0<span> / 21</span></div>
+      <div class="records-subtitle">완료한 글귀</div>
+      <div class="records-bar-wrap">
+        <div class="records-bar-track">
+          <div class="records-bar-fill" id="recordsBarFill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="records-list-title">완료 목록</div>
+    <div id="recordsList">
+      <div class="records-empty">아직 완료한 글귀가 없어요 🌱<br>오늘의 첫 필사를 시작해보세요!</div>
+    </div>
+    <div class="records-117">
+      <div style="font-family:'Jua',sans-serif;font-size:2rem;font-weight:800;background:linear-gradient(180deg,#fb923c,#e8620a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;flex:0 0 18%;text-align:center;border-right:1px solid rgba(124,45,18,0.15);padding-right:0.7rem;">117</div>
+      <div style="font-size:0.82rem;color:#7c2d12;line-height:1.6;flex:1;"><strong style="color:#9a3412;">학교폭력 신고는 117</strong><br>24시간 언제든지 전화·문자로 신고할 수 있어요.</div>
+    </div>
+  </div>
+
+</div><!-- /appShell -->
+
+<!-- 하단 고정 네비게이션 - 항상 표시 -->
+<nav id="bottomNav">
+  <button class="nav-tab-btn active" id="navWriting" onclick="switchTab('writing')">
+    <span class="nav-icon">✏️</span>
+    <span>오늘의 필사</span>
+  </button>
+  <button class="nav-tab-btn" id="navGallery" onclick="switchTab('gallery')">
+    <span class="nav-icon">🖼️</span>
+    <span>나의 필사</span>
+  </button>
+  <button class="nav-tab-btn" id="navRecords" onclick="switchTab('records')">
+    <span class="nav-icon">📋</span>
+    <span>나의 기록</span>
+  </button>
+</nav>
+
+<!-- ══════════════════════════════════════════════════
+     미션 페이지
+══════════════════════════════════════════════════ -->
+<div class="mission-page" id="missionPage">
+  <!-- 공통 헤더 -->
+  <div class="page-top-header">
+    <svg class="header-svg" viewBox="0 0 320 52" xmlns="http://www.w3.org/2000/svg" aria-label="꽃처럼 피어나는 말 쓰기">
+      <defs>
+        <linearGradient id="missionTitleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="#f9a8d4"/>
+          <stop offset="45%"  stop-color="#fdba74"/>
+          <stop offset="100%" stop-color="#fb923c"/>
+        </linearGradient>
+      </defs>
+      <text x="50%" y="40" text-anchor="middle" dominant-baseline="auto" fill="url(#missionTitleGrad)"
+        font-family="Jua, sans-serif" font-weight="900">
+        <tspan font-size="33">꽃</tspan><tspan font-size="17" dy="0">처럼 피어나는</tspan><tspan font-size="33" dy="0"> 말 쓰기</tspan>
+      </text>
+    </svg>
+  </div>
+  <!-- 통합 헤더: 미션 타이틀 + 학교전담경찰관의 마음 한 줄 -->
+  <div class="mission-top">
+    <div class="mission-top-inner">
+      <div class="mission-top-row">
+        <span class="mission-badge">오늘 심어볼 꽃씨 🌱</span>
+        <span class="mission-top-title">미션: 따라 말해보기</span>
+      </div>
+      <div class="mission-top-cop">🚔 학교전담경찰관의 마음 한 줄 🚔</div>
+      <div class="mission-top-msg" id="missionMsg">
+        <div class="mission-top-quote" id="missionQuoteText"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mission-body">
+
+    <!-- 꽃씨 한마디 + 마이크 -->
+    <div class="mission-seed-card">
+      <div class="mission-seed-label">오늘 심어볼 꽃씨</div>
+      <div class="mission-seed-text" id="missionSeedText"></div>
+      <div class="mission-seed-desc">이 말을 오늘 실제로 친구에게 건네보세요</div>
+    </div>
+    <div class="mission-voice-box">
+      <div class="mission-voice-prompt">위 꽃씨 문장을 큰 소리로 읽어보세요</div>
+      <button class="btn-mic" id="missionMicBtn2" onclick="toggleMissionMic(2)">🎤</button>
+      <div class="mission-status" id="missionStatus2">버튼을 눌러 시작하세요</div>
+      <div class="mission-voice-result" id="missionResult2"></div>
+      <div class="mission-voice-pct" id="missionPct2"></div>
+    </div>
+
+    <button class="mission-done-btn" id="missionDoneBtn" onclick="completeMission()" disabled>
+      미션 완료! 축하 받으러 가기 🌸
+    </button>
+    <button class="mission-skip-btn" onclick="skipMission()">건너뛰고 축하 받기 →</button>
+  </div>
+</div>
+
+<div class="celebrate-page" id="celebratePage">
+  <!-- 통합 헤더: 기존 cel-top + cel-level-card 합침, 이모지 삭제 -->
+  <div class="cel-top">
+    <div class="cel-top-glow"></div>
+    <div class="cel-level-group" id="celLevelGroup">
+      <div class="cel-level-row">
+        <span class="cel-level-badge" id="celLevelBadge">Lv.1</span>
+        <span class="cel-level-name" id="celLevelName">씨앗</span>
+      </div>
+      <div class="cel-level-art" id="celLevelArt"></div>
+    </div>
+    <div class="cel-title" id="celTitle">훌륭해요! 글귀를 마음에 새겼어요</div>
+    <div class="cel-level-msg" id="celLevelMsg"></div>
+  </div>
+  <div class="cel-body">
+    <div class="cel-quote-wrap">
+      <div class="cel-quote-label">오늘 완성한 글귀</div>
+      <div class="cel-quote-text" id="celQuoteText"></div>
+    </div>
+    <!-- 오늘 심은 꽃씨 카드 -->
+    <div class="mission-seed-card" style="margin-bottom:0.8rem;">
+      <div class="mission-seed-label">오늘 심은 꽃씨</div>
+      <div class="mission-seed-text" id="celSeedText"></div>
+    </div>
+    <div class="cel-stamp-row">
+      <div id="celStamp" style="display:inline-block;opacity:0;transform:rotate(-8deg) scale(1);">
+        <svg id="celStampSvg" width="150" height="150" viewBox="0 0 150 150" style="overflow:visible;"></svg>
+      </div>
+    </div>
+    <div class="cel-btns">
+      <button class="cel-btn-main" id="celBtnMain" onclick="nextQuote()">다음 글귀 쓰기 →</button>
+      <button class="cel-btn-sub" onclick="closeCelebrate()">← 현재 글귀 다시 보기</button>
+    </div>
+    <div class="cel-footer-wrap"><div class="cel-footer">은평경찰서 언어폭력예방 필사캠페인</div></div>
+  </div>
+</div>
+
+<div class="done-screen" id="doneScreen">
+  <div class="done-top">
+    <div class="sakura-wrap" id="sakuraWrap"></div>
+    <div class="done-top-inner">
+      <div class="done-confetti">🌸</div>
+      <div class="done-top-title">꽃비가 내려요!</div>
+      <div class="done-top-sub">21개의 글귀를 모두 마음에 새겼어요</div>
+    </div>
+  </div>
+  <div class="done-body">
+    <div class="done-journey">
+      <div class="done-journey-title">🏅 나의 성장 여정 🏅</div>
+      <div class="done-journey-grid" id="doneJourneyGrid"></div>
+    </div>
+    <div style="text-align:center;margin-bottom:-0.5rem;transform:scale(0.8);transform-origin:center top;">
+      <div id="doneStamp" style="display:inline-block;opacity:0;transform:rotate(-8deg) scale(1);">
+        <svg id="doneStampSvg" width="150" height="150" viewBox="0 0 150 150" style="overflow:visible;"></svg>
+      </div>
+    </div>
+    <div class="done-msg-card">
+      <p>오늘 심은 좋은 말의 씨앗이<br>여러분의 마음속에서 꽃나무로 자라 꽃동산을 이루었어요.<br><br></p>
+      <div style="font-size:2em;margin-bottom:0.3rem;">🚔</div>
+      <strong>한 글자 한 글자 써 내려간 그 말들이<br>더 따뜻하고 안전한 학교를 만드는<br>진짜 힘이 됩니다.</strong>
+    </div>
+    <div class="done-117" style="background:linear-gradient(135deg,rgba(249,168,212,0.35) 0%,rgba(253,186,116,0.35) 50%,rgba(253,230,138,0.35) 100%);border-radius:8px;padding:0.7rem 0.8rem;display:flex;flex-direction:row;align-items:center;gap:0.7rem;margin-bottom:1rem;border:1px solid rgba(255,255,255,0.6);">
+      <div style="font-family:'Jua',sans-serif;font-size:2.1rem;font-weight:800;background:linear-gradient(180deg,#fb923c 0%,#e8620a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;flex:0 0 22%;text-align:center;border-right:1px solid rgba(124,45,18,0.15);padding-right:0.7rem;">117</div>
+      <div style="font-size:0.9rem;color:#7c2d12;line-height:1.6;word-break:keep-all;flex:1;text-align:left;"><strong style="color:#9a3412;">학교폭력 신고는 117</strong><br>24시간 언제든지 전화·문자로 신고할 수 있어요.</div>
+    </div>
+    <button onclick="restartAll()" class="done-restart-btn">처음부터 다시 하기 <span style="font-size:1.3em;vertical-align:middle;">👆</span></button>
+    <div class="cel-footer-wrap" style="margin-top:1rem;"><div class="cel-footer">은평경찰서 언어폭력예방 필사캠페인</div></div>
+  </div>
+</div>
+
+
+<script>
+const QUOTES = [
+  {
+    text: "사람과 사람 사이의 다리는 오직 진실하고 다정한 말로만 지어진다.",
+    source: "— 앙투안 드 생텍쥐페리",
+    emoji: "🌉",
+    highlight: "오직 진실하고 다정한 말",
+    msg: "친구에게 건네는 '고마워', '미안해', '괜찮아'라는 진실하고 다정한 세 마디는 세상 그 어떤 방패보다 강력하게 우리를 폭력과 갈등으로부터 지켜줍니다.",
+    mission: "\"고마워\" \"미안해\" \"괜찮아\""
+  },
+  {
+    text: "햇살 같은 말은 영혼의 꽃을 피운다.",
+    source: "— 호손",
+    emoji: "🌸",
+    msg: "가시 돋친 말 한마디를 멈추는 것만으로도 폭력은 줄어들지만, 햇살 같은 말 한마디를 건네는 것은 누군가의 마음속에 평생 시들지 않는 꽃을 심는 일입니다.",
+    mission: "니가 즐거워보여서 나까지 기분좋아진다 고마워"
+  },
+  {
+    text: "부드러운 말은 뼈를 꺾지 않으면서도 마음을 움직이는 힘.",
+    source: "— 벤저민 프랭클린",
+    emoji: "🕊️",
+    msg: "경찰관으로서 수많은 갈등을 보지만, 결국 문제를 해결하는 건 큰 목소리가 아니라 상대를 존중하는 부드러운 진심이었습니다.",
+    mission: "화난 이유를 솔직하게 말해주니까 네 마음이 이해가 간다. 우리 이런 일로 멀어지지 말자"
+  },
+  {
+    text: "친절한 말은 결코 사라지지 않고 마음속에서 영원히 메아리친다.",
+    source: "— 롱펠로",
+    emoji: "🤝",
+    msg: "힘든 일을 겪었던 친구들은 사건보다 '그때 그 친구가 해준 말'을 더 오래 기억하곤 합니다. 오늘 당신의 한마디가 누군가의 인생을 지키는 가장 튼튼한 방패가 됩니다.",
+    mission: "괜찮아, 누구나 그럴 수 있어"
+  },
+  {
+    text: "한 번도 상처 준 적 없는 사람은 없다. 그래서 우리는 매일 더 다정해져야 한다.",
+    source: "— 작자 미상",
+    emoji: "💛",
+    msg: "완벽한 말은 없습니다. 하지만 더 다정하게, 더 조심스럽게, 더 따뜻하게 말하려는 노력이 쌓이면 우리 사이의 상처는 줄어듭니다. 오늘도 그 노력을 해봐요.",
+    mission: "내가 무심코 한 말이 상처가 됐을까? 미안해"
+  },
+  {
+    text: "적절한 때에 건네는 알맞은 말은 은쟁반 위의 금사과처럼 가치 있다.",
+    source: "— 베이컨",
+    emoji: "🍎",
+    msg: "사과는 늦지 않게, 칭찬은 아낌없이. 적절한 순간의 한마디가 학교 폭력을 막는 가장 큰 힘입니다.",
+    mission: "아까 내가 좀 심했지? 나도 계속 마음이 쓰였어. 진심이 아니었어, 미안해"
+  },
+  {
+    text: "말은 창보다 강하고 칼보다 예리하다.",
+    source: "— 에드워드 불워-리튼",
+    emoji: "🛡️",
+    msg: "학교폭력 현장에서 가장 깊은 상처를 남기는 건 주먹이 아니라 말이었습니다. 오늘 내 말이 누군가를 찌르지는 않는지 한 번만 돌아봐 주세요.",
+    mission: "그 말은 나한테 상처가 됐어. 앞으로는 그렇게 말하지 않았으면 좋겠어"
+  },
+  {
+    text: "혀는 작지만 세상에서 가장 강력한 무기이다.",
+    source: "— 마크 트웨인",
+    emoji: "⚡",
+    msg: "무심코 던진 말 한마디가 친구의 가슴에 평생 남는 흉터가 될 수 있습니다. 말을 뱉기 전 단 3초만 멈춰 생각해 주세요, 이 말이 친구에게 상처가 되지 않을지.",
+    mission: "지금 내가 하려는 말이 괜찮은 말인지 한 번 더 생각해볼게"
+  },
+  {
+    text: "말이 통하면 만 가지 일이 이루어진다.",
+    source: "— 한국 속담",
+    emoji: "💬",
+    msg: "서로의 말에 귀를 기울이는 것, 그것이 학교폭력 예방의 첫걸음입니다. 대화가 막힐 때 폭력이 시작된다는 것을 현장에서 매번 확인합니다.",
+    mission: "네 이야기 들을게. 무슨 일인지 말해봐"
+  },
+  {
+    text: "폭력은 약자의 무기요, 말은 강자의 도구이다.",
+    source: "— 작자 미상",
+    emoji: "💪",
+    msg: "진짜 용기는 주먹을 드는 것이 아니라 감정을 말로 표현할 줄 아는 것입니다. 말로 표현하는 힘을 기르는 것이 진정한 강함입니다.",
+    mission: "나 좀 화가 났어. 근데 너랑 말로 해결하고 싶어"
+  },
+  {
+    text: "모든 위대한 변화는 작은 말 한마디에서 시작된다.",
+    source: "— 작자 미상",
+    emoji: "✨",
+    msg: "학교폭력 없는 학교를 만드는 것, 거창한 일이 아닙니다. 오늘 내가 친구에게 건네는 따뜻한 말 한마디가 그 변화의 시작입니다.",
+    mission: "오늘도 수고했어! 내일도 같이 하자"
+  },
+  {
+    text: "말은 창문을 열어 빛을 들여오는 손길이다.",
+    source: "— 헬렌 켈러",
+    emoji: "🌟",
+    msg: "태어나면서부터 보지도 듣지도 못했던 헬렌 켈러에게 세상을 열어준 것은 선생님의 따뜻한 말이었습니다. 오늘 여러분의 한마디가 친구의 닫힌 마음에 빛을 들이는 손길이 될 수 있습니다.",
+    mission: "나 여기 있어. 언제든지 말해도 돼"
+  },
+  {
+    text: "당신이 내뱉는 말은 당신이 만들어 가는 세계이다.",
+    source: "— 와이즈먼",
+    emoji: "🌍",
+    msg: "말 한마디가 쌓여 우리가 사는 학교의 분위기가 됩니다. 따뜻한 말이 넘치는 교실은 그 말들이 만든 세계입니다. 오늘 어떤 세계를 만들고 싶으신가요?",
+    mission: "넌 말투가 다정해서 너랑 대화하면 늘 기분이 좋아 고마워"
+  },
+  {
+    text: "사랑한다는 말을 아끼지 마라. 그 말이 누군가를 살리기도 한다.",
+    source: "— 레오 버스카글리아",
+    emoji: "❤️",
+    msg: "학교현장에서 만난 위기 청소년들이 가장 듣고 싶었던 말은 거창한 것이 아니었습니다. '네가 소중해', '네가 있어서 다행이야' — 그 한마디를 기다리고 있는 친구가 여러분 곁에 있을 수 있습니다.",
+    mission: "너랑 같은 반이어서 진짜 다행이야"
+  },
+  {
+    text: "꽃에게 매일 물을 주듯, 사람에게도 매일 좋은 말을 주어라.",
+    source: "— 작자 미상",
+    emoji: "🌻",
+    msg: "칭찬과 격려는 한 번으로 끝나는 것이 아닙니다. 매일 조금씩 건네는 따뜻한 말이 친구를 조금씩, 하지만 분명히 피워냅니다.",
+    mission: "기억해줘서 고마워  배려해줘서 고마워 그렇게 말해줘서 고마워"
+  },
+  {
+    text: "상처받은 마음을 치유하는 가장 좋은 약은 따뜻한 말 한마디이다.",
+    source: "— 성 프란치스코",
+    emoji: "🫶",
+    msg: "학교폭력 피해 학생들이 가장 먼저 회복되는 순간은 누군가 진심으로 '많이 힘들었겠다'라고 말해줄 때였습니다. 치유는 거창한 것이 아니라 진심 어린 말 한마디에서 시작됩니다.",
+    mission: "그동안 많이 힘들었겠다. 이제 내가 옆에 있을게"
+  },
+  {
+    text: "용기를 주는 말 한마디가 어둠 속의 등불이 된다.",
+    source: "— 마더 테레사",
+    emoji: "🕯️",
+    msg: "혼자라고 생각되고 가장 어두운 곳에 있다고 느낄 때 누군가 건네준 다정한 말 한마디는, 다시 세상으로 나아갈 수 있게 하는 힘이 됩니다.",
+    mission: "잘 될 거야. 내가 믿으니까 너도 믿어봐"
+  },
+  {
+    text: "우리가 나누는 말은 우리 사이의 공기가 된다.",
+    source: "— 작자 미상",
+    emoji: "🌬️",
+    msg: "욕설과 비난이 가득한 교실은 숨쉬기 힘든 공간이 됩니다. 따뜻하고 존중하는 말이 오가는 교실은 모두가 편안하게 숨쉴 수 있는 공간이 됩니다. 말이 공기를 만듭니다.",
+    mission: "오늘 기분 안 좋아 보이는데, 무슨 일 있어? 내가 도와줄께"
+  },
+  {
+    text: "사랑은 행동이기 전에, 먼저 말이다.",
+    source: "— 가브리엘 가르시아 마르케스",
+    emoji: "💌",
+    msg: "사랑과 우정은 마음속에만 있으면 전해지지 않습니다. 표현해야 비로소 사랑이 됩니다. 오늘 마음속에만 담아두었던 그 말을, 용기 내어 전해보세요.",
+    mission: "평소에 말 못 했는데, 고마워. 진짜로"
+  },
+  {
+    text: "말 한마디는 씨앗이다. 심는 곳에 따라 꽃도 되고 나무도 된다.",
+    source: "— 파울로 코엘료",
+    emoji: "🌱",
+    msg: "친구의 마음 밭에 어떤 씨앗을 심고 있나요? 좋은 말의 씨앗을 심으면 그 친구는 꽃이 됩니다. 오늘 심은 한마디가 몇 년 뒤 아름드리나무가 될 수 있습니다.",
+    mission: "너는 정말 괜찮은 사람이야. 널 보면서 나도 많이 배워"
+  },
+  {
+    text: "친구의 이름을 다정하게 부르는 것, 그것이 가장 아름다운 노래이다.",
+    source: "— 데일 카네기",
+    emoji: "🎵",
+    msg: "이름을 불러주는 것만으로도 '나를 알아봐 준다'는 느낌을 줍니다. 오늘 소외된 친구의 이름을 다정하게, 눈을 맞추며 불러주는 것 — 그것이 가장 쉽고 강력한 학교폭력 예방입니다.",
+    mission: "○○아, 안녕! 오늘 어땠어?"
+  }
+];
+
+const VOICE_THRESHOLD = 40;
+
+const STROKES_PER_CHAR = 4.8;
+const DIST_PER_CHAR   = 175;
+
+let currentIdx = 0;
+let completedSet = new Set();
+let penSize = 6;
+let penColor = '#2d2d2d';
+let gradientMode = 'pastel'; // 기본: 파스텔 그라디언트
+let isErasing = false;
+let isDrawing = false;
+let lastX = 0, lastY = 0;
+let currentMode = 'write';
+let coverage = 0;
+let strokeCount = 0;
+let totalDist   = 0;
+const undoStack = []; // 획 시작 전 캔버스 상태 저장
+let voiceAccepted = false;
+let recognition = null;
+let isListening = false;
+let finalTranscript = '';
+let accumulatedTranscripts = [];
+
+const canvas = document.getElementById('drawCanvas');
+const ctx = canvas.getContext('2d');
+
+function initCanvas() {
+  const wrapper = document.getElementById('canvasWrapper');
+  // 꽃잎 SVG 한 번만 삽입
+  if (!wrapper.querySelector('.canvas-flower')) {
+    const flowerSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <g transform="translate(6,6)">
+        <ellipse rx="3.2" ry="8" fill="#c9a84c" transform="rotate(0) translate(0,-9)"/>
+        <ellipse rx="3.2" ry="8" fill="#c9a84c" transform="rotate(72) translate(0,-9)"/>
+        <ellipse rx="3.2" ry="8" fill="#c9a84c" transform="rotate(144) translate(0,-9)"/>
+        <ellipse rx="3.2" ry="8" fill="#c9a84c" transform="rotate(216) translate(0,-9)"/>
+        <ellipse rx="3.2" ry="8" fill="#c9a84c" transform="rotate(288) translate(0,-9)"/>
+        <circle r="3.5" fill="#e8c96a"/>
+      </g>
+    </svg>`;
+    ['tl','tr','bl','br'].forEach(pos => {
+      const div = document.createElement('div');
+      div.className = 'canvas-flower ' + pos;
+      div.innerHTML = flowerSVG;
+      wrapper.appendChild(div);
+    });
+  }
+  const w = wrapper.clientWidth;
+  const isMobile = window.innerWidth <= 600;
+  const h = isMobile
+    ? Math.max(Math.round(window.innerHeight * 0.75), 450)
+    : Math.min(Math.max(w * 0.87, 360), 600);
+  canvas.width = w;
+  canvas.height = h;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  wrapper.style.height = h + 'px';
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+}
+
+function getTargets() {
+  const charCount = QUOTES[currentIdx].text.replace(/\s/g, '').length;
+  return {
+    targetStrokes: Math.round(charCount * STROKES_PER_CHAR),
+    targetDist:    Math.round(charCount * DIST_PER_CHAR)
+  };
+}
+
+function calcWriteScore() {
+  const charCount = QUOTES[currentIdx].text.replace(/\s/g, '').length;
+  // 글자당 목표 이동거리 (px) - 한 글자를 제대로 쓰면 약 120px
+  const TARGET_DIST_PER_CHAR = 140;
+  const targetDist = charCount * TARGET_DIST_PER_CHAR;
+  return Math.min(Math.round(totalDist / targetDist * 100), 100);
+}
+
+function updateCoverageBar() {
+  coverage = calcWriteScore();
+  const fill  = document.getElementById('coverageFill');
+  const label = document.getElementById('coverageLabel');
+  const pct   = Math.min(coverage, 100);
+  fill.style.width  = pct + '%';
+  fill.className    = 'coverage-fill' + (pct >= 80 ? ' ok' : '');
+  label.textContent = '필사량: ' + pct + '%';
+  checkCompleteEligibility();
+}
+
+function checkCompleteEligibility() {
+  const btn  = document.getElementById('completeBtn');
+  const hint = document.getElementById('completeHint');
+  if (!btn) return;
+  if (currentMode === 'write') {
+    if (coverage >= 80) {
+      btn.classList.add('ready');
+      btn.style.opacity = '1';
+      btn.style.background = '';
+      hint.textContent = '';
+    } else {
+      btn.classList.remove('ready');
+      btn.style.opacity = '0.55';
+      hint.textContent = '조금 더 써보세요 (' + coverage + '%)';
+    }
+  } else {
+    if (voiceAccepted) {
+      btn.classList.add('ready');
+      btn.style.opacity = '1';
+      hint.textContent = '';
+    } else {
+      btn.classList.remove('ready');
+      btn.style.opacity = '0.55';
+      hint.textContent = '글귀를 읽어주세요';
+    }
+  }
+}
+
+function loadQuote(idx) {
+  currentIdx = idx;
+  const q = QUOTES[idx];
+  document.getElementById('quoteText').textContent = q.text;
+  document.getElementById('quoteSource').textContent = q.source;
+  document.getElementById('guideText').textContent = q.text;
+  const gs = document.getElementById('guideText');
+  gs.style.fontFamily = "'" + currentGuideFont + "', sans-serif";
+  const cfg = fontSizeMap[currentGuideFont] || { size: '3.2rem', lineHeight: '1.7', transform: '' };
+  gs.style.fontSize = cfg.size;
+  gs.style.lineHeight = cfg.lineHeight;
+  gs.style.transform = cfg.transform || '';
+  document.getElementById('voiceTarget').textContent = q.text;
+  updateNav();
+  updateProgress();
+  resetAll();
+  // 홈뷰 업데이트
+  updateWritingHome();
+  // canvas 크기가 0이면 재초기화
+  if (canvas.width === 0 || canvas.height === 0) {
+    initCanvas();
+  }
+}
+
+function resetAll() {
+  currentMode = 'write';
+  switchMode('write');
+  clearCanvas();
+  undoStack.length = 0;
+  voiceAccepted = false;
+  finalTranscript = '';
+  accumulatedTranscripts = [];
+  document.getElementById('voiceResult').textContent = '';
+  document.getElementById('voiceResult').className = 'voice-result';
+  document.getElementById('matchPct').textContent = '';
+  document.getElementById('voiceStatus').textContent = '버튼을 눌러 시작하세요';
+  const hintEl = document.getElementById('hint');
+  if (hintEl) hintEl.classList.remove('hidden');
+  stopMic();
+  // 완료버튼 초기화
+  const btn = document.getElementById('completeBtn');
+  const hint = document.getElementById('completeHint');
+  if (btn) { btn.classList.remove('ready'); btn.style.opacity = '0.55'; }
+  if (hint) hint.textContent = '조금 더 써보세요';
+}
+
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // context 상태 완전 초기화 (지우개 사용 후 globalCompositeOperation 오염 방지)
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = 1;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  coverage     = 0;
+  strokeCount  = 0;
+  totalDist    = 0;
+  resetZoom();
+  if (currentMode === 'write') {
+    const fill = document.getElementById('coverageFill');
+    fill.style.width  = '0%';
+    fill.className    = 'coverage-fill';
+    document.getElementById('coverageLabel').textContent = '필사량: 0%';
+    checkCompleteEligibility();
+  }
+}
+
+function updateNav() {
+  const nav = document.getElementById('quoteNav');
+  if (nav) {
+    nav.innerHTML = '';
+    QUOTES.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'nav-dot' + (i === currentIdx ? ' active' : '') + (completedSet.has(i) ? ' done' : '');
+      dot.title = '글귀 ' + (i+1);
+      dot.textContent = (i + 1);
+      dot.onclick = () => loadQuote(i);
+      nav.appendChild(dot);
+    });
+  }
+  // 번호 배지 업데이트
+  const badge = document.getElementById('quoteNumBadge');
+  if (badge) badge.textContent = (currentIdx + 1) + ' / ' + QUOTES.length;
+}
+
+function movePrevQuote() {
+  const prev = (currentIdx - 1 + QUOTES.length) % QUOTES.length;
+  loadQuote(prev);
+}
+
+function moveNextQuote() {
+  const next = (currentIdx + 1) % QUOTES.length;
+  loadQuote(next);
+}
+
+function updateProgress() {
+  const done = completedSet.size;
+  const total = QUOTES.length;
+  const bar = document.getElementById('progressBar');
+  const label = document.getElementById('progressLabel');
+  if (bar) bar.style.width = (done / total * 100) + '%';
+  if (label) label.textContent = done + ' / ' + total;
+}
+
+function setPenSize(size, el) {
+  penSize = size;
+  isErasing = false;
+  document.getElementById('eraseBtn').classList.remove('active');
+  document.querySelectorAll('.pen-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setColor(color, el) {
+  penColor = color;
+  gradientMode = null;
+  isErasing = false;
+  document.getElementById('eraseBtn').classList.remove('active');
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+function setGradient(mode, el) {
+  gradientMode = mode;
+  isErasing = false;
+  document.getElementById('eraseBtn').classList.remove('active');
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+function getStrokeColor(x) {
+  if (!gradientMode || isErasing) return penColor;
+  const t = Math.max(0, Math.min(1, x / canvas.width));
+  const stops = gradientMode === 'pastel'
+    ? [[249,168,212],[253,186,116],[134,239,172]]
+    : [[230,57,70],[247,194,31],[59,176,67],[30,144,255],[139,63,190]];
+  const n = stops.length - 1;
+  const i = Math.min(Math.floor(t * n), n - 1);
+  const f = t * n - i;
+  const a = stops[i], b = stops[i+1];
+  return `rgb(${Math.round(a[0]+(b[0]-a[0])*f)},${Math.round(a[1]+(b[1]-a[1])*f)},${Math.round(a[2]+(b[2]-a[2])*f)})`;
+}
+
+function toggleErase() {
+  isErasing = !isErasing;
+  document.getElementById('eraseBtn').classList.toggle('active', isErasing);
+}
+
+function getPos(e) {
+  // canvasWrapper의 rect를 기준으로 잡아야 transform 영향 없이 정확한 좌표 계산 가능
+  const wrapper = document.getElementById('canvasWrapper');
+  const rect = wrapper.getBoundingClientRect();
+  let clientX, clientY;
+  if (e.touches) { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; }
+  else { clientX = e.clientX; clientY = e.clientY; }
+  // wrapper 기준 상대 좌표 → 줌 스케일/오프셋 보정으로 실제 캔버스 좌표 변환
+  return {
+    x: (clientX - rect.left - zoomOffsetX) / zoomScale,
+    y: (clientY - rect.top  - zoomOffsetY) / zoomScale
+  };
+}
+
+function startDraw(e) {
+  if (e.touches && e.touches.length > 1) return;
+  if (e.preventDefault) e.preventDefault();
+  isDrawing = true;
+  const pos = getPos(e);
+  lastX = pos.x; lastY = pos.y;
+  // 획 시작 전 상태 저장 (최대 30단계)
+  if (undoStack.length >= 30) undoStack.shift();
+  undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+  const hintEl2 = document.getElementById('hint');
+  if (hintEl2) hintEl2.classList.add('hidden');
+  if (!isErasing) {
+    strokeCount++;
+    if (['flower','leaf','autumn','snow','moon','cloud','heart'].includes(penType)) {
+      const stampMap = { flower:FLOWERS, leaf:LEAVES, autumn:AUTUMN, snow:SNOW, moon:MOONS, cloud:CLOUDS, heart:HEARTS };
+      const stamps = stampMap[penType];
+      flowerDist = 0;
+      const sz = penSize * 3.5;
+      const stamp = stamps[flowerIdx % stamps.length];
+      flowerIdx++;
+      ctx.save();
+      ctx.font = sz + 'px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.globalAlpha = 0.85;
+      ctx.translate(lastX, lastY);
+      ctx.rotate((Math.random() - 0.5) * 0.6);
+      ctx.fillText(stamp, 0, 0);
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    } else if (penType === 'star') {
+      // 선택 색상으로 별 그리기
+      const sz = penSize * 4;
+      ctx.save();
+      ctx.translate(lastX, lastY);
+      ctx.rotate((Math.random() - 0.5) * 0.6);
+      ctx.scale(sz / 20, sz / 20);
+      ctx.beginPath();
+      for (let i = 0; i < 5; i++) {
+        const outerA = (i * 4 * Math.PI / 5) - Math.PI / 2;
+        const innerA = outerA + Math.PI / 5;
+        i === 0 ? ctx.moveTo(Math.cos(outerA)*10, Math.sin(outerA)*10) : ctx.lineTo(Math.cos(outerA)*10, Math.sin(outerA)*10);
+        ctx.lineTo(Math.cos(innerA)*4, Math.sin(innerA)*4);
+      }
+      ctx.closePath();
+      ctx.fillStyle = getStrokeColor(lastX);
+      ctx.globalAlpha = 0.9;
+      ctx.fill();
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    } else if (penType === 'colorheart') {
+      // 선택 색상으로 하트 그리기
+      const sz = penSize * 4;
+      ctx.save();
+      ctx.translate(lastX, lastY);
+      ctx.rotate((Math.random() - 0.5) * 0.5);
+      ctx.scale(sz / 28, sz / 28);
+      const hp = new Path2D('M 0,-8 C -4,-14 -14,-14 -14,-6 C -14,2 0,12 0,12 C 0,12 14,2 14,-6 C 14,-14 4,-14 0,-8 Z');
+      ctx.fillStyle = getStrokeColor(lastX);
+      ctx.globalAlpha = 0.9;
+      ctx.fill(hp);
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.beginPath();
+      ctx.arc(lastX, lastY, penSize / 2, 0, Math.PI * 2);
+      ctx.fillStyle = getStrokeColor(lastX);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fill();
+    }
+  }
+}
+
+function draw(e) {
+  if (!isDrawing) return;
+  if (e.touches && e.touches.length > 1) { endDraw(); return; }
+  if (e.preventDefault) e.preventDefault();
+  const pos = getPos(e);
+  if (!isErasing) {
+    const dx = pos.x - lastX;
+    const dy = pos.y - lastY;
+    totalDist += Math.sqrt(dx * dx + dy * dy);
+  }
+
+  const color = isErasing ? '#fff' : getStrokeColor(pos.x);
+
+  if (isErasing) {
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = penSize * 6;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.stroke();
+    ctx.globalCompositeOperation = 'source-over'; // 반드시 복원
+
+  } else if (penType === 'brush') {
+    // 붓펜: 속도에 따라 두께 변화
+    const speed = Math.sqrt((pos.x-lastX)**2 + (pos.y-lastY)**2);
+    const w = Math.max(penSize * 0.4, penSize * 1.8 - speed * 0.3);
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = w;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.globalAlpha = 0.85;
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+  } else if (penType === 'crayon') {
+    // 크레파스: 여러 개의 약간 흩어진 선으로 거친 질감
+    ctx.globalCompositeOperation = 'source-over';
+    for (let i = 0; i < 4; i++) {
+      const ox = (Math.random() - 0.5) * penSize * 1.2;
+      const oy = (Math.random() - 0.5) * penSize * 1.2;
+      ctx.beginPath();
+      ctx.moveTo(lastX + ox, lastY + oy);
+      ctx.lineTo(pos.x + ox, pos.y + oy);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = penSize * 0.6;
+      ctx.lineCap = 'round';
+      ctx.globalAlpha = 0.35 + Math.random() * 0.25;
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+  } else if (penType === 'marker') {
+    // 형광펜: 넓고 반투명
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = penSize * 3;
+    ctx.lineCap = 'square'; ctx.lineJoin = 'round';
+    ctx.globalAlpha = 0.3;
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+  } else if (penType === 'chalk') {
+    // 분필: 흰 노이즈 섞인 거친 선
+    ctx.globalCompositeOperation = 'source-over';
+    for (let i = 0; i < 6; i++) {
+      const t = i / 5;
+      const x = lastX + (pos.x - lastX) * t + (Math.random() - 0.5) * penSize;
+      const y = lastY + (pos.y - lastY) * t + (Math.random() - 0.5) * penSize;
+      ctx.beginPath();
+      ctx.arc(x, y, penSize * (0.2 + Math.random() * 0.4), 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.2 + Math.random() * 0.4;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+  } else if (['flower','leaf','autumn','snow','moon','cloud','heart'].includes(penType)) {
+    const stampMap = { flower:FLOWERS, leaf:LEAVES, autumn:AUTUMN, snow:SNOW, moon:MOONS, cloud:CLOUDS, heart:HEARTS };
+    const stamps = stampMap[penType];
+    const dx = pos.x - lastX, dy = pos.y - lastY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    flowerDist += dist;
+    totalDist += dist;
+    const sz = penSize * 3.5;
+    while (flowerDist >= penSize * 3.5) {
+      flowerDist -= penSize * 3.5;
+      const t = 1 - flowerDist / dist;
+      const fx = lastX + dx * t;
+      const fy = lastY + dy * t;
+      const stamp = stamps[flowerIdx % stamps.length];
+      flowerIdx++;
+      ctx.save();
+      ctx.font = sz + 'px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.globalAlpha = 0.85;
+      ctx.translate(fx, fy);
+      ctx.rotate((Math.random() - 0.5) * 0.6);
+      ctx.fillText(stamp, 0, 0);
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+
+  } else if (penType === 'star') {
+    const dx = pos.x - lastX, dy = pos.y - lastY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    flowerDist += dist; totalDist += dist;
+    const sz = penSize * 4;
+    while (flowerDist >= sz) {
+      flowerDist -= sz;
+      const t = 1 - flowerDist / dist;
+      const fx = lastX + dx * t, fy = lastY + dy * t;
+      ctx.save();
+      ctx.translate(fx, fy);
+      ctx.rotate((Math.random() - 0.5) * 0.6);
+      ctx.scale(sz / 20, sz / 20);
+      ctx.beginPath();
+      for (let i = 0; i < 5; i++) {
+        const outerA = (i * 4 * Math.PI / 5) - Math.PI / 2;
+        const innerA = outerA + Math.PI / 5;
+        i === 0 ? ctx.moveTo(Math.cos(outerA)*10, Math.sin(outerA)*10) : ctx.lineTo(Math.cos(outerA)*10, Math.sin(outerA)*10);
+        ctx.lineTo(Math.cos(innerA)*4, Math.sin(innerA)*4);
+      }
+      ctx.closePath();
+      ctx.fillStyle = getStrokeColor(fx);
+      ctx.globalAlpha = 0.9;
+      ctx.fill();
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+
+  } else if (penType === 'colorheart') {
+    const dx = pos.x - lastX, dy = pos.y - lastY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    flowerDist += dist; totalDist += dist;
+    const sz = penSize * 4;
+    while (flowerDist >= sz) {
+      flowerDist -= sz;
+      const t = 1 - flowerDist / dist;
+      const fx = lastX + dx * t, fy = lastY + dy * t;
+      const hp = new Path2D('M 0,-8 C -4,-14 -14,-14 -14,-6 C -14,2 0,12 0,12 C 0,12 14,2 14,-6 C 14,-14 4,-14 0,-8 Z');
+      ctx.save();
+      ctx.translate(fx, fy);
+      ctx.rotate((Math.random() - 0.5) * 0.5);
+      ctx.scale(sz / 28, sz / 28);
+      ctx.fillStyle = getStrokeColor(fx);
+      ctx.globalAlpha = 0.9;
+      ctx.fill(hp);
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+
+  } else {
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = penSize;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.stroke();
+  }
+
+  lastX = pos.x; lastY = pos.y;
+}
+
+function undoLastStroke() {
+  if (undoStack.length === 0) return;
+  const prev = undoStack.pop();
+  ctx.putImageData(prev, 0, 0);
+  updateCoverageBar();
+}
+
+function endDraw() {
+  if (!isDrawing) return;
+  isDrawing = false;
+  ctx.globalCompositeOperation = 'source-over';
+  updateCoverageBar();
+}
+
+canvas.addEventListener('mousedown', startDraw);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', endDraw);
+canvas.addEventListener('mouseleave', endDraw);
+
+// 터치 통합 핸들러 - 1손가락: 그리기, 2손가락: 핀치줌
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  if (e.touches.length === 2) {
+    if (isDrawing) endDraw();
+    isPinching = true;
+    lastPinchDist = getPinchDist(e.touches);
+    const mid = getPinchMid(e.touches);
+    lastMidX = mid.x; lastMidY = mid.y;
+  } else if (e.touches.length === 1) {
+    isPinching = false;
+    lastPinchDist = null;
+    startDraw(e);
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  if (e.touches.length === 2) {
+    isPinching = true;
+    if (isDrawing) endDraw();
+    const dist = getPinchDist(e.touches);
+    const mid = getPinchMid(e.touches);
+    if (lastPinchDist) {
+      const ratio = dist / lastPinchDist;
+      const newScale = Math.min(Math.max(zoomScale * ratio, 1), 4);
+      const wrapper = document.getElementById('canvasWrapper');
+      const rect = wrapper.getBoundingClientRect();
+      const pinchX = (mid.x - rect.left) / zoomScale;
+      const pinchY = (mid.y - rect.top)  / zoomScale;
+      zoomOffsetX += pinchX * (zoomScale - newScale);
+      zoomOffsetY += pinchY * (zoomScale - newScale);
+      zoomScale = newScale;
+    }
+    zoomOffsetX += (mid.x - lastMidX);
+    zoomOffsetY += (mid.y - lastMidY);
+    const minX = canvas.width  * (1 - zoomScale);
+    const minY = canvas.height * (1 - zoomScale);
+    zoomOffsetX = Math.min(0, Math.max(minX, zoomOffsetX));
+    zoomOffsetY = Math.min(0, Math.max(minY, zoomOffsetY));
+    applyZoomTransform();
+    lastPinchDist = dist;
+    lastMidX = mid.x; lastMidY = mid.y;
+  } else if (e.touches.length === 1 && !isPinching) {
+    draw(e);
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchend', (e) => {
+  if (e.touches.length < 2) {
+    lastPinchDist = null;
+    isPinching = false;
+  }
+  if (e.touches.length === 0) {
+    endDraw();
+  }
+});
+
+canvas.addEventListener('touchcancel', (e) => {
+  lastPinchDist = null;
+  isPinching = false;
+  isDrawing = false;
+});
+
+function switchMode(mode) {
+  currentMode = mode;
+  document.getElementById('tabWrite').className = 'mode-tab' + (mode === 'write' ? ' active' : '');
+  document.getElementById('tabVoice').className = 'mode-tab' + (mode === 'voice' ? ' active' : '');
+  document.getElementById('canvasSection').className = 'canvas-section' + (mode === 'write' ? '' : ' hidden');
+  document.getElementById('voiceSection').className = 'voice-section' + (mode === 'voice' ? '' : ' hidden');
+  stopMic();
+  checkCompleteEligibility();
+}
+
+function handleClear() {
+  if (currentMode === 'write') {
+    clearCanvas();
+  } else {
+    voiceAccepted = false;
+    finalTranscript = '';
+    accumulatedTranscripts = [];
+    document.getElementById('voiceResult').textContent = '';
+    document.getElementById('voiceResult').className = 'voice-result';
+    document.getElementById('matchPct').textContent = '';
+    document.getElementById('voiceStatus').textContent = '버튼을 눌러 시작하세요';
+    stopMic();
+    checkCompleteEligibility();
+  }
+}
+
+function normalize(str) {
+  return str
+    .replace(/[.,!?。，、。·\-—「」『』《》\[\]()（）"'""'']/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+function decompose(char) {
+  const code = char.charCodeAt(0) - 0xAC00;
+  if (code < 0 || code > 11171) return char;
+  const cho = Math.floor(code / 28 / 21);
+  const jung = Math.floor((code / 28) % 21);
+  return cho + '-' + jung;
+}
+
+function syllableKey(word) {
+  return Array.from(word).map(decompose).join('');
+}
+
+function tokenize(str) {
+  const normalized = normalize(str);
+  return normalized.split(/\s+/).filter(Boolean).map(w => {
+    if (w.length >= 3) {
+      const suffixes = ['은','는','이','가','을','를','의','에','서','도','만','로','으로','과','와','이나','나','라도','에서','에게','한테','에도','이고','이며','고','며'];
+      for (const s of suffixes) {
+        if (w.endsWith(s) && w.length - s.length >= 2) {
+          return w.slice(0, w.length - s.length);
+        }
+      }
+    }
+    return w;
+  });
+}
+
+function wordSimilarity(target, spoken) {
+  if (target === spoken) return 1.0;
+  const t2 = target.slice(0, 2);
+  const s2 = spoken.slice(0, 2);
+  if (t2 === s2) return 0.85;
+  if (target.length >= 2 && spoken.length >= 2 && target.slice(0,1) === spoken.slice(0,1)) return 0.6;
+  const tk = syllableKey(target);
+  const sk = syllableKey(spoken);
+  if (tk === sk) return 0.8;
+  if (tk.slice(0,4) === sk.slice(0,4)) return 0.5;
+  return 0;
+}
+
+function isKeyword(word) {
+  return word.length >= 2 && !['하지만','그러나','그리고','하지만','또한','그래서','따라서'].includes(word);
+}
+
+function evaluateMatch(spokenRaw) {
+  const target = QUOTES[currentIdx].text;
+  const targetWords = tokenize(target);
+  const spokenWords = tokenize(spokenRaw);
+
+  let totalScore = 0;
+  let maxScore = 0;
+  const hitIdx = new Set();
+  const usedSpoken = new Set();
+
+  targetWords.forEach((tw, ti) => {
+    const weight = isKeyword(tw) ? 1.0 : 0.5;
+    maxScore += weight;
+    let bestScore = 0;
+    let bestSi = -1;
+    for (let si = 0; si < spokenWords.length; si++) {
+      if (usedSpoken.has(si)) continue;
+      const sim = wordSimilarity(tw, spokenWords[si]);
+      if (sim > bestScore) { bestScore = sim; bestSi = si; }
+    }
+    if (bestScore >= 0.5 && bestSi >= 0) {
+      totalScore += weight * bestScore;
+      usedSpoken.add(bestSi);
+      hitIdx.add(ti);
+    }
+  });
+
+  const pct = maxScore > 0 ? Math.round(totalScore / maxScore * 100) : 0;
+  const resultEl = document.getElementById('voiceResult');
+  let html = '<span class="match-words">';
+  targetWords.forEach((w, i) => {
+    html += '<span class="' + (hitIdx.has(i) ? 'hit' : 'miss') + '">' + w + '</span> ';
+  });
+  html += '</span>';
+  resultEl.innerHTML = html;
+  document.getElementById('matchPct').textContent = '일치율: ' + pct + '%  (기준: ' + VOICE_THRESHOLD + '% 이상)';
+
+  if (pct >= VOICE_THRESHOLD) {
+    resultEl.className = 'voice-result match';
+    document.getElementById('voiceStatus').textContent = '훌륭해요! 잘 읽었어요 ✓';
+    voiceAccepted = true;
+  } else {
+    resultEl.className = 'voice-result partial';
+    const gap = VOICE_THRESHOLD - pct;
+    document.getElementById('voiceStatus').textContent = '조금 더 또렷하게 읽어볼까요? (' + pct + '%, ' + gap + '% 더 필요)';
+    voiceAccepted = false;
+  }
+  checkCompleteEligibility();
+  return pct;
+}
+
+function setupRecognition() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) return null;
+  const r = new SpeechRec();
+  r.lang = 'ko-KR';
+  r.continuous = false;
+  r.interimResults = true;
+  r.maxAlternatives = 3;
+
+  r.onstart = () => {
+    isListening = true;
+    document.getElementById('micBtn').classList.add('listening');
+    document.getElementById('voiceStatus').textContent = '듣고 있어요... 글귀를 읽어주세요';
+  };
+
+  r.onresult = (e) => {
+    let interim = '';
+    let sessionFinal = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        let best = '';
+        let bestPct = -1;
+        for (let alt = 0; alt < e.results[i].length; alt++) {
+          const candidate = e.results[i][alt].transcript;
+          const pct = evaluateMatch(candidate);
+          if (pct > bestPct) { bestPct = pct; best = candidate; }
+        }
+        sessionFinal += best;
+      } else {
+        interim += e.results[i][0].transcript;
+      }
+    }
+    if (sessionFinal) {
+      accumulatedTranscripts.push(sessionFinal);
+      let bestOverall = sessionFinal;
+      let bestPct = 0;
+      accumulatedTranscripts.forEach(t => {
+        const p = evaluateMatch(t);
+        if (p > bestPct) { bestPct = p; bestOverall = t; }
+      });
+      evaluateMatch(bestOverall);
+    } else if (interim) {
+      document.getElementById('voiceResult').textContent = interim;
+    }
+  };
+
+  r.onerror = (e) => {
+    isListening = false;
+    document.getElementById('micBtn').classList.remove('listening');
+    if (e.error === 'not-allowed') {
+      // SpeechRecognition 단계에서도 not-allowed → 안내 표시
+      showMicPermissionGuide();
+    } else if (e.error === 'no-speech') {
+      document.getElementById('voiceStatus').textContent = '소리가 감지되지 않았어요. 다시 눌러 시도해보세요.';
+    } else {
+      document.getElementById('voiceStatus').textContent = '인식 오류(' + e.error + ') — 다시 눌러보세요.';
+    }
+  };
+
+  r.onend = () => {
+    isListening = false;
+    document.getElementById('micBtn').classList.remove('listening');
+    if (!voiceAccepted && accumulatedTranscripts.length === 0) {
+      document.getElementById('voiceStatus').textContent = '다시 눌러 시도해보세요';
+    }
+  };
+  return r;
+}
+
+// ── 21단계 성장 데이터 ──
+const LEVELS = [
+  { lv:1,  name:'씨앗',         art:'🌑',       msg:'작은 씨앗 하나가 땅속에 자리를 잡았어요. 좋은 말의 여정이 시작됩니다!' },
+  { lv:2,  name:'껍질깨기',     art:'🥚',       msg:'단단한 껍질을 깨고 나올 준비를 해요. 용기 있는 한 걸음이 시작됐어요!' },
+  { lv:3,  name:'첫뿌리',       art:'🌱',       msg:'땅속으로 첫 뿌리가 뻗어 나갔어요. 보이지 않는 곳에서 힘을 키우고 있어요.' },
+  { lv:4,  name:'새싹',         art:'🍃',       msg:'땅을 뚫고 새싹이 돋아났어요! 말의 힘이 세상으로 나오기 시작했어요.' },
+  { lv:5,  name:'떡잎',         art:'🌿',       msg:'두 개의 떡잎이 활짝 펼쳐졌어요. 좋은 말이 하나씩 피어나고 있어요.' },
+  { lv:6,  name:'어린잎',       art:'🍀',       msg:'초록 어린잎이 자라났어요. 한 글자 한 글자가 뿌리를 내리고 있어요.' },
+  { lv:7,  name:'줄기',         art:'🎋',       msg:'줄기가 곧게 자라고 있어요. 바른 말이 나를 바르게 세워줘요.' },
+  { lv:8,  name:'꽃봉오리',     art:'🌷',       msg:'꽃봉오리가 맺혔어요! 곧 아름다운 꽃이 피어날 거예요.' },
+  { lv:9,  name:'첫 꽃',        art:'🌸',       msg:'첫 번째 꽃이 피었어요! 좋은 말 한마디가 세상을 밝혀요.' },
+  { lv:10, name:'두 송이',      art:'🌸🌸',     msg:'두 송이가 피었어요. 나누는 말이 많아질수록 꽃도 많아져요.' },
+  { lv:11, name:'잎 무성',      art:'🍃🍃',     msg:'잎이 무성하게 자랐어요. 말의 숲이 점점 짙어지고 있어요.' },
+  { lv:12, name:'어린 묘목',    art:'🎋🎋',     msg:'어린 묘목이 쑥쑥 자라고 있어요. 좋은 말의 줄기가 두 개로 뻗었어요!' },
+  { lv:13, name:'작은 나무',    art:'🌲',       msg:'작지만 든든한 나무가 됐어요. 말의 힘이 단단해졌어요.' },
+  { lv:14, name:'튼튼한 나무',  art:'🌳',       msg:'튼튼한 나무로 자랐어요! 정말 대단해요. 절반이 훌쩍 넘었어요!' },
+  { lv:15, name:'그늘나무',     art:'🌳✨',     msg:'그늘을 만드는 나무처럼, 당신의 말도 누군가의 쉼터가 돼요.' },
+  { lv:16, name:'꽃나무',       art:'🌳🌸',     msg:'나무에 꽃이 활짝 피었어요. 아름다운 말이 가득 피어나요!' },
+  { lv:17, name:'열매나무',     art:'🍎🌳',     msg:'드디어 열매가 열렸어요. 좋은 말이 풍성한 결실을 맺어요.' },
+  { lv:18, name:'씨앗퍼트리기', art:'🌳💨',     msg:'바람에 씨앗이 퍼지듯, 당신의 좋은 말이 세상 곳곳으로 퍼져나가요.' },
+  { lv:19, name:'숲의 시작',    art:'🌳🌲',   msg:'나무들이 모여 숲을 이루기 시작했어요. 거의 다 왔어요!' },
+  { lv:20, name:'꽃동산',       art:'🌺🌳',     msg:'꽃이 가득 핀 아름다운 꽃동산이 됐어요! 마지막 한 걸음만 더요!' },
+  { lv:21, name:'꽃비',         art:'🌸🌺\n🌺🌸', msg:'드디어! 씨앗이 꽃비가 내리는 꽃동산으로 자랐어요. 당신의 말 한마디 한마디가 이 모든 아름다운 꽃비를 만들었습니다. 🎉🌸' }
+];
+
+
+// ── 미션 페이지 ──
+let missionRec = null;
+let missionListening = false;
+let missionTranscripts2 = [];
+
+function showMissionPage() {
+  try {
+    const q = QUOTES[currentIdx];
+    const missionQuoteText = document.getElementById('missionQuoteText');
+    if (missionQuoteText) missionQuoteText.textContent = '- ' + q.text + ' -';
+    const msgBox = document.getElementById('missionMsg');
+    if (msgBox) {
+      msgBox.innerHTML = '';
+      const msgP = document.createElement('p');
+      msgP.style.cssText = 'margin-top:0.5rem;font-size:0.9rem;color:#2d4a35;line-height:1.75;word-break:keep-all;';
+      msgP.textContent = q.msg || '';
+      msgBox.appendChild(msgP);
+    }
+    const missionSeedText = document.getElementById('missionSeedText');
+    if (missionSeedText) missionSeedText.textContent = '\u201c' + (q.mission || q.text) + '\u201d';
+    missionTranscripts2 = [];
+    missionListening = false;
+    const r2 = document.getElementById('missionResult2');
+    const p2 = document.getElementById('missionPct2');
+    const s2 = document.getElementById('missionStatus2');
+    const db = document.getElementById('missionDoneBtn');
+    const mb = document.getElementById('missionMicBtn2');
+    if (r2) { r2.textContent = ''; r2.className = 'mission-voice-result'; }
+    if (p2) p2.textContent = '';
+    if (s2) s2.textContent = '버튼을 눌러 시작하세요';
+    if (db) db.disabled = true;
+    if (mb) mb.classList.remove('listening');
+    document.getElementById('missionPage').classList.add('show');
+    document.getElementById('missionPage').scrollTop = 0;
+  } catch(e) {
+    // missionPage 오류 시 축하페이지로 직접 이동
+    showCelebratePage();
+  }
+}
+
+function toggleMissionMic(step) {
+  if (missionListening) { stopMissionMicAll(); return; }
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    document.getElementById('missionStatus2').textContent = 'Chrome 브라우저를 사용해주세요.';
+    return;
+  }
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    document.getElementById('missionStatus2').textContent = '마이크 허용 팝업을 확인해주세요...';
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => { stream.getTracks().forEach(t => t.stop()); startMissionRec(); })
+      .catch(() => { document.getElementById('missionStatus2').textContent = '마이크 권한이 필요해요.'; });
+  } else {
+    startMissionRec();
+  }
+}
+
+function startMissionRec() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  missionRec = new SpeechRec();
+  missionRec.lang = 'ko-KR';
+  missionRec.continuous = false;
+  missionRec.interimResults = true;
+  missionRec.maxAlternatives = 3;
+
+  const micBtn = document.getElementById('missionMicBtn2');
+  const statusEl = document.getElementById('missionStatus2');
+  const resultEl = document.getElementById('missionResult2');
+  const pctEl = document.getElementById('missionPct2');
+  const target = QUOTES[currentIdx].mission || QUOTES[currentIdx].text;
+
+  missionRec.onstart = () => {
+    missionListening = true;
+    micBtn.classList.add('listening');
+    statusEl.textContent = '듣고 있어요... 읽어주세요';
+  };
+
+  missionRec.onresult = (e) => {
+    let interim = '', sessionFinal = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        let best = '', bestP = -1;
+        for (let alt = 0; alt < e.results[i].length; alt++) {
+          const c = e.results[i][alt].transcript;
+          const p = evalMissionText(c, target, null, null);
+          if (p > bestP) { bestP = p; best = c; }
+        }
+        sessionFinal += best;
+      } else { interim += e.results[i][0].transcript; }
+    }
+    if (sessionFinal) {
+      missionTranscripts2.push(sessionFinal);
+      let bestT = sessionFinal, bestP = 0;
+      missionTranscripts2.forEach(t => { const p = evalMissionText(t, target, null, null); if (p > bestP) { bestP = p; bestT = t; } });
+      const pct = evalMissionText(bestT, target, resultEl, pctEl);
+      if (pct >= 40) {
+        statusEl.textContent = '훌륭해요! 꽃씨를 심었어요 🌸';
+        document.getElementById('missionDoneBtn').disabled = false;
+      } else {
+        statusEl.textContent = '조금 더 또렷하게 읽어볼까요? (' + pct + '%)';
+      }
+    } else if (interim) { resultEl.textContent = interim; }
+  };
+
+  missionRec.onerror = (e) => {
+    missionListening = false;
+    micBtn.classList.remove('listening');
+    if (e.error === 'no-speech') statusEl.textContent = '소리가 감지되지 않았어요. 다시 눌러보세요.';
+  };
+
+  missionRec.onend = () => {
+    missionListening = false;
+    micBtn.classList.remove('listening');
+  };
+
+  missionRec.start();
+}
+
+function evalMissionText(spokenRaw, targetText, resultEl, pctEl) {
+  const targetWords = tokenize(targetText);
+  const spokenWords = tokenize(spokenRaw);
+  let totalScore = 0, maxScore = 0;
+  const hitIdx = new Set(), usedSpoken = new Set();
+  targetWords.forEach((tw, ti) => {
+    const weight = isKeyword(tw) ? 1.0 : 0.5;
+    maxScore += weight;
+    let bestScore = 0, bestSi = -1;
+    for (let si = 0; si < spokenWords.length; si++) {
+      if (usedSpoken.has(si)) continue;
+      const sim = wordSimilarity(tw, spokenWords[si]);
+      if (sim > bestScore) { bestScore = sim; bestSi = si; }
+    }
+    if (bestScore >= 0.5 && bestSi >= 0) {
+      totalScore += weight * bestScore;
+      usedSpoken.add(bestSi);
+      hitIdx.add(ti);
+    }
+  });
+  const pct = maxScore > 0 ? Math.round(totalScore / maxScore * 100) : 0;
+  if (resultEl) {
+    let html = '<span class="match-words">';
+    targetWords.forEach((w, i) => { html += '<span class="' + (hitIdx.has(i) ? 'hit' : 'miss') + '">' + w + '</span> '; });
+    html += '</span>';
+    resultEl.innerHTML = html;
+    resultEl.className = 'mission-voice-result' + (pct >= 40 ? ' match' : ' partial');
+  }
+  if (pctEl) pctEl.textContent = '일치율: ' + pct + '% (40% 이상이면 완료)';
+  return pct;
+}
+
+function stopMissionMicAll() {
+  if (missionRec && missionListening) { try { missionRec.stop(); } catch(e) {} }
+  missionListening = false;
+  ['missionMicBtn1','missionMicBtn2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('listening');
+  });
+}
+
+function completeMission() {
+  stopMissionMicAll();
+  document.getElementById('missionPage').classList.remove('show');
+  completeQuote();
+}
+
+function skipMission() {
+  stopMissionMicAll();
+  document.getElementById('missionPage').classList.remove('show');
+  completeQuote();
+}
+
+function showCelebratePage() {
+  const q = QUOTES[currentIdx];
+  const isAllDone = completedSet.size === QUOTES.length;
+  document.getElementById('celTitle').textContent = isAllDone ? '꽃이 피었습니다! 🌸 글귀를 모두 새겼어요' : '훌륭해요! 글귀를 마음에 새겼어요';
+  const lvData = getLevelData(completedSet.size);
+  document.getElementById('celLevelBadge').textContent = 'Lv.' + lvData.lv;
+  document.getElementById('celLevelName').textContent = lvData.name;
+  document.getElementById('celLevelArt').textContent = lvData.art;
+  // JS 직접 애니메이션 - 회전하며 나타나기
+  const grp = document.getElementById('celLevelGroup');
+  if (grp) {
+    const duration = 8000; // 8초
+    const start = performance.now();
+    grp.style.opacity = '0';
+    grp.style.transform = 'rotate(-270deg) scale(0.05)';
+    grp.style.transition = 'none';
+    function animStep(now) {
+      const elapsed = now - start;
+      const t = Math.min(elapsed / duration, 1);
+      // easeOutCubic
+      const e = 1 - Math.pow(1 - t, 3);
+      const deg = -270 + 270 * e;
+      const scale = 0.05 + 0.95 * e;
+      const opacity = Math.min(t * 3, 1);
+      grp.style.transform = `rotate(${deg}deg) scale(${scale})`;
+      grp.style.opacity = opacity;
+      if (t < 1) requestAnimationFrame(animStep);
+    }
+    requestAnimationFrame(animStep);
+  }
+  document.getElementById('celLevelMsg').textContent = lvData.msg;
+  document.getElementById('celQuoteText').textContent = q.text;
+  const celQuoteSource = document.getElementById('celQuoteSource');
+  if (celQuoteSource) celQuoteSource.textContent = '';
+  document.getElementById('celSeedText').textContent = '\u201c' + (q.mission || q.text) + '\u201d';
+  const stamp = document.getElementById('celStamp');
+  stamp.classList.remove('stamp-fired');
+  stamp.style.opacity = '0';
+
+  // 날짜
+  const today = new Date();
+  const dateStr = today.getFullYear() + '.' +
+    String(today.getMonth()+1).padStart(2,'0') + '.' +
+    String(today.getDate()).padStart(2,'0');
+  const numStr = completedSet.size + ' / ' + QUOTES.length;
+
+  // SVG 타원형 도장 그리기
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.getElementById('celStampSvg');
+  svg.setAttribute('width','150'); svg.setAttribute('height','150');
+  svg.setAttribute('viewBox','0 0 150 150'); svg.style.overflow='visible';
+  svg.innerHTML = `
+    <defs>
+      <filter id="sf_cel" x="-15%" y="-15%" width="130%" height="130%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.065" numOctaves="4" seed="12" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="2.8" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <path id="fullCircle" d="M 35,75 A 40,40 0 0,1 115,75 A 40,40 0 0,1 35,75"/>
+    </defs>
+    <circle cx="75" cy="75" r="68" fill="rgba(176,90,74,0.06)" stroke="#8a3020" stroke-width="4" filter="url(#sf_cel)"/>
+    <circle cx="75" cy="75" r="40" fill="none" stroke="#8a3020" stroke-width="1.2" stroke-dasharray="3 2" filter="url(#sf_cel)"/>
+    <text font-family="'Nanum Myeongjo',serif" font-size="15" fill="#7a2a1a" font-weight="900" letter-spacing="11">
+      <textPath href="#fullCircle" startOffset="0%">은평경찰서 언어폭력예방 필사 캠페인</textPath>
+    </text>
+    <!-- 진행 번호 (맨 위) -->
+    <text x="75" y="60" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="32" font-weight="bold" fill="#7a2a1a" filter="url(#sf_cel)">${numStr}</text>
+    <!-- 구분선 1 -->
+    <line x1="16" y1="68" x2="134" y2="68" stroke="#8a3020" stroke-width="1.5" opacity="1"/>
+    <!-- 날짜 (구분선 사이) -->
+    <text x="75" y="86" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="18" font-weight="bold" fill="#7a2a1a" filter="url(#sf_cel)" letter-spacing="1">${dateStr}</text>
+    <!-- 구분선 2 -->
+    <line x1="16" y1="93" x2="134" y2="93" stroke="#8a3020" stroke-width="1.5" opacity="1"/>
+    <!-- 완★료 (맨 아래) -->
+    <text x="75" y="117" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="22" fill="#7a2a1a" filter="url(#sf_cel)" letter-spacing="3">완★료</text>
+  `;
+
+  setTimeout(() => { stamp.classList.add('stamp-fired'); }, 350);
+  const btnMain = document.getElementById('celBtnMain');
+  if (isAllDone) {
+    btnMain.textContent = '완료 화면 보기 🏅';
+    btnMain.onclick = showDoneScreen;
+  } else {
+    btnMain.textContent = '다음 글귀 쓰기 →';
+    btnMain.onclick = nextQuote;
+  }
+  document.getElementById('celebratePage').classList.add('show');
+  document.getElementById('celebratePage').scrollTop = 0;
+}
+
+function getLevelData(completedCount) {
+  return LEVELS[Math.min(completedCount, 21) - 1] || LEVELS[0];
+}
+function goToIntro() {
+  switchTab('writing');
+}
+
+function buildShareCanvas() {
+  const padding = 16;
+  const bannerH = 44;
+  const bannerMarginTop = 10;
+  const bottomPad = 14;
+  const radius = 22;
+  const totalH = canvas.height + bannerMarginTop + bannerH + bottomPad;
+  const tmpCanvas = document.createElement('canvas');
+  tmpCanvas.width  = canvas.width;
+  tmpCanvas.height = totalH;
+  const tmpCtx = tmpCanvas.getContext('2d');
+
+  tmpCtx.fillStyle = '#ffffff';
+  tmpCtx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+  tmpCtx.drawImage(canvas, 0, 0);
+
+  const bx = padding, by = canvas.height + bannerMarginTop;
+  const bw = tmpCanvas.width - padding * 2;
+  const grad = tmpCtx.createLinearGradient(bx, 0, bx + bw, 0);
+  grad.addColorStop(0,   'rgba(249,168,212,0.4)');
+  grad.addColorStop(0.5, 'rgba(253,186,116,0.4)');
+  grad.addColorStop(1,   'rgba(134,239,172,0.4)');
+
+  tmpCtx.beginPath();
+  tmpCtx.moveTo(bx + radius, by);
+  tmpCtx.lineTo(bx + bw - radius, by);
+  tmpCtx.quadraticCurveTo(bx + bw, by, bx + bw, by + radius);
+  tmpCtx.lineTo(bx + bw, by + bannerH - radius);
+  tmpCtx.quadraticCurveTo(bx + bw, by + bannerH, bx + bw - radius, by + bannerH);
+  tmpCtx.lineTo(bx + radius, by + bannerH);
+  tmpCtx.quadraticCurveTo(bx, by + bannerH, bx, by + bannerH - radius);
+  tmpCtx.lineTo(bx, by + radius);
+  tmpCtx.quadraticCurveTo(bx, by, bx + radius, by);
+  tmpCtx.closePath();
+  tmpCtx.fillStyle = grad;
+  tmpCtx.fill();
+
+  tmpCtx.fillStyle = 'rgba(76,29,107,0.7)';
+  tmpCtx.font = 'bold 13px "Nanum Myeongjo", serif';
+  tmpCtx.textAlign = 'center';
+  tmpCtx.textBaseline = 'middle';
+  tmpCtx.fillText('🌸 은평경찰서 언어폭력 예방 필사 캠페인 🌸', tmpCanvas.width / 2, by + bannerH / 2);
+
+  return tmpCanvas;
+}
+
+// 저장하기 - 이미지를 화면에 크게 보여주고 스크린샷 유도
+function saveMyCanvas() {
+  const tmpCanvas = buildShareCanvas();
+  const dataUrl = tmpCanvas.toDataURL('image/png');
+
+  // 전체화면 오버레이에 이미지 표시
+  const overlay = document.createElement('div');
+  overlay.style.cssText = [
+    'position:fixed', 'inset:0', 'background:#000',
+    'z-index:99999', 'display:flex', 'flex-direction:column',
+    'align-items:center', 'justify-content:flex-start',
+    'overflow-y:auto', '-webkit-overflow-scrolling:touch',
+    'padding:0'
+  ].join(';');
+
+  const topBar = document.createElement('div');
+  topBar.style.cssText = 'width:100%;background:#111;padding:0.8rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1;';
+  topBar.innerHTML = '<span style="color:#fff;font-size:0.9rem;">📸 스크린샷으로 저장하세요</span>' +
+    '<button style="background:#fff;border:none;border-radius:16px;padding:0.4rem 1rem;font-size:0.9rem;cursor:pointer;">닫기</button>';
+  topBar.querySelector('button').onclick = () => document.body.removeChild(overlay);
+
+  const img = document.createElement('img');
+  img.src = dataUrl;
+  img.style.cssText = 'width:100%;display:block;';
+
+  overlay.appendChild(topBar);
+  overlay.appendChild(img);
+  document.body.appendChild(overlay);
+}
+
+// 공유하기 - Web Share API (앱 배포 후 SNS 공유)
+async function shareMyCanvas() {
+  const tmpCanvas = buildShareCanvas();
+  const q = QUOTES[currentIdx];
+  const fileName = '꽃말쓰기_' + (currentIdx + 1) + '_' + (q.text.slice(0, 8).replace(/\s/g, '')) + '.png';
+  const shareText = '🌸 은평경찰서 언어폭력 예방 필사 캠페인\n"' + q.text.slice(0, 20) + '..."';
+  tmpCanvas.toBlob(async (blob) => {
+    const file = new File([blob], fileName, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ title: '꽃말쓰기 🌸', text: shareText, files: [file] }); }
+      catch(e) { if (e.name !== 'AbortError') saveMyCanvas(); }
+    } else {
+      saveMyCanvas();
+    }
+  }, 'image/png');
+}
+
+function saveCanvas() {
+  const tmpCanvas = buildShareCanvas();
+  const q = QUOTES[currentIdx];
+  const fileName = '꽃말쓰기_' + (currentIdx + 1) + '_' + (q.text.slice(0, 8).replace(/\s/g, '')) + '.png';
+  const link = document.createElement('a');
+  link.download = fileName;
+  link.href = tmpCanvas.toDataURL('image/png');
+  link.click();
+}
+
+// ── 가이드 글씨체 선택 ──
+let flowerDist = 0; // 꽃 찍을 거리 누적
+const FLOWERS = ['🌸','🌺','🌼'];
+const LEAVES   = ['🍃','🌿','🍀'];
+const AUTUMN   = ['🍂','🍁','🍃'];
+const SNOW     = ['❄️','⛄','🌨️'];
+const MOONS    = ['🌙','⭐','🌟','✨'];
+const STARS    = ['⭐','🌟','✨','💫'];
+const CLOUDS   = ['☁️'];
+const HEARTS   = ['❤️','🧡','💛','💚','💙','💜'];
+let flowerIdx = 0;
+let penType = 'normal'; // normal | brush | crayon | marker | chalk
+
+function setPenType(type, el) {
+  penType = type;
+  document.querySelectorAll('.pen-type-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+const fontSizeMap = {
+  'Jua':                { size: '3.2rem', lineHeight: '1.7', transform: '' },
+  'Nanum Pen Script':   { size: '3.8rem', lineHeight: '1.5', transform: '' },
+  'Gaegu':              { size: '3.0rem', lineHeight: '1.5', transform: '' },
+  'Yeon Sung':          { size: '3.3rem', lineHeight: '1.7', transform: '' },
+  'Gugi':               { size: '2.86rem', lineHeight: '1.7', transform: '' },
+  'Single Day':         { size: '3.4rem', lineHeight: '1.5', transform: '' },
+  'Kirang Haerang':     { size: '3.0rem', lineHeight: '1.6', transform: '' },
+  'Hi Melody':          { size: '3.2rem', lineHeight: '1.6', transform: '', weight: '900' },
+  'Do Hyeon':           { size: '3.2rem', lineHeight: '1.7', transform: '' },
+  'Black Han Sans':     { size: '2.6rem', lineHeight: '1.7', transform: '' },
+  'Cute Font':          { size: '3.0rem', lineHeight: '1.7', transform: '' },
+  'Diphylleia':         { size: '3.2rem', lineHeight: '1.6', transform: '', weight: '900' }
+};
+
+function setGuideFont(font) {
+  currentGuideFont = font;
+  const guideSpan = document.getElementById('guideText');
+  if (guideSpan) {
+    const cfg = fontSizeMap[font] || { size: '3.2rem', lineHeight: '1.7', transform: '' };
+    guideSpan.style.fontFamily = "'" + font + "', sans-serif";
+    guideSpan.style.fontSize = cfg.size;
+    guideSpan.style.lineHeight = cfg.lineHeight;
+    guideSpan.style.transform = cfg.transform || '';
+    guideSpan.style.fontWeight = cfg.weight || '';
+    guideSpan.style.display = cfg.transform ? 'block' : '';
+  }
+  document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
+  const idMap = {
+'Nanum Pen Script':'fontPen',
+    'Gaegu':'fontGaegu','Yeon Sung':'fontYeon',
+    'Gugi':'fontGugi','Single Day':'fontSingle',
+    'Kirang Haerang':'fontKirang','Hi Melody':'fontMelody',
+    'Diphylleia':'fontDiphylleia'
+    };
+  const btn = document.getElementById(idMap[font]);
+  if (btn) btn.classList.add('active');
+}
+
+// ── 캔버스 핀치 줌 & 드래그 ──
+let zoomScale = 1;
+let zoomOffsetX = 0, zoomOffsetY = 0;
+let lastPinchDist = null;
+let lastMidX = 0, lastMidY = 0;
+let isPinching = false;
+
+function applyZoomTransform() {
+  const t = `translate(${zoomOffsetX}px, ${zoomOffsetY}px) scale(${zoomScale})`;
+  canvas.style.transformOrigin = '0 0';
+  canvas.style.transform = t;
+  const guide = document.querySelector('.canvas-guide');
+  if (guide) { guide.style.transformOrigin = '0 0'; guide.style.transform = t; }
+}
+
+// ── 캔버스 이동 버튼 ──
+let scrollTimer = null;
+function startScroll(dir) {
+  moveCanvas(dir);
+  scrollTimer = setInterval(() => moveCanvas(dir), 80);
+}
+function stopScroll() {
+  clearInterval(scrollTimer);
+  scrollTimer = null;
+}
+function moveCanvas(dir) {
+  const step = 40;
+  const minY = -(canvas.height * zoomScale - canvas.height);
+  zoomOffsetY = Math.min(0, Math.max(minY, zoomOffsetY - dir * step));
+  applyZoomTransform();
+}
+
+function resetZoom() {
+  zoomScale = 1; zoomOffsetX = 0; zoomOffsetY = 0;
+  applyZoomTransform();
+}
+
+function getPinchDist(t) {
+  const dx = t[0].clientX - t[1].clientX;
+  const dy = t[0].clientY - t[1].clientY;
+  return Math.sqrt(dx*dx + dy*dy);
+}
+
+function getPinchMid(t) {
+  return { x: (t[0].clientX + t[1].clientX)/2, y: (t[0].clientY + t[1].clientY)/2 };
+}
+
+let micPermissionGranted = false;
+
+// ── 버튼 탭 핸들러 ──
+// 흐름: getUserMedia(권한 팝업) → 허용 → 스트림 해제 → SpeechRecognition 시작
+// 한 번 허용되면 micPermissionGranted=true 로 캐시 → 이후 팝업 없이 바로 시작
+function toggleMic() {
+  if (isListening) { stopMic(); return; }
+
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    document.getElementById('voiceStatus').textContent =
+      '이 브라우저는 음성 인식을 지원하지 않아요. Chrome(크롬)으로 열어주세요.';
+    return;
+  }
+
+  // 이미 허용된 경우 바로 시작 (두 번째 탭부터는 팝업 없음)
+  if (micPermissionGranted) {
+    startRecognition();
+    return;
+  }
+
+  document.getElementById('voiceStatus').textContent = '마이크 허용 팝업을 확인해주세요...';
+
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    // ★ 핵심: getUserMedia 가 실제로 권한 팝업을 띄우는 유일한 방법
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        // 권한 허용 → 스트림은 즉시 해제 (SpeechRecognition이 자체적으로 마이크를 사용)
+        stream.getTracks().forEach(t => t.stop());
+        micPermissionGranted = true;
+        // 배너 있으면 제거
+        const b = document.getElementById('permBanner');
+        if (b) b.remove();
+        startRecognition();
+      })
+      .catch(err => {
+        const statusEl = document.getElementById('voiceStatus');
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          // 사용자가 거부했거나 시스템에서 차단 → 안내 표시
+          showMicPermissionGuide();
+        } else if (err.name === 'NotFoundError') {
+          statusEl.textContent = '마이크를 찾을 수 없어요. 기기에 마이크가 있는지 확인해주세요.';
+        } else {
+          // 기타 오류는 일단 SpeechRecognition 직접 시도 (일부 구형 Android)
+          startRecognition();
+        }
+      });
+  } else {
+    // getUserMedia 자체가 없는 구형 환경 → 직접 시도
+    startRecognition();
+  }
+}
+
+function startRecognition() {
+  recognition = setupRecognition();
+  if (!recognition) {
+    document.getElementById('voiceStatus').textContent =
+      '음성 인식을 지원하지 않는 브라우저입니다. Chrome(크롬)을 사용해주세요.';
+    return;
+  }
+  try {
+    recognition.start();
+  } catch(e) {
+    // 이미 실행 중인 경우 재시도
+    recognition = setupRecognition();
+    try { recognition.start(); } catch(e2) {
+      document.getElementById('voiceStatus').textContent =
+        '음성 인식을 시작할 수 없어요. 잠시 후 다시 눌러보세요.';
+    }
+  }
+}
+
+function showMicPermissionGuide() {
+  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
+  document.getElementById('voiceStatus').textContent =
+    '마이크 접근이 차단됐어요. 아래 안내를 따라 허용한 뒤 페이지를 새로고침해주세요.';
+  showPermissionBanner(isIOS, isAndroid);
+}
+
+function showPermissionBanner(isIOS, isAndroid) {
+  const existing = document.getElementById('permBanner');
+  if (existing) existing.remove();
+
+  const banner = document.createElement('div');
+  banner.id = 'permBanner';
+  banner.style.cssText =
+    'margin:0.7rem 0 0;padding:0.9rem 1rem;background:#fff8e1;border:1px solid #ffca28;' +
+    'border-radius:6px;font-size:0.78rem;line-height:1.75;color:#5d4037;word-break:keep-all;text-align:left;';
+
+  let guideHTML = '';
+  if (isIOS) {
+    guideHTML =
+      '<strong>📱 iPhone · iPad 마이크 허용 방법</strong><br>' +
+      '① <strong>설정</strong> 앱 열기<br>' +
+      '② 아래로 스크롤 → <strong>Safari</strong> (또는 사용 중인 브라우저) 선택<br>' +
+      '③ <strong>마이크</strong> → <strong>허용</strong> 으로 변경<br>' +
+      '④ 이 페이지 <strong>새로고침</strong> 후 🎤 버튼 다시 탭';
+  } else if (isAndroid) {
+    guideHTML =
+      '<strong>📱 Android 마이크 허용 방법</strong><br>' +
+      '① 주소창 왼쪽 <strong>🔒 자물쇠 아이콘</strong> 탭<br>' +
+      '② <strong>사이트 설정</strong> → <strong>마이크</strong> → <strong>허용</strong><br>' +
+      '③ 페이지 <strong>새로고침</strong> 후 🎤 버튼 다시 탭<br>' +
+      '<span style="font-size:0.7rem;opacity:0.8;">※ 항목이 없으면: 설정 → 앱 → Chrome → 권한 → 마이크</span>';
+  } else {
+    guideHTML =
+      '<strong>🖥️ PC 마이크 허용 방법</strong><br>' +
+      '① 주소창 왼쪽 <strong>🔒 아이콘</strong> 클릭<br>' +
+      '② <strong>마이크 → 허용</strong> 선택<br>' +
+      '③ 페이지 <strong>새로고침</strong> 후 🎤 버튼 다시 클릭';
+  }
+
+  banner.innerHTML = guideHTML +
+    '<br><div style="margin-top:0.6rem;display:flex;gap:0.5rem;">' +
+    '<button onclick="location.reload()" ' +
+    'style="padding:0.3rem 0.8rem;border:none;border-radius:20px;background:#8b4513;color:#fff;font-size:0.72rem;cursor:pointer;">새로고침</button>' +
+    '<button onclick="this.closest(\'#permBanner\').remove?this.closest(\'#permBanner\').remove():this.parentElement.parentElement.remove()" ' +
+    'style="padding:0.3rem 0.8rem;border:1px solid #5d4037;border-radius:20px;background:transparent;color:#5d4037;font-size:0.72rem;cursor:pointer;">닫기</button>' +
+    '</div>';
+
+  const voiceBox = document.querySelector('.voice-box');
+  if (voiceBox) voiceBox.appendChild(banner);
+}
+
+function stopMic() {
+  if (recognition && isListening) { try { recognition.stop(); } catch(e) {} }
+  isListening = false;
+  document.getElementById('micBtn').classList.remove('listening');
+}
+
+function completeQuote() {
+  completedSet.add(currentIdx);
+  const today = new Date();
+  completionDates[currentIdx] = today.getFullYear() + '.' +
+    String(today.getMonth()+1).padStart(2,'0') + '.' +
+    String(today.getDate()).padStart(2,'0');
+  // 캔버스 이미지 저장 (갤러리용)
+  try {
+    const imgData = canvas.toDataURL('image/jpeg', 0.75);
+    localStorage.setItem('maeum_img_' + currentIdx, imgData);
+  } catch(e) {}
+  saveProgress();
+  updateNav();
+  updateProgress();
+  document.getElementById('missionPage').classList.remove('show');
+  showCelebratePage();
+}
+
+function tryComplete() {
+  showMissionPage();
+}
+
+function closeCelebrate() {
+  document.getElementById('celebratePage').classList.remove('show');
+  switchTab('writing');
+}
+
+function nextQuote() {
+  document.getElementById('celebratePage').classList.remove('show');
+  for (let i = 0; i < QUOTES.length; i++) {
+    const idx = (currentIdx + 1 + i) % QUOTES.length;
+    if (!completedSet.has(idx)) { loadQuote(idx); switchTab('writing'); return; }
+  }
+  switchTab('writing');
+}
+
+/* ── 오늘의 필사 홈뷰 / 필사뷰 전환 ── */
+function updateWritingHome() {
+  const q = QUOTES[currentIdx];
+  const numEl = document.getElementById('whQuoteNum');
+  const emojiEl = document.getElementById('whNavEmoji');
+  const textEl = document.getElementById('whQuoteText');
+  const sourceEl = document.getElementById('whQuoteSource');
+  const missionEl = document.getElementById('whMissionText');
+  if (numEl) numEl.textContent = (currentIdx + 1) + ' / ' + QUOTES.length;
+  if (emojiEl) emojiEl.textContent = q.emoji || '🌸';
+  if (textEl) textEl.textContent = q.text;
+  if (sourceEl) sourceEl.textContent = q.source;
+  if (missionEl) missionEl.textContent = q.msg || '';
+  renderWhDots();
+}
+
+function renderWhDots() {
+  const container = document.getElementById('whDots');
+  if (!container) return;
+  container.innerHTML = '';
+  QUOTES.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'wh-dot' +
+      (i === currentIdx ? ' active' : '') +
+      (completedSet.has(i) ? ' done' : '');
+    dot.setAttribute('aria-label', (i + 1) + '번 글귀');
+    dot.onclick = () => whGoTo(i);
+    container.appendChild(dot);
+  });
+}
+
+function whGoTo(idx) {
+  currentIdx = idx;
+  // 필사뷰 관련 상태도 반영 (loadQuote 대신 가볍게)
+  const q = QUOTES[idx];
+  const numBadge = document.getElementById('quoteNumBadge');
+  const quoteText = document.getElementById('quoteText');
+  const quoteSource = document.getElementById('quoteSource');
+  const voiceTarget = document.getElementById('voiceTarget');
+  const guideText = document.getElementById('guideText');
+  if (numBadge) numBadge.textContent = (idx + 1) + ' / ' + QUOTES.length;
+  if (quoteText) quoteText.textContent = q.text;
+  if (quoteSource) quoteSource.textContent = q.source;
+  if (voiceTarget) voiceTarget.textContent = q.text;
+  if (guideText) guideText.textContent = q.text;
+  updateWritingHome();
+}
+
+function whMovePrev() {
+  whGoTo((currentIdx - 1 + QUOTES.length) % QUOTES.length);
+}
+
+function whMoveNext() {
+  whGoTo((currentIdx + 1) % QUOTES.length);
+}
+
+function showWritingHome() {
+  updateWritingHome();
+  document.getElementById('writingHome').style.display = 'flex';
+  document.getElementById('writingHome').style.flexDirection = 'column';
+  document.getElementById('mainApp').style.display = 'none';
+}
+
+function goToCanvas() {
+  // 선택된 글귀로 캔버스 완전 초기화
+  loadQuote(currentIdx);
+  document.getElementById('writingHome').style.display = 'none';
+  document.getElementById('mainApp').style.display = '';
+  const qc = document.getElementById('quoteCard');
+  if (qc) qc.style.display = 'none';
+  requestAnimationFrame(() => {
+    try { if (canvas.width === 0 || canvas.height === 0) initCanvas(); } catch(e) {}
+  });
+}
+
+/* ── 탭 전환 ── */
+let appStarted = false;
+function switchTab(tab) {
+  try {
+    // 처음 탭 누를 때 앱 초기화
+    if (!appStarted) {
+      appStarted = true;
+      document.getElementById('introPage').classList.add('hidden');
+      document.getElementById('appShell').classList.add('show');
+      requestAnimationFrame(() => {
+        initCanvas();
+        setGuideFont('Gaegu');
+        const hasProgress = loadProgress();
+        if (hasProgress) { updateNav(); updateProgress(); loadQuote(currentIdx); }
+        else { loadQuote(0); }
+      });
+    }
+
+    // 항상: 모든 오버레이 닫기
+    const overlays = ['missionPage', 'celebratePage', 'doneScreen'];
+    overlays.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('show');
+    });
+
+    // 탭 전환
+    document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+
+    if (tab === 'writing') {
+      document.getElementById('tabWriting').classList.add('active');
+      document.getElementById('navWriting').classList.add('active');
+      // 항상 홈뷰로 돌아오기
+      showWritingHome();
+
+    } else if (tab === 'gallery') {
+      document.getElementById('tabGallery').classList.add('active');
+      document.getElementById('navGallery').classList.add('active');
+      renderGallery();
+
+    } else if (tab === 'records') {
+      document.getElementById('tabRecords').classList.add('active');
+      document.getElementById('navRecords').classList.add('active');
+      showDoneScreen();
+    }
+
+    window.scrollTo(0, 0);
+  } catch(e) {
+    console.error('switchTab error:', e);
+  }
+}
+
+/* ── 갤러리 렌더링 ── */
+function renderGallery() {
+  const pill = document.getElementById('galleryProgressPill');
+  if (pill) pill.textContent = completedSet.size + ' / ' + QUOTES.length + ' 완료';
+  const container = document.getElementById('galleryContent');
+  if (!container) return;
+  const completed = Array.from(completedSet).sort((a,b) => a-b);
+  if (completed.length === 0) {
+    container.innerHTML = '<div class="gallery-empty"><div class="empty-icon">✍️</div><p>아직 완성한 필사가 없어요<br>오늘의 필사 탭에서 첫 글귀를 써보세요!</p></div>';
+    return;
+  }
+  let html = '<div class="gallery-grid">';
+  completed.forEach(idx => {
+    const q = QUOTES[idx];
+    const img = localStorage.getItem('maeum_img_' + idx);
+    const date = completionDates[idx] || '';
+    html += '<div class="gallery-item">';
+    if (img) {
+      html += '<img src="' + img + '" alt="필사 ' + (idx+1) + '">';
+    } else {
+      html += '<div style="aspect-ratio:1;background:var(--paper-warm);display:flex;align-items:center;justify-content:center;font-size:2rem;">✍️</div>';
+    }
+    html += '<div class="gallery-item-info">';
+    html += '<div class="gallery-item-num">글귀 ' + (idx+1) + '</div>';
+    html += '<div class="gallery-item-text">' + q.text + '</div>';
+    if (date) html += '<div class="gallery-item-date">' + date + '</div>';
+    html += '</div></div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+/* ── 기록 렌더링 ── */
+function renderRecords() {
+  const countEl = document.getElementById('recordsCount');
+  if (countEl) countEl.innerHTML = completedSet.size + '<span> / ' + QUOTES.length + '</span>';
+  const fillEl = document.getElementById('recordsBarFill');
+  if (fillEl) fillEl.style.width = Math.round(completedSet.size / QUOTES.length * 100) + '%';
+  const listEl = document.getElementById('recordsList');
+  if (!listEl) return;
+  const completed = Array.from(completedSet).sort((a,b) => a-b);
+  if (completed.length === 0) {
+    listEl.innerHTML = '<div class="records-empty">아직 완료한 글귀가 없어요 🌱<br>오늘의 첫 필사를 시작해보세요!</div>';
+    return;
+  }
+  let html = '<div class="records-list">';
+  completed.forEach(idx => {
+    const q = QUOTES[idx];
+    const date = completionDates[idx] || '';
+    html += '<div class="records-item">';
+    html += '<div class="records-item-num">' + (idx+1) + '</div>';
+    html += '<div class="records-item-body">';
+    html += '<div class="records-item-text">' + q.text + '</div>';
+    if (date) html += '<div class="records-item-date">' + date + '</div>';
+    html += '</div>';
+    html += '<div class="records-item-check">🌸</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  listEl.innerHTML = html;
+}
+
+function makeDateStamp(dateShort) {
+  if (!dateShort) {
+    return '<svg width="44" height="44" viewBox="0 0 44 44"><circle cx="22" cy="22" r="19" fill="none" stroke="rgba(139,37,0,0.12)" stroke-width="1" stroke-dasharray="2 2"/></svg>';
+  }
+  const seed = Math.random() * 10 | 0;
+  return `<svg width="44" height="44" viewBox="0 0 44 44" style="overflow:visible;">
+    <defs>
+      <filter id="sf${seed}" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="3" seed="${seed}" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="1.2" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+    <circle cx="22" cy="22" r="19" fill="rgba(139,37,0,0.04)" stroke="#8a3020" stroke-width="1.8" filter="url(#sf${seed})"/>
+    <circle cx="22" cy="22" r="15" fill="none" stroke="#8a3020" stroke-width="0.7" stroke-dasharray="2 1.5" filter="url(#sf${seed})"/>
+    <text x="22" y="22" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="8.5" font-weight="bold" fill="#4a0f0a" filter="url(#sf${seed})">${dateShort.slice(3)}</text>
+    <text x="22" y="33" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="7" font-weight="bold" fill="#4a0f0a" filter="url(#sf${seed})">완 ★</text>
+  </svg>`;
+}
+
+function showDoneScreen() {
+  document.getElementById('celebratePage').classList.remove('show');
+
+  // doneTreeArt 요소가 있을 때만 접근
+  const treeArt = document.getElementById('doneTreeArt');
+  if (treeArt) treeArt.textContent = LEVELS[20].art;
+
+  // 성장 여정 그리드 렌더
+  const grid = document.getElementById('doneJourneyGrid');
+  grid.innerHTML = '';
+  LEVELS.forEach((lv, i) => {
+    const item = document.createElement('div');
+    item.className = 'done-journey-item';
+    const dateStr = completionDates[i] || '';
+    const dateShort = dateStr ? dateStr.slice(2) : '';
+    item.innerHTML =
+      '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0.45rem 0.2rem 0.15rem;">' +
+        lv.art.split('\n')[0] +
+        '<span>Lv.' + lv.lv + '<br>' + lv.name + '</span>' +
+      '</div>' +
+      '<span class="done-journey-date">' + makeDateStamp(dateShort) + '</span>';
+    grid.appendChild(item);
+  });
+
+  document.getElementById('doneScreen').classList.add('show');
+  document.getElementById('doneScreen').scrollTop = 0;
+  startPetalRain();
+
+  // SVG 도장 생성
+  const today = new Date();
+  const dateStr = today.getFullYear() + '.' + String(today.getMonth()+1).padStart(2,'0') + '.' + String(today.getDate()).padStart(2,'0');
+  const doneStamp = document.getElementById('doneStamp');
+  const doneSvg = document.getElementById('doneStampSvg');
+  if (doneStamp && doneSvg) {
+    doneStamp.style.opacity = '0';
+    doneSvg.innerHTML = `
+      <defs>
+        <filter id="dsf" x="-15%" y="-15%" width="130%" height="130%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.065" numOctaves="4" seed="12" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.8" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        <path id="dfc" d="M 15,75 A 60,60 0 0,1 135,75 A 60,60 0 0,1 15,75"/>
+      </defs>
+      <circle cx="75" cy="75" r="72" fill="rgba(176,90,74,0.06)" stroke="#8a3020" stroke-width="4" filter="url(#dsf)"/>
+      <circle cx="75" cy="75" r="60" fill="none" stroke="#8a3020" stroke-width="1.2" stroke-dasharray="3 2" filter="url(#dsf)"/>
+      <text font-family="'Nanum Myeongjo',serif" font-size="11" fill="#7a2a1a" font-weight="900" letter-spacing="6.5">
+        <textPath href="#dfc" startOffset="0%">★ 은평경찰서 ★ 언어폭력예방 필사 캠페인</textPath>
+      </text>
+      <text x="75" y="60" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="22" font-weight="bold" fill="#4a0f0a">21 / 21</text>
+      <line x1="16" y1="68" x2="134" y2="68" stroke="#8a3020" stroke-width="1.5" opacity="1"/>
+      <text x="75" y="86" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="18" font-weight="bold" fill="#4a0f0a" letter-spacing="1">${dateStr}</text>
+      <line x1="16" y1="93" x2="134" y2="93" stroke="#8a3020" stroke-width="1.5" opacity="1"/>
+      <text x="75" y="117" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="22" font-weight="bold" fill="#4a0f0a" letter-spacing="3">완★료</text>
+      <path d="M 80,93 Q 112,73 145,93 Q 178,113 210,93" fill="none" stroke="#8a3020" stroke-width="1.6" opacity="0.3" filter="url(#dsf)"/>
+      <path d="M 80,106 Q 112,86 145,106 Q 178,126 210,106" fill="none" stroke="#8a3020" stroke-width="1.6" opacity="0.3" filter="url(#dsf)"/>
+      <path d="M 80,119 Q 112,99 145,119 Q 178,139 210,119" fill="none" stroke="#8a3020" stroke-width="1.6" opacity="0.3" filter="url(#dsf)"/>
+      <path d="M 80,132 Q 112,112 145,132 Q 178,152 210,132" fill="none" stroke="#8a3020" stroke-width="1.6" opacity="0.3" filter="url(#dsf)"/>
+    `;
+    setTimeout(() => { doneStamp.classList.add('stamp-fired'); }, 500);
+  }
+}
+
+function startPetalRain() {
+  const wrap = document.getElementById('sakuraWrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const colors = [
+    ['#fff5f8','#ffc8e0','#ff9ec0'],
+    ['#fff8fa','#ffd0e8','#ffaad0'],
+    ['#ffeff6','#ffbad8','#ff8fbb'],
+    ['#fff3fb','#f9c8ee','#f099d8'],
+  ];
+  for (let i = 0; i < 28; i++) {
+    const s = document.createElement('div');
+    const typeNum = Math.floor(Math.random() * 6) + 1;
+    s.className = 'sakura type' + typeNum;
+    const col = colors[i % colors.length];
+    const w = 7 + Math.random() * 7;
+    const extraTransform = typeNum === 3 ? ' scaleY(0.2)' : typeNum === 4 ? ' scaleX(0.15)' : typeNum === 5 ? ' rotate(45deg)' : '';
+    s.style.cssText = 'left:' + (Math.random()*105) + '%;width:' + w + 'px;height:' + (w*1.3) + 'px;background:radial-gradient(ellipse at 40% 35%,' + col[0] + ' 0%,' + col[1] + ' 45%,' + col[2] + ' 100%);animation-duration:' + (2.8+Math.random()*3.5) + 's;animation-delay:' + (Math.random()*5) + 's;transform:rotate(' + (Math.random()*360) + 'deg)' + extraTransform + ';';
+    wrap.appendChild(s);
+  }
+}
+
+function restartAll() {
+  completedSet.clear();
+  currentIdx = 0;
+  saveProgress();
+  document.getElementById('doneScreen').classList.remove('show');
+  document.getElementById('celebratePage').classList.remove('show');
+  loadQuote(0);
+  switchTab('writing');
+}
+
+window.addEventListener('resize', () => {
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  initCanvas();
+  ctx.putImageData(imgData, 0, 0);
+});
+
+// ── 완료 날짜 저장 ──
+let completionDates = {}; // { quoteIdx: 'YYYY.MM.DD' }
+
+// ── 진행 상태 저장/복원 (localStorage + sessionStorage + cookie 삼중) ──
+const STORAGE_KEY = 'kkotmal_progress';
+
+function saveProgress() {
+  try {
+    const data = {
+      completed: Array.from(completedSet),
+      currentIdx: currentIdx,
+      dates: completionDates
+    };
+    const json = JSON.stringify(data);
+    try { localStorage.setItem(STORAGE_KEY, json); } catch(e) {}
+    try { sessionStorage.setItem(STORAGE_KEY, json); } catch(e) {}
+    try {
+      const exp = new Date(Date.now() + 365*24*60*60*1000).toUTCString();
+      document.cookie = STORAGE_KEY + '=' + encodeURIComponent(json) + ';expires=' + exp + ';path=/';
+    } catch(e) {}
+  } catch(e) {}
+}
+
+function getRawProgress() {
+  // 1. localStorage
+  try { const r = localStorage.getItem(STORAGE_KEY); if (r) return r; } catch(e) {}
+  // 2. sessionStorage
+  try { const r = sessionStorage.getItem(STORAGE_KEY); if (r) return r; } catch(e) {}
+  // 3. cookie
+  try {
+    const match = document.cookie.match('(^|;)\\s*' + STORAGE_KEY + '=([^;]+)');
+    if (match) return decodeURIComponent(match[2]);
+  } catch(e) {}
+  return null;
+}
+
+function loadProgress() {
+  try {
+    const raw = getRawProgress();
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (data.completed && Array.isArray(data.completed)) {
+      completedSet = new Set(data.completed.map(Number));
+    }
+    if (data.dates) completionDates = data.dates;
+    if (completedSet.size > 0) {
+      let nextIdx = 0;
+      for (let i = 0; i < QUOTES.length; i++) {
+        if (!completedSet.has(i)) { nextIdx = i; break; }
+      }
+      currentIdx = nextIdx;
+      return true;
+    }
+    return false;
+  } catch(e) { return false; }
+}
+
+function startApp() {
+  switchTab('writing');
+}
+
+// 저장된 진행 상태 확인 → 이어하기 버튼 표시
+function checkSavedProgress() {
+  try {
+    const raw = getRawProgress();
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (!data.completed || data.completed.length === 0) return;
+    const btn = document.getElementById('resumeBtn');
+    if (!btn) return;
+    btn.textContent = '이어서 하기 (' + data.completed.length + '/21 완료) →';
+    btn.style.display = 'block';
+  } catch(e) {}
+}
+
+// DOM 상태와 무관하게 반드시 실행
+checkSavedProgress();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', checkSavedProgress);
+}
+
+// 페이지 로드 시에는 시작 페이지만 표시 (initCanvas/loadQuote는 startApp에서 실행)
+</script>
+</body>
+</html>
