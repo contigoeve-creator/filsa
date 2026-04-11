@@ -2622,8 +2622,15 @@
 
     </div><!-- /canvas-header -->
     <div class="zoom-hint" style="font-size:1.066rem;letter-spacing:-0.1em;"><strong style="color:var(--accent);">두 손가락</strong>으로 캔버스를 확대 축소하면 따라 쓰기 쉬워져요!</div>
-    <div class="canvas-wrapper" id="canvasWrapper">
-      <div class="canvas-scroll-btns">
+
+    <!-- 캔버스 + 이동버튼 나란히 배치 -->
+    <div style="display:flex;align-items:center;gap:0.3rem;margin:0 1rem;">
+      <div class="canvas-wrapper" id="canvasWrapper" style="margin:0;flex:1;">
+        <div class="canvas-guide"><span id="guideText"></span></div>
+        <canvas id="drawCanvas"></canvas>
+      </div>
+      <!-- 이동 버튼: 캔버스 바깥 오른쪽 -->
+      <div style="display:flex;flex-direction:column;gap:0.4rem;flex-shrink:0;">
         <button class="canvas-scroll-btn" id="scrollUpBtn"
           onpointerdown="startScroll(-1)" onpointerup="stopScroll()" onpointerleave="stopScroll()"
           ontouchstart="startScroll(-1);event.preventDefault();" ontouchend="stopScroll()">▲</button>
@@ -2631,8 +2638,6 @@
           onpointerdown="startScroll(1)" onpointerup="stopScroll()" onpointerleave="stopScroll()"
           ontouchstart="startScroll(1);event.preventDefault();" ontouchend="stopScroll()">▼</button>
       </div>
-      <div class="canvas-guide"><span id="guideText"></span></div>
-      <canvas id="drawCanvas"></canvas>
     </div>
     <div class="coverage-bar-wrap">
       <div class="coverage-track"><div class="coverage-fill" id="coverageFill"></div></div>
@@ -4290,10 +4295,11 @@ function stopScroll() {
 }
 function moveCanvas(dir) {
   const step = 40;
-  // 줌 1배여도 최소 캔버스 높이만큼 이동 가능하게
   const scaledH = canvas.height * Math.max(zoomScale, 1.5);
   const minY = -(scaledH - canvas.height);
-  zoomOffsetY = Math.min(0, Math.max(minY, zoomOffsetY - dir * step));
+  const newY = Math.min(0, Math.max(minY, zoomOffsetY - dir * step));
+  if (newY === zoomOffsetY) return; // 경계에서 떨림 방지
+  zoomOffsetY = newY;
   applyZoomTransform();
 }
 
