@@ -870,6 +870,20 @@
     transition: all 0.2s;
   }
   .cel-btn-sub:hover { background: var(--paper-warm); color: var(--accent); border-color: var(--accent); }
+  .cel-btn-share {
+    width: 100%;
+    padding: 0.85rem;
+    border: 1.5px solid rgba(212,118,59,0.4);
+    border-radius: 8px;
+    background: rgba(212,118,59,0.08);
+    color: #d4763b;
+    font-family: 'Jua', sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+  .cel-btn-share:hover { background: rgba(212,118,59,0.15); }
   .done-screen { display: none; position: fixed; inset: 0; background: var(--paper); z-index: 300; overflow-y: auto; }
   .done-screen.show { display: block; }
 
@@ -2810,7 +2824,7 @@
     <div style="margin-bottom:1rem;text-align:center;">
       <div style="font-family:'Jua',sans-serif;font-size:0.8rem;color:var(--sage);letter-spacing:0.08em;margin-bottom:0.5rem;">✍️ 내가 쓴 글씨</div>
       <img id="celMyWriting" src="" alt="내가 쓴 글씨"
-        style="width:100%;border-radius:12px;border:1px solid rgba(201,168,76,0.3);box-shadow:0 3px 14px rgba(139,69,19,0.1);display:none;">
+        style="width:100%;max-height:220px;object-fit:cover;object-position:top;border-radius:12px;border:1px solid rgba(201,168,76,0.3);box-shadow:0 3px 14px rgba(139,69,19,0.1);display:none;background:#fff;">
       <div id="celNoWriting" style="padding:1.5rem;color:var(--sage);font-size:0.85rem;display:none;">아직 저장된 글씨가 없어요</div>
     </div>
     <div class="cel-stamp-row">
@@ -2820,7 +2834,7 @@
     </div>
     <div class="cel-btns">
       <button class="cel-btn-main" id="celBtnMain" onclick="nextQuote()">다음 글귀 쓰기 →</button>
-      <button class="cel-btn-sub" onclick="closeCelebrate()">← 현재 글귀 다시 보기</button>
+      <button class="cel-btn-share" onclick="shareMyWriting()">📤 내 글씨 공유하기</button>
     </div>
     <div class="cel-footer-wrap"><div class="cel-footer">은평경찰서 언어폭력예방 필사캠페인</div></div>
   </div>
@@ -4466,15 +4480,52 @@ function stopMic() {
   document.getElementById('micBtn').classList.remove('listening');
 }
 
+async function shareMyWriting() {
+  const imgSrc = localStorage.getItem('maeum_img_' + currentIdx);
+  const q = QUOTES[currentIdx];
+  const text = `✍️ 마음글씨 필사 "${q.text}" - 은평경찰서 꽃말쓰기`;
+
+  if (imgSrc && navigator.share && navigator.canShare) {
+    try {
+      // base64 → Blob → File
+      const res = await fetch(imgSrc);
+      const blob = await res.blob();
+      const file = new File([blob], 'maeumgulssi.jpg', { type: 'image/jpeg' });
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], text });
+        return;
+      }
+    } catch(e) {}
+  }
+  // 이미지 공유 불가 시 텍스트만 공유
+  if (navigator.share) {
+    try { await navigator.share({ text }); return; } catch(e) {}
+  }
+  // 폴백: 이미지 다운로드
+  if (imgSrc) {
+    const a = document.createElement('a');
+    a.href = imgSrc;
+    a.download = 'maeumgulssi.jpg';
+    a.click();
+    alert('이미지를 저장했어요! 카카오톡이나 인스타그램에 직접 업로드해보세요 😊');
+  }
+}
+
 function completeQuote() {
   completedSet.add(currentIdx);
   const today = new Date();
   completionDates[currentIdx] = today.getFullYear() + '.' +
     String(today.getMonth()+1).padStart(2,'0') + '.' +
     String(today.getDate()).padStart(2,'0');
-  // 캔버스 이미지 저장 (갤러리용)
+  // 캔버스 이미지 저장 (흰 배경 추가)
   try {
-    const imgData = canvas.toDataURL('image/jpeg', 0.75);
+    const tmpC = document.createElement('canvas');
+    tmpC.width = canvas.width; tmpC.height = canvas.height;
+    const tmpCtx = tmpC.getContext('2d');
+    tmpCtx.fillStyle = '#ffffff';
+    tmpCtx.fillRect(0, 0, tmpC.width, tmpC.height);
+    tmpCtx.drawImage(canvas, 0, 0);
+    const imgData = tmpC.toDataURL('image/jpeg', 0.85);
     localStorage.setItem('maeum_img_' + currentIdx, imgData);
   } catch(e) {}
   saveProgress();
