@@ -334,27 +334,27 @@
   .erase-btn:active { background: #d4763b; color: #fff; border-color: #d4763b; }
 
   /* ── 캔버스 래퍼: 줄 없는 예쁜 필사 캔버스 ── */
-  /* 캔버스 스크롤 컨테이너 */
+  /* 캔버스 스크롤 외부 컨테이너 */
   .canvas-scroll-outer {
-    position: relative;
-    margin: 0;
-    flex: 1;
+    margin: 0 1rem;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    border-radius: 16px;
+    border: 1px solid rgba(201,168,76,0.25);
+    box-shadow: 0 4px 24px rgba(139,69,19,0.10);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(201,168,76,0.5) rgba(201,168,76,0.1);
   }
+  .canvas-scroll-outer::-webkit-scrollbar { width: 5px; }
+  .canvas-scroll-outer::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.5); border-radius: 3px; }
+  .canvas-scroll-outer::-webkit-scrollbar-track { background: rgba(201,168,76,0.08); }
   .canvas-wrapper {
     position: relative;
-    border-radius: 16px;
-    overflow-y: auto;
-    overflow-x: hidden;
     background: linear-gradient(145deg, #fffdf7 0%, #fef9ee 40%, #fdf4e3 100%);
-    box-shadow:
-      0 4px 24px rgba(139,69,19,0.10),
-      inset 0 1px 0 rgba(255,255,255,0.9),
-      inset 0 -1px 0 rgba(139,69,19,0.06);
-    border: 1px solid rgba(201,168,76,0.25);
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    inset: 0 1px 0 rgba(255,255,255,0.9);
+    flex: 1;
   }
-  .canvas-wrapper::-webkit-scrollbar { display: none; }
   .canvas-scroll-btn {
     width: 36px;
     height: 36px;
@@ -902,7 +902,7 @@
   .mission-top {
     background: linear-gradient(160deg, rgba(134,239,172,0.5) 0%, rgba(253,186,116,0.5) 50%, rgba(249,168,212,0.5) 100%);
     background-color: #f0fff4;
-    padding: 1.1rem 1.2rem 1.2rem;
+    padding: 0.77rem 1.2rem 0.84rem;
     position: relative;
     flex-shrink: 0;
   }
@@ -932,13 +932,13 @@
   }
   .mission-top-quote {
     font-family: 'Gaegu', cursive;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #2d4a35;
     line-height: 1.75;
     word-break: keep-all;
     text-align: center;
-    margin-top: 0.6rem;
+    margin-top: 0.4rem;
     letter-spacing: 0.2rem;
     position: relative;
   }
@@ -985,7 +985,7 @@
     background: linear-gradient(135deg, rgba(134,239,172,0.2) 0%, rgba(253,230,138,0.2) 100%);
     border: 1.5px solid rgba(134,239,172,0.4);
     border-radius: 14px;
-    padding: 0.7rem 1.2rem;
+    padding: 0.56rem 1.2rem;
     margin-bottom: 1.1rem;
     text-align: center;
     box-shadow: 0 3px 14px rgba(52,168,83,0.08);
@@ -2635,20 +2635,11 @@
     </div><!-- /canvas-header -->
     <div class="zoom-hint" style="font-size:1.066rem;letter-spacing:-0.1em;"><strong style="color:var(--accent);">두 손가락</strong>으로 캔버스를 확대 축소하면 따라 쓰기 쉬워져요!</div>
 
-    <!-- 캔버스 + 이동버튼 나란히 배치 -->
-    <div style="display:flex;align-items:center;gap:0.4rem;margin:0 1rem;">
-      <div class="canvas-wrapper" id="canvasWrapper" style="flex:1;">
+    <!-- 캔버스 스크롤 컨테이너 -->
+    <div class="canvas-scroll-outer" id="canvasScrollOuter">
+      <div class="canvas-wrapper" id="canvasWrapper">
         <div class="canvas-guide"><span id="guideText"></span></div>
         <canvas id="drawCanvas"></canvas>
-      </div>
-      <!-- 이동 버튼: 캔버스 오른쪽 바깥 -->
-      <div style="display:flex;flex-direction:column;gap:0.5rem;flex-shrink:0;">
-        <button class="canvas-scroll-btn" id="scrollUpBtn"
-          onpointerdown="startScroll(-1)" onpointerup="stopScroll()" onpointerleave="stopScroll()"
-          ontouchstart="startScroll(-1);event.preventDefault();" ontouchend="stopScroll()">▲</button>
-        <button class="canvas-scroll-btn" id="scrollDownBtn"
-          onpointerdown="startScroll(1)" onpointerup="stopScroll()" onpointerleave="stopScroll()"
-          ontouchstart="startScroll(1);event.preventDefault();" ontouchend="stopScroll()">▼</button>
       </div>
     </div>
     <div class="coverage-bar-wrap">
@@ -2682,11 +2673,11 @@
     </button>
   </div>
 
-  <div class="footer-wrap"><div class="footer">은평경찰서 언어폭력예방 필사캠페인</div></div>
+</div><!-- /canvasSection -->
 </div><!-- /mainApp -->
-  </div><!-- /tabWriting -->
+</div><!-- /tabWriting -->
 
-  <!-- 탭2: 나의 필사 갤러리 -->
+<!-- 탭2: 나의 필사 갤러리 -->
   <div class="tab-page" id="tabGallery">
     <div class="gallery-header">
       <h2>🖼️ 나의 필사</h2>
@@ -2763,14 +2754,10 @@
       </text>
     </svg>
   </div>
-  <!-- 통합 헤더: 오늘의 글귀 카드 -->
+  <!-- 통합 헤더: 오늘 심어볼 꽃씨 카드 -->
   <div class="mission-top">
     <div class="mission-top-inner">
-      <div class="mission-top-row">
-        <span class="mission-badge">오늘 심어볼 꽃씨 🌱</span>
-        <span class="mission-top-title">미션: 따라 말해보기</span>
-      </div>
-      <div class="mission-top-cop">✏️ 오늘의 글귀 ✏️</div>
+      <div class="mission-top-cop">🌱 오늘 심어볼 꽃씨 🌱</div>
       <div class="mission-top-msg" id="missionMsg">
         <div class="mission-top-quote" id="missionQuoteText"></div>
       </div>
@@ -2778,24 +2765,38 @@
   </div>
   <div class="mission-body">
 
-    <!-- 통합 카드: 꽃씨 + 따라읽기 -->
-    <div class="mission-seed-card">
-      <div class="mission-seed-label">오늘 심어볼 꽃씨</div>
-      <div class="mission-seed-text" id="missionSeedText"></div>
+    <!-- 미션 탭 -->
+    <div style="display:flex;gap:0.3rem;margin-bottom:0.7rem;">
+      <button id="missionTabVoice" onclick="switchMissionTab('voice')"
+        style="flex:1;padding:0.5rem;border:none;border-radius:8px 8px 0 0;font-family:'Jua',sans-serif;font-size:0.95rem;cursor:pointer;transition:all 0.2s;background:#d4763b;color:#fff;">
+        🎤 따라 읽기
+      </button>
+      <button id="missionTabShare" onclick="switchMissionTab('share')"
+        style="flex:1;padding:0.5rem;border:none;border-radius:8px 8px 0 0;font-family:'Jua',sans-serif;font-size:0.95rem;cursor:pointer;transition:all 0.2s;background:var(--paper-warm);color:var(--sage);">
+        📤 공유하기
+      </button>
+    </div>
 
-      <!-- 구분선 -->
-      <div style="height:1px;background:rgba(134,239,172,0.35);margin:0.9rem 0;"></div>
-
-      <div class="mission-voice-prompt">위 꽃씨 문장을 큰 소리로 읽어보세요</div>
+    <!-- 따라읽기 패널 -->
+    <div id="missionPanelVoice" class="mission-seed-card" style="border-radius:0 8px 8px 8px;margin-top:0;">
+      <div class="mission-voice-prompt">버튼을 눌러 위 꽃씨문장을 읽어보세요</div>
       <button class="btn-mic" id="missionMicBtn2" onclick="toggleMissionMic(2)">🎤</button>
-      <div class="mission-status" id="missionStatus2">버튼을 눌러 시작하세요</div>
+      <div class="mission-status" id="missionStatus2" style="display:none;"></div>
       <div class="mission-voice-result" id="missionResult2"></div>
       <div class="mission-voice-pct" id="missionPct2"></div>
-
-      <!-- 안내 문구: 카드 하단 -->
-      <div style="margin-top:1rem;padding-top:0.8rem;border-top:1px solid rgba(134,239,172,0.35);">
+      <div style="margin-top:0.8rem;padding-top:0.6rem;border-top:1px solid rgba(134,239,172,0.35);">
         <div class="mission-seed-desc">이 말을 오늘 실제로 친구에게 건네보세요</div>
       </div>
+    </div>
+
+    <!-- 공유하기 패널 -->
+    <div id="missionPanelShare" class="mission-seed-card" style="display:none;border-radius:0 8px 8px 8px;margin-top:0;">
+      <div class="mission-seed-label">오늘 심어볼 꽃씨</div>
+      <div class="mission-seed-text" id="missionSeedText"></div>
+      <div style="margin-top:0.8rem;padding-top:0.6rem;border-top:1px solid rgba(134,239,172,0.35);">
+        <div class="mission-seed-desc">이 꽃씨를 친구에게 공유해보세요</div>
+      </div>
+      <button class="cel-btn-share" style="margin-top:0.8rem;" onclick="shareSeedCard()">📤 SNS로 공유하기</button>
     </div>
 
     <button class="mission-done-btn" id="missionDoneBtn" onclick="completeMission()" disabled>
@@ -2820,21 +2821,37 @@
     <div class="cel-level-msg" id="celLevelMsg"></div>
   </div>
   <div class="cel-body">
-    <!-- 내가 쓴 글씨 이미지 -->
-    <div style="margin-bottom:1rem;text-align:center;">
-      <div style="font-family:'Jua',sans-serif;font-size:0.8rem;color:var(--sage);letter-spacing:0.08em;margin-bottom:0.5rem;">✍️ 내가 쓴 글씨</div>
+
+    <!-- 두 버튼 탭 -->
+    <div style="display:flex;gap:0.3rem;margin-bottom:0.6rem;">
+      <button id="celTabWriting" onclick="switchCelTab('writing')"
+        style="flex:1;padding:0.5rem;border:none;border-radius:8px 8px 0 0;font-family:'Jua',sans-serif;font-size:0.9rem;cursor:pointer;transition:all 0.2s;background:#d4763b;color:#fff;">
+        ✍️ 내가 쓴 글씨
+      </button>
+      <button id="celTabSeed" onclick="switchCelTab('seed')"
+        style="flex:1;padding:0.5rem;border:none;border-radius:8px 8px 0 0;font-family:'Jua',sans-serif;font-size:0.9rem;cursor:pointer;transition:all 0.2s;background:var(--paper-warm);color:var(--sage);">
+        🌱 내가 심은 꽃씨
+      </button>
+    </div>
+
+    <!-- 내가 쓴 글씨 패널 -->
+    <div id="celPanelWriting" style="background:var(--paper-warm);border-radius:0 8px 8px 8px;padding:0.8rem;margin-bottom:0.8rem;">
       <img id="celMyWriting" src="" alt="내가 쓴 글씨"
-        style="width:100%;max-height:220px;object-fit:cover;object-position:top;border-radius:12px;border:1px solid rgba(201,168,76,0.3);box-shadow:0 3px 14px rgba(139,69,19,0.1);display:none;background:#fff;">
-      <div id="celNoWriting" style="padding:1.5rem;color:var(--sage);font-size:0.85rem;display:none;">아직 저장된 글씨가 없어요</div>
+        style="width:100%;border-radius:10px;border:1px solid rgba(201,168,76,0.3);box-shadow:0 3px 14px rgba(139,69,19,0.1);display:none;background:#fff;">
+      <div id="celNoWriting" style="padding:1.5rem;color:var(--sage);font-size:0.85rem;text-align:center;display:none;">아직 저장된 글씨가 없어요</div>
+      <button class="cel-btn-share" style="margin-top:0.7rem;" onclick="shareMyWriting()">📤 내가 쓴 글씨 공유하기</button>
     </div>
-    <div class="cel-stamp-row">
-      <div id="celStamp" style="display:inline-block;opacity:0;transform:rotate(-8deg) scale(1);">
-        <svg id="celStampSvg" width="150" height="150" viewBox="0 0 150 150" style="overflow:visible;"></svg>
-      </div>
+
+    <!-- 내가 심은 꽃씨 패널 -->
+    <div id="celPanelSeed" style="display:none;background:linear-gradient(135deg,rgba(134,239,172,0.2),rgba(253,230,138,0.2));border:1.5px solid rgba(134,239,172,0.4);border-radius:0 8px 8px 8px;padding:1rem 1.2rem;margin-bottom:0.8rem;text-align:center;">
+      <div class="mission-seed-label">오늘 심은 꽃씨</div>
+      <div class="mission-seed-text" id="celSeedText"></div>
+      <div style="margin-top:0.8rem;font-size:0.78rem;color:#4a6741;">이 말을 오늘 실제로 친구에게 건네보세요 🌱</div>
+      <button class="cel-btn-share" style="margin-top:0.7rem;" onclick="shareCelSeed()">📤 꽃씨 공유하기</button>
     </div>
+
     <div class="cel-btns">
       <button class="cel-btn-main" id="celBtnMain" onclick="nextQuote()">다음 글귀 쓰기 →</button>
-      <button class="cel-btn-share" onclick="shareMyWriting()">📤 내 글씨 공유하기</button>
     </div>
     <div class="cel-footer-wrap"><div class="cel-footer">은평경찰서 언어폭력예방 필사캠페인</div></div>
   </div>
@@ -3079,12 +3096,15 @@ function initCanvas() {
   const viewH = isMobile
     ? Math.max(Math.round(window.innerHeight * 0.75), 450)
     : Math.min(Math.max(w * 0.87, 360), 600);
-  const canvasH = Math.round(viewH * 1.6); // 실제 캔버스는 1.6배 높이
+  const canvasH = Math.round(viewH * 1.6);
   canvas.width = w;
   canvas.height = canvasH;
   canvas.style.width = w + 'px';
   canvas.style.height = canvasH + 'px';
-  wrapper.style.height = viewH + 'px'; // wrapper는 원래 높이 (스크롤 영역)
+  wrapper.style.height = canvasH + 'px';
+  // outer(스크롤 컨테이너)에만 viewH 적용
+  const outer = document.getElementById('canvasScrollOuter');
+  if (outer) outer.style.height = viewH + 'px';
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 }
@@ -3201,6 +3221,9 @@ function clearCanvas() {
   strokeCount  = 0;
   totalDist    = 0;
   resetZoom();
+  resetCanvasScroll();
+  const outer = document.getElementById('canvasScrollOuter');
+  if (outer) outer.scrollTop = 0;
   if (currentMode === 'write') {
     const fill = document.getElementById('coverageFill');
     fill.style.width  = '0%';
@@ -3312,6 +3335,7 @@ function startDraw(e) {
   lastX = pos.x; lastY = pos.y;
   // 획 시작 전 상태 저장 (최대 30단계)
   if (undoStack.length >= 30) undoStack.shift();
+  if (canvas.width === 0 || canvas.height === 0) return;
   undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
   const hintEl2 = document.getElementById('hint');
   if (hintEl2) hintEl2.classList.add('hidden');
@@ -3858,6 +3882,40 @@ const LEVELS = [
 ];
 
 
+// ── 미션 탭 전환 ──
+function switchMissionTab(tab) {
+  const voice = document.getElementById('missionPanelVoice');
+  const share = document.getElementById('missionPanelShare');
+  const tabVoice = document.getElementById('missionTabVoice');
+  const tabShare = document.getElementById('missionTabShare');
+  if (tab === 'voice') {
+    if (voice) voice.style.display = '';
+    if (share) share.style.display = 'none';
+    if (tabVoice) { tabVoice.style.background = '#d4763b'; tabVoice.style.color = '#fff'; }
+    if (tabShare) { tabShare.style.background = 'var(--paper-warm)'; tabShare.style.color = 'var(--sage)'; }
+  } else {
+    if (voice) voice.style.display = 'none';
+    if (share) share.style.display = '';
+    if (tabShare) { tabShare.style.background = '#d4763b'; tabShare.style.color = '#fff'; }
+    if (tabVoice) { tabVoice.style.background = 'var(--paper-warm)'; tabVoice.style.color = 'var(--sage)'; }
+  }
+}
+
+// ── 공유하기 (꽃씨 카드 공유) ──
+async function shareSeedCard() {
+  const q = QUOTES[currentIdx];
+  const text = `🌱 오늘 심어볼 꽃씨\n"${q.mission || q.text}"\n\n이 말을 오늘 실제로 친구에게 건네보세요 😊\n— 은평경찰서 꽃말쓰기`;
+  if (navigator.share) {
+    try { await navigator.share({ text }); } catch(e) {}
+  } else {
+    navigator.clipboard && navigator.clipboard.writeText(text);
+    alert('꽃씨 문구가 복사됐어요! SNS에 붙여넣기 해보세요 🌱');
+  }
+  // 공유 완료 → 미션 완료 버튼 활성화
+  const db = document.getElementById('missionDoneBtn');
+  if (db) db.disabled = false;
+}
+
 // ── 미션 페이지 ──
 let missionRec = null;
 let missionListening = false;
@@ -3866,18 +3924,21 @@ let missionTranscripts2 = [];
 function showMissionPage() {
   try {
     const q = QUOTES[currentIdx];
+    // 상단 카드: 꽃씨 내용으로 교체
     const missionQuoteText = document.getElementById('missionQuoteText');
-    if (missionQuoteText) missionQuoteText.textContent = q.text;
+    if (missionQuoteText) missionQuoteText.textContent = q.mission || q.text;
     const msgBox = document.getElementById('missionMsg');
     if (msgBox) {
       msgBox.innerHTML = '';
       const quoteDiv = document.createElement('div');
       quoteDiv.className = 'mission-top-quote';
-      quoteDiv.textContent = q.text;
+      quoteDiv.textContent = q.mission || q.text;
       msgBox.appendChild(quoteDiv);
     }
     const missionSeedText = document.getElementById('missionSeedText');
     if (missionSeedText) missionSeedText.textContent = '\u201c' + (q.mission || q.text) + '\u201d';
+    // 탭 초기화: 따라읽기 기본
+    switchMissionTab('voice');
     missionTranscripts2 = [];
     missionListening = false;
     const r2 = document.getElementById('missionResult2');
@@ -3887,13 +3948,12 @@ function showMissionPage() {
     const mb = document.getElementById('missionMicBtn2');
     if (r2) { r2.textContent = ''; r2.className = 'mission-voice-result'; }
     if (p2) p2.textContent = '';
-    if (s2) s2.textContent = '버튼을 눌러 시작하세요';
+    if (s2) s2.textContent = '';
     if (db) db.disabled = true;
     if (mb) mb.classList.remove('listening');
     document.getElementById('missionPage').classList.add('show');
     document.getElementById('missionPage').scrollTop = 0;
   } catch(e) {
-    // missionPage 오류 시 축하페이지로 직접 이동
     showCelebratePage();
   }
 }
@@ -4073,6 +4133,11 @@ function showCelebratePage() {
     celImg.style.display = 'none';
     if (celNo) celNo.style.display = 'block';
   }
+  // 꽃씨 텍스트
+  const celSeed = document.getElementById('celSeedText');
+  if (celSeed) celSeed.textContent = '\u201c' + (q.mission || q.text) + '\u201d';
+  // 탭 초기화: 내가 쓴 글씨 기본
+  switchCelTab('writing');
   const stamp = document.getElementById('celStamp');
   stamp.classList.remove('stamp-fired');
   stamp.style.opacity = '0';
@@ -4308,9 +4373,15 @@ function applyZoomTransform() {
   const guide = document.querySelector('.canvas-guide');
   if (guide) { guide.style.transformOrigin = '0 0'; guide.style.transform = t; }
 }
+function resetZoom() {
+  zoomScale = 1; zoomOffsetX = 0; zoomOffsetY = 0;
+  applyZoomTransform();
+}
 
-// ── 캔버스 이동 버튼 (scrollBy 방식) ──
+// ── 캔버스 ▲▼ 이동 버튼 ──
 let scrollTimer = null;
+let canvasOffsetY = 0;
+
 function startScroll(dir) {
   doScroll(dir);
   scrollTimer = setInterval(() => doScroll(dir), 80);
@@ -4320,23 +4391,18 @@ function stopScroll() {
   scrollTimer = null;
 }
 function doScroll(dir) {
-  const wrapper = document.getElementById('canvasWrapper');
-  if (wrapper) wrapper.scrollBy({ top: dir * 50, behavior: 'auto' });
-}
-// 하위 호환용 빈 함수
-function moveCanvas() {}
-function applyZoomTransform() {
-  const t = `translate(${zoomOffsetX}px, ${zoomOffsetY}px) scale(${zoomScale})`;
-  canvas.style.transformOrigin = '0 0';
-  canvas.style.transform = t;
+  const step = 40;
+  const maxOffset = canvas.height - canvas.height / 1.6;
+  canvasOffsetY = Math.max(-maxOffset, Math.min(0, canvasOffsetY - dir * step));
+  canvas.style.transform = `translateY(${canvasOffsetY}px)`;
   const guide = document.querySelector('.canvas-guide');
-  if (guide) { guide.style.transformOrigin = '0 0'; guide.style.transform = t; }
+  if (guide) guide.style.transform = `translateY(${canvasOffsetY}px)`;
 }
-function resetZoom() {
-  zoomScale = 1; zoomOffsetX = 0; zoomOffsetY = 0;
-  applyZoomTransform();
-  const wrapper = document.getElementById('canvasWrapper');
-  if (wrapper) wrapper.scrollTop = 0;
+function resetCanvasScroll() {
+  canvasOffsetY = 0;
+  canvas.style.transform = '';
+  const guide = document.querySelector('.canvas-guide');
+  if (guide) guide.style.transform = '';
 }
 
 function getPinchDist(t) {
@@ -4480,6 +4546,36 @@ function stopMic() {
   document.getElementById('micBtn').classList.remove('listening');
 }
 
+// ── 축하 페이지 탭 전환 ──
+function switchCelTab(tab) {
+  const pw = document.getElementById('celPanelWriting');
+  const ps = document.getElementById('celPanelSeed');
+  const tw = document.getElementById('celTabWriting');
+  const ts = document.getElementById('celTabSeed');
+  if (tab === 'writing') {
+    if (pw) pw.style.display = '';
+    if (ps) ps.style.display = 'none';
+    if (tw) { tw.style.background = '#d4763b'; tw.style.color = '#fff'; }
+    if (ts) { ts.style.background = 'var(--paper-warm)'; ts.style.color = 'var(--sage)'; }
+  } else {
+    if (pw) pw.style.display = 'none';
+    if (ps) ps.style.display = '';
+    if (ts) { ts.style.background = '#d4763b'; ts.style.color = '#fff'; }
+    if (tw) { tw.style.background = 'var(--paper-warm)'; tw.style.color = 'var(--sage)'; }
+  }
+}
+
+async function shareCelSeed() {
+  const q = QUOTES[currentIdx];
+  const text = `🌱 오늘 심어볼 꽃씨\n"${q.mission || q.text}"\n\n이 말을 오늘 실제로 친구에게 건네보세요 😊\n— 은평경찰서 꽃말쓰기`;
+  if (navigator.share) {
+    try { await navigator.share({ text }); } catch(e) {}
+  } else {
+    navigator.clipboard && navigator.clipboard.writeText(text);
+    alert('꽃씨 문구가 복사됐어요! SNS에 붙여넣기 해보세요 🌱');
+  }
+}
+
 async function shareMyWriting() {
   const imgSrc = localStorage.getItem('maeum_img_' + currentIdx);
   const q = QUOTES[currentIdx];
@@ -4517,14 +4613,18 @@ function completeQuote() {
   completionDates[currentIdx] = today.getFullYear() + '.' +
     String(today.getMonth()+1).padStart(2,'0') + '.' +
     String(today.getDate()).padStart(2,'0');
-  // 캔버스 이미지 저장 (흰 배경 추가)
+  // 캔버스 이미지 저장 (흰 배경 + 실제 보이는 영역만 크롭)
   try {
+    const outer = document.getElementById('canvasScrollOuter');
+    const viewH = outer ? outer.clientHeight : canvas.height;
+    const scrollTop = outer ? outer.scrollTop : 0;
     const tmpC = document.createElement('canvas');
-    tmpC.width = canvas.width; tmpC.height = canvas.height;
+    tmpC.width = canvas.width;
+    tmpC.height = viewH;
     const tmpCtx = tmpC.getContext('2d');
     tmpCtx.fillStyle = '#ffffff';
     tmpCtx.fillRect(0, 0, tmpC.width, tmpC.height);
-    tmpCtx.drawImage(canvas, 0, 0);
+    tmpCtx.drawImage(canvas, 0, -scrollTop);
     const imgData = tmpC.toDataURL('image/jpeg', 0.85);
     localStorage.setItem('maeum_img_' + currentIdx, imgData);
   } catch(e) {}
@@ -4617,14 +4717,19 @@ function showWritingHome() {
 }
 
 function goToCanvas() {
-  // 선택된 글귀로 캔버스 완전 초기화
   loadQuote(currentIdx);
   document.getElementById('writingHome').style.display = 'none';
   document.getElementById('mainApp').style.display = '';
   const qc = document.getElementById('quoteCard');
   if (qc) qc.style.display = 'none';
+  // mainApp가 표시된 다음 프레임에 initCanvas 실행 (width=0 방지)
   requestAnimationFrame(() => {
-    try { if (canvas.width === 0 || canvas.height === 0) initCanvas(); } catch(e) {}
+    requestAnimationFrame(() => {
+      try {
+        initCanvas();
+        resetAll();
+      } catch(e) { console.error('goToCanvas:', e); }
+    });
   });
 }
 
