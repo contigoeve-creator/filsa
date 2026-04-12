@@ -4079,7 +4079,8 @@ function stopMissionMicAll() {
 
 function completeMission() {
   stopMissionMicAll();
-  document.getElementById('missionPage').classList.remove('show');
+  const mp = document.getElementById('missionPage');
+  if (mp) mp.classList.remove('show');
   completeQuote();
 }
 
@@ -4138,48 +4139,46 @@ function showCelebratePage() {
   if (celSeed) celSeed.textContent = '\u201c' + (q.mission || q.text) + '\u201d';
   // 탭 초기화: 내가 쓴 글씨 기본
   switchCelTab('writing');
+
   const stamp = document.getElementById('celStamp');
-  stamp.classList.remove('stamp-fired');
-  stamp.style.opacity = '0';
+  if (stamp) {
+    stamp.classList.remove('stamp-fired');
+    stamp.style.opacity = '0';
 
-  // 날짜
-  const today = new Date();
-  const dateStr = today.getFullYear() + '.' +
-    String(today.getMonth()+1).padStart(2,'0') + '.' +
-    String(today.getDate()).padStart(2,'0');
-  const numStr = completedSet.size + ' / ' + QUOTES.length;
+    // 날짜
+    const today = new Date();
+    const dateStr = today.getFullYear() + '.' +
+      String(today.getMonth()+1).padStart(2,'0') + '.' +
+      String(today.getDate()).padStart(2,'0');
+    const numStr = completedSet.size + ' / ' + QUOTES.length;
 
-  // SVG 타원형 도장 그리기
-  const NS = 'http://www.w3.org/2000/svg';
-  const svg = document.getElementById('celStampSvg');
-  svg.setAttribute('width','150'); svg.setAttribute('height','150');
-  svg.setAttribute('viewBox','0 0 150 150'); svg.style.overflow='visible';
-  svg.innerHTML = `
-    <defs>
-      <filter id="sf_cel" x="-15%" y="-15%" width="130%" height="130%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.065" numOctaves="4" seed="12" result="n"/>
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="2.8" xChannelSelector="R" yChannelSelector="G"/>
-      </filter>
-      <path id="fullCircle" d="M 35,75 A 40,40 0 0,1 115,75 A 40,40 0 0,1 35,75"/>
-    </defs>
-    <circle cx="75" cy="75" r="68" fill="rgba(176,90,74,0.06)" stroke="#8a3020" stroke-width="4" filter="url(#sf_cel)"/>
-    <circle cx="75" cy="75" r="40" fill="none" stroke="#8a3020" stroke-width="1.2" stroke-dasharray="3 2" filter="url(#sf_cel)"/>
-    <text font-family="'Nanum Myeongjo',serif" font-size="15" fill="#7a2a1a" font-weight="900" letter-spacing="11">
-      <textPath href="#fullCircle" startOffset="0%">은평경찰서 언어폭력예방 필사 캠페인</textPath>
-    </text>
-    <!-- 진행 번호 (맨 위) -->
-    <text x="75" y="60" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="32" font-weight="bold" fill="#7a2a1a" filter="url(#sf_cel)">${numStr}</text>
-    <!-- 구분선 1 -->
-    <line x1="16" y1="68" x2="134" y2="68" stroke="#8a3020" stroke-width="1.5" opacity="1"/>
-    <!-- 날짜 (구분선 사이) -->
-    <text x="75" y="86" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="18" font-weight="bold" fill="#7a2a1a" filter="url(#sf_cel)" letter-spacing="1">${dateStr}</text>
-    <!-- 구분선 2 -->
-    <line x1="16" y1="93" x2="134" y2="93" stroke="#8a3020" stroke-width="1.5" opacity="1"/>
-    <!-- 완★료 (맨 아래) -->
-    <text x="75" y="117" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="22" fill="#7a2a1a" filter="url(#sf_cel)" letter-spacing="3">완★료</text>
-  `;
-
-  setTimeout(() => { stamp.classList.add('stamp-fired'); }, 350);
+    // SVG 타원형 도장 그리기
+    const svg = document.getElementById('celStampSvg');
+    if (svg) {
+      svg.setAttribute('width','150'); svg.setAttribute('height','150');
+      svg.setAttribute('viewBox','0 0 150 150'); svg.style.overflow='visible';
+      svg.innerHTML = `
+        <defs>
+          <filter id="sf_cel" x="-15%" y="-15%" width="130%" height="130%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.065" numOctaves="4" seed="12" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="2.8" xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+          <path id="fullCircle" d="M 35,75 A 40,40 0 0,1 115,75 A 40,40 0 0,1 35,75"/>
+        </defs>
+        <circle cx="75" cy="75" r="68" fill="rgba(176,90,74,0.06)" stroke="#8a3020" stroke-width="4" filter="url(#sf_cel)"/>
+        <circle cx="75" cy="75" r="40" fill="none" stroke="#8a3020" stroke-width="1.2" stroke-dasharray="3 2" filter="url(#sf_cel)"/>
+        <text font-family="'Nanum Myeongjo',serif" font-size="15" fill="#7a2a1a" font-weight="900" letter-spacing="11">
+          <textPath href="#fullCircle" startOffset="0%">은평경찰서 언어폭력예방 필사 캠페인</textPath>
+        </text>
+        <text x="75" y="60" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="32" font-weight="bold" fill="#7a2a1a" filter="url(#sf_cel)">${numStr}</text>
+        <line x1="16" y1="68" x2="134" y2="68" stroke="#8a3020" stroke-width="1.5" opacity="1"/>
+        <text x="75" y="86" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="18" font-weight="bold" fill="#7a2a1a" filter="url(#sf_cel)" letter-spacing="1">${dateStr}</text>
+        <line x1="16" y1="93" x2="134" y2="93" stroke="#8a3020" stroke-width="1.5" opacity="1"/>
+        <text x="75" y="117" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="22" fill="#7a2a1a" filter="url(#sf_cel)" letter-spacing="3">완★료</text>
+      `;
+    }
+    setTimeout(() => { stamp.classList.add('stamp-fired'); }, 350);
+  }
   const btnMain = document.getElementById('celBtnMain');
   if (isAllDone) {
     btnMain.textContent = '완료 화면 보기 🏅';
@@ -4615,23 +4614,28 @@ function completeQuote() {
     String(today.getDate()).padStart(2,'0');
   // 캔버스 이미지 저장 (흰 배경 + 실제 보이는 영역만 크롭)
   try {
-    const outer = document.getElementById('canvasScrollOuter');
-    const viewH = outer ? outer.clientHeight : canvas.height;
-    const scrollTop = outer ? outer.scrollTop : 0;
-    const tmpC = document.createElement('canvas');
-    tmpC.width = canvas.width;
-    tmpC.height = viewH;
-    const tmpCtx = tmpC.getContext('2d');
-    tmpCtx.fillStyle = '#ffffff';
-    tmpCtx.fillRect(0, 0, tmpC.width, tmpC.height);
-    tmpCtx.drawImage(canvas, 0, -scrollTop);
-    const imgData = tmpC.toDataURL('image/jpeg', 0.85);
-    localStorage.setItem('maeum_img_' + currentIdx, imgData);
-  } catch(e) {}
+    if (canvas.width > 0 && canvas.height > 0) {
+      const outer = document.getElementById('canvasScrollOuter');
+      const viewH = outer ? outer.clientHeight : canvas.height;
+      const scrollTop = outer ? outer.scrollTop : 0;
+      const tmpC = document.createElement('canvas');
+      tmpC.width = canvas.width;
+      tmpC.height = Math.max(viewH, 1);
+      const tmpCtx = tmpC.getContext('2d');
+      tmpCtx.fillStyle = '#ffffff';
+      tmpCtx.fillRect(0, 0, tmpC.width, tmpC.height);
+      tmpCtx.drawImage(canvas, 0, -scrollTop);
+      const imgData = tmpC.toDataURL('image/jpeg', 0.85);
+      localStorage.setItem('maeum_img_' + currentIdx, imgData);
+    }
+  } catch(e) { console.warn('이미지 저장 실패:', e); }
   saveProgress();
   updateNav();
   updateProgress();
-  document.getElementById('missionPage').classList.remove('show');
+  // missionPage 숨기기
+  const mp = document.getElementById('missionPage');
+  if (mp) mp.classList.remove('show');
+  // 축하 페이지로 이동 (반드시 실행)
   showCelebratePage();
 }
 
