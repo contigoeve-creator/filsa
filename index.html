@@ -532,6 +532,7 @@
     margin: 0.8rem 1rem 0;
     display: flex;
     gap: 0.5rem;
+    padding-bottom: 80px;
   }
   .btn-clear {
     flex: 1;
@@ -1820,16 +1821,17 @@
     display: none;
     flex-direction: column;
     min-height: 100vh;
-    padding-bottom: 68px;
   }
   #appShell.show { display: flex; }
 
   /* 상단 고정 헤더 */
   #appTopBar {
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 100;
-    background: linear-gradient(160deg, rgba(249,168,212,0.42) 0%, rgba(253,186,116,0.42) 35%, rgba(253,230,138,0.42) 60%, rgba(134,239,172,0.42) 100%);
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background: linear-gradient(160deg, rgba(249,168,212,0.95) 0%, rgba(253,186,116,0.95) 35%, rgba(253,230,138,0.95) 60%, rgba(134,239,172,0.95) 100%);
     background-color: #fff9f5;
     border-bottom: 1px solid rgba(249,168,212,0.25);
     display: flex;
@@ -1838,7 +1840,10 @@
     padding: 0.5rem 1rem;
     box-shadow: 0 2px 12px rgba(249,168,212,0.15);
     min-height: 64px;
+    flex-shrink: 0;
   }
+  /* appTopBar fixed이므로 탭 콘텐츠에 여백 */
+  #tabWriting { padding-top: 70px; }
   #appTopBar .header-svg {
     width: 100%;
     max-width: 320px;
@@ -1866,8 +1871,21 @@
   }
 
   /* 탭 페이지 */
-  .tab-page { display: none; flex: 1; }
+  .tab-page { display: none; }
   .tab-page.active { display: block; }
+  /* 갤러리/기록 탭은 fixed 오버레이로 */
+  #tabGallery, #tabRecords {
+    position: fixed;
+    inset: 0;
+    background: var(--paper);
+    z-index: 50;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-top: 70px; /* appTopBar 높이 */
+    padding-bottom: 80px; /* 네비바 높이 */
+  }
+  #tabGallery { padding-left: 1rem; padding-right: 1rem; }
+  #tabRecords { padding-left: 1rem; padding-right: 1rem; }
 
   /* 하단 고정 네비게이션 */
   #bottomNav {
@@ -1914,9 +1932,7 @@
   .nav-tab-btn:active { opacity: 0.7; }
 
   /* ── 나의 필사 갤러리 탭 ── */
-  #tabGallery {
-    padding: 1rem;
-  }
+  #tabGallery-removed { padding: 0; }
   .gallery-header {
     text-align: center;
     margin-bottom: 1rem;
@@ -1996,9 +2012,7 @@
   }
 
   /* ── 나의 기록 탭 ── */
-  #tabRecords {
-    padding: 1rem;
-  }
+  #tabRecords-removed { padding: 0; }
   .records-header {
     text-align: center;
     margin-bottom: 1rem;
@@ -3892,12 +3906,12 @@ function switchMissionTab(tab) {
     if (voice) voice.style.display = '';
     if (share) share.style.display = 'none';
     if (tabVoice) { tabVoice.style.background = '#d4763b'; tabVoice.style.color = '#fff'; }
-    if (tabShare) { tabShare.style.background = 'var(--paper-warm)'; tabShare.style.color = 'var(--sage)'; }
+    if (tabShare) { tabShare.style.background = '#f5efe3'; tabShare.style.color = '#6b7c6a'; }
   } else {
     if (voice) voice.style.display = 'none';
     if (share) share.style.display = '';
     if (tabShare) { tabShare.style.background = '#d4763b'; tabShare.style.color = '#fff'; }
-    if (tabVoice) { tabVoice.style.background = 'var(--paper-warm)'; tabVoice.style.color = 'var(--sage)'; }
+    if (tabVoice) { tabVoice.style.background = '#f5efe3'; tabVoice.style.color = '#6b7c6a'; }
   }
 }
 
@@ -3954,7 +3968,10 @@ function showMissionPage() {
     document.getElementById('missionPage').classList.add('show');
     document.getElementById('missionPage').scrollTop = 0;
   } catch(e) {
-    showCelebratePage();
+    console.error('showMissionPage 오류:', e);
+    // 오류가 나도 missionPage는 표시
+    const mp = document.getElementById('missionPage');
+    if (mp) mp.classList.add('show');
   }
 }
 
@@ -4555,12 +4572,12 @@ function switchCelTab(tab) {
     if (pw) pw.style.display = '';
     if (ps) ps.style.display = 'none';
     if (tw) { tw.style.background = '#d4763b'; tw.style.color = '#fff'; }
-    if (ts) { ts.style.background = 'var(--paper-warm)'; ts.style.color = 'var(--sage)'; }
+    if (ts) { ts.style.background = '#f5efe3'; ts.style.color = '#6b7c6a'; }
   } else {
     if (pw) pw.style.display = 'none';
     if (ps) ps.style.display = '';
     if (ts) { ts.style.background = '#d4763b'; ts.style.color = '#fff'; }
-    if (tw) { tw.style.background = 'var(--paper-warm)'; tw.style.color = 'var(--sage)'; }
+    if (tw) { tw.style.background = '#f5efe3'; tw.style.color = '#6b7c6a'; }
   }
 }
 
@@ -4776,14 +4793,15 @@ function switchTab(tab) {
       document.getElementById('tabGallery').classList.add('active');
       document.getElementById('navGallery').classList.add('active');
       renderGallery();
+      document.getElementById('tabGallery').scrollTop = 0;
 
     } else if (tab === 'records') {
       document.getElementById('tabRecords').classList.add('active');
       document.getElementById('navRecords').classList.add('active');
-      showDoneScreen();
+      renderRecords();
+      document.getElementById('tabRecords').scrollTop = 0;
     }
 
-    window.scrollTo(0, 0);
   } catch(e) {
     console.error('switchTab error:', e);
   }
