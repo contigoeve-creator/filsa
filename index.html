@@ -528,6 +528,171 @@
   .match-words span { display: inline-block; padding: 1px 3px; margin: 1px; border-radius: 2px; font-size: 0.88rem; }
   .match-words .hit { background: rgba(99,153,34,0.18); color: #3b6d11; }
   .match-words .miss { background: rgba(232,75,74,0.1); color: #a32d2d; }
+  /* ── 카드 디자이너 모달 ── */
+  .card-designer-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 950;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .card-designer-backdrop.show { display: flex; }
+  .card-designer {
+    background: #fff;
+    border-radius: 20px;
+    padding: 1.2rem;
+    width: 100%;
+    max-width: 380px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .card-designer-title {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.1rem;
+    text-align: center;
+    color: #333;
+    margin-bottom: 0.8rem;
+  }
+  .card-preview-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  }
+  .card-preview-wrap canvas {
+    width: 100%; height: 100%;
+    display: block;
+  }
+  .card-bg-label {
+    font-family: 'Jua', sans-serif;
+    font-size: 0.78rem;
+    color: #888;
+    margin-bottom: 0.4rem;
+  }
+  .card-bg-themes {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.8rem;
+  }
+  .card-bg-swatch {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .card-bg-swatch.selected { border-color: #333; }
+  .card-upload-btn {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    border: 2px dashed #ccc;
+    background: #f9f9f9;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .card-share-btn {
+    width: 100%;
+    padding: 0.9rem;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #d4763b, #e8956a);
+    color: #fff;
+    font-family: 'Jua', sans-serif;
+    font-size: 1.05rem;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.04em;
+  }
+  .card-close-btn {
+    width: 100%;
+    padding: 0.7rem;
+    border: none;
+    border-radius: 10px;
+    background: #f5f5f5;
+    font-family: 'Jua', sans-serif;
+    font-size: 0.9rem;
+    color: #888;
+    cursor: pointer;
+  }
+  .share-modal-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 900;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .share-modal-backdrop.show { display: flex; }
+  .share-modal {
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    padding: 1.5rem 1.5rem 2rem;
+    width: 100%;
+    max-width: 480px;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+  .share-modal-title {
+    font-family: 'Jua', sans-serif;
+    font-size: 1rem;
+    color: #555;
+    text-align: center;
+    margin-bottom: 1.2rem;
+  }
+  .share-modal-btns {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .share-icon-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 12px;
+    transition: background 0.15s;
+    min-width: 72px;
+  }
+  .share-icon-btn:active { background: #f0f0f0; }
+  .share-icon-circle {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+  }
+  .share-icon-label {
+    font-family: 'Jua', sans-serif;
+    font-size: 0.7rem;
+    color: #555;
+  }
+  .share-modal-cancel {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 10px;
+    background: #f5f5f5;
+    font-family: 'Jua', sans-serif;
+    font-size: 0.9rem;
+    color: #888;
+    cursor: pointer;
+  }
   .action-area {
     margin: 0.8rem 1rem 0;
     display: flex;
@@ -3915,16 +4080,239 @@ function switchMissionTab(tab) {
   }
 }
 
-// ── 공유하기 (꽃씨 카드 공유) ──
+// ── 카드 디자이너 ──
+const CARD_THEMES = [
+  ['#f9a8d4','#fdba74','#86efac'], // 파스텔 무지개
+  ['#a8edea','#fed6e3'],           // 민트핑크
+  ['#fddb92','#d1fdff'],           // 옐로민트
+  ['#c3cfe2','#f5f7fa'],           // 회색하늘
+  ['#b2fefa','#0ed2f7'],           // 하늘파랑
+  ['#e0c3fc','#8ec5fc'],           // 라벤더
+  ['#f6d365','#fda085'],           // 선셋
+];
+let _cardThemeIdx = 0;
+let _cardBgImage = null;
+let _cardSeedText = '';
+
+function openCardDesigner(seedText) {
+  _cardSeedText = seedText;
+  _cardThemeIdx = 0;
+  _cardBgImage = null;
+  document.querySelectorAll('.card-bg-swatch').forEach((el,i) => {
+    el.classList.toggle('selected', i === 0);
+  });
+  document.getElementById('cardDesignerBackdrop').classList.add('show');
+  renderCardPreview();
+}
+
+function closeCardDesigner() {
+  document.getElementById('cardDesignerBackdrop').classList.remove('show');
+}
+
+function selectCardBg(idx, el) {
+  _cardThemeIdx = idx;
+  _cardBgImage = null;
+  document.querySelectorAll('.card-bg-swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  renderCardPreview();
+}
+
+function uploadCardBg(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      _cardBgImage = img;
+      document.querySelectorAll('.card-bg-swatch').forEach(s => s.classList.remove('selected'));
+      renderCardPreview();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderCardPreview() {
+  const cv = document.getElementById('cardPreviewCanvas');
+  const ctx = cv.getContext('2d');
+  const W = 1080, H = 1080;
+
+  // 배경
+  if (_cardBgImage) {
+    // 이미지: cover 방식
+    const sc = Math.max(W / _cardBgImage.width, H / _cardBgImage.height);
+    const dw = _cardBgImage.width * sc, dh = _cardBgImage.height * sc;
+    ctx.drawImage(_cardBgImage, (W-dw)/2, (H-dh)/2, dw, dh);
+    // 반투명 오버레이
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillRect(0, 0, W, H);
+  } else {
+    const colors = CARD_THEMES[_cardThemeIdx];
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    colors.forEach((c, i) => grad.addColorStop(i / (colors.length - 1), c));
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // 둥근 흰 카드 영역
+  const pad = 80, r = 40;
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(pad, pad, W-pad*2, H-pad*2, r);
+  ctx.fillStyle = 'rgba(255,255,255,0.82)';
+  ctx.fill();
+  ctx.restore();
+
+  // 🌱 상단 이모지
+  ctx.font = '90px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('🌱', W/2, 260);
+
+  // 꽃씨 텍스트
+  ctx.fillStyle = '#2d4a35';
+  ctx.textAlign = 'center';
+  const lines = wrapCardText(_cardSeedText, 680);
+  const lineH = 100;
+  const startY = 420 - ((lines.length - 1) * lineH) / 2;
+  lines.forEach((line, i) => {
+    ctx.font = `bold 72px "Nanum Myeongjo", serif`;
+    ctx.fillText(line, W/2, startY + i * lineH);
+  });
+
+  // 구분선
+  ctx.strokeStyle = 'rgba(45,74,53,0.25)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(180, 800); ctx.lineTo(900, 800);
+  ctx.stroke();
+
+  // 하단: 은평경찰서 문구
+  ctx.fillStyle = '#4a6741';
+  ctx.font = 'bold 42px "Jua", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('🚔 은평경찰서 꽃말쓰기', W/2, 870);
+  ctx.font = '34px "Nanum Myeongjo", serif';
+  ctx.fillStyle = '#7a9a78';
+  ctx.fillText('청소년 언어문화 개선 프로그램', W/2, 930);
+}
+
+function wrapCardText(text, maxWidth) {
+  // 글자 수 기준으로 줄바꿈 (폰트 측정 대신)
+  const MAX_CHARS = 14;
+  const words = text.split('');
+  const lines = [];
+  let line = '';
+  for (let ch of words) {
+    if (line.length >= MAX_CHARS || ch === '\n') {
+      if (line) lines.push(line.trim());
+      line = ch === '\n' ? '' : ch;
+    } else {
+      line += ch;
+    }
+  }
+  if (line) lines.push(line.trim());
+  return lines;
+}
+
+async function shareCardImage() {
+  renderCardPreview();
+  const cv = document.getElementById('cardPreviewCanvas');
+  cv.toBlob(async blob => {
+    const file = new File([blob], 'eunpyeong-flower.png', { type: 'image/png' });
+    closeCardDesigner();
+    // 이미지 파일로 공유 모달 열기
+    _shareImg = file;
+    document.getElementById('shareModalBackdrop').classList.add('show');
+  }, 'image/png');
+}
+
+// ── 공유 모달 ──
+let _shareText = '';
+let _shareImg = null;
+
+function openShareModal(text, imgSrc) {
+  _shareText = text;
+  _shareImg = imgSrc || null;
+  document.getElementById('shareModalBackdrop').classList.add('show');
+}
+function closeShareModal() {
+  document.getElementById('shareModalBackdrop').classList.remove('show');
+}
+
+function doShareKakao() {
+  closeShareModal();
+  const tryShare = async () => {
+    if (_shareImg && navigator.share && navigator.canShare) {
+      const file = _shareImg instanceof File ? _shareImg : null;
+      if (file && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file] }); return; } catch(e) {}
+      }
+    }
+    const encoded = encodeURIComponent(_shareText);
+    window.location.href = 'kakaotalk://send?text=' + encoded;
+    setTimeout(() => {
+      if (navigator.share) navigator.share({ text: _shareText }).catch(() => {});
+    }, 2000);
+  };
+  tryShare();
+}
+
+function doShareInstagram() {
+  closeShareModal();
+  const tryShare = async () => {
+    if (_shareImg && navigator.share && navigator.canShare) {
+      const file = _shareImg instanceof File ? _shareImg : null;
+      if (file && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file] }); return; } catch(e) {}
+      }
+    }
+    // 이미지 저장 후 인스타그램 안내
+    if (_shareImg) {
+      const url = URL.createObjectURL(_shareImg);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'flower-card.png'; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      alert('이미지를 저장했어요! 인스타그램 앱에서 업로드해보세요 📸');
+    }
+    setTimeout(() => { window.location.href = 'instagram://'; }, 500);
+  };
+  tryShare();
+}
+
+async function doShareOther() {
+  closeShareModal();
+  if (_shareImg && navigator.share && navigator.canShare) {
+    const file = _shareImg instanceof File ? _shareImg : null;
+    if (file && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file] }); return; } catch(e) {}
+    }
+  }
+  if (navigator.share) {
+    try { await navigator.share({ text: _shareText }); } catch(e) {}
+  }
+}
+
+function doShareCopy() {
+  // 이미지 저장
+  if (_shareImg) {
+    const url = URL.createObjectURL(_shareImg);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'flower-card.png'; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    alert('카드 이미지를 저장했어요! 😊');
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(_shareText).then(() => {
+      alert('복사됐어요! 어디든 붙여넣기 해보세요 😊');
+    });
+  }
+  closeShareModal();
+}
+
 async function shareSeedCard() {
   const q = QUOTES[currentIdx];
-  const text = `🌱 오늘 심어볼 꽃씨\n"${q.mission || q.text}"\n\n이 말을 오늘 실제로 친구에게 건네보세요 😊\n— 은평경찰서 꽃말쓰기`;
-  if (navigator.share) {
-    try { await navigator.share({ text }); } catch(e) {}
-  } else {
-    navigator.clipboard && navigator.clipboard.writeText(text);
-    alert('꽃씨 문구가 복사됐어요! SNS에 붙여넣기 해보세요 🌱');
-  }
+  const seedText = q.mission || q.text;
+  openCardDesigner(seedText);
   // 공유 완료 → 미션 완료 버튼 활성화
   const db = document.getElementById('missionDoneBtn');
   if (db) db.disabled = false;
@@ -4581,46 +4969,17 @@ function switchCelTab(tab) {
   }
 }
 
-async function shareCelSeed() {
+function shareCelSeed() {
   const q = QUOTES[currentIdx];
   const text = `🌱 오늘 심어볼 꽃씨\n"${q.mission || q.text}"\n\n이 말을 오늘 실제로 친구에게 건네보세요 😊\n— 은평경찰서 꽃말쓰기`;
-  if (navigator.share) {
-    try { await navigator.share({ text }); } catch(e) {}
-  } else {
-    navigator.clipboard && navigator.clipboard.writeText(text);
-    alert('꽃씨 문구가 복사됐어요! SNS에 붙여넣기 해보세요 🌱');
-  }
+  openShareModal(text);
 }
 
-async function shareMyWriting() {
-  const imgSrc = localStorage.getItem('maeum_img_' + currentIdx);
+function shareMyWriting() {
   const q = QUOTES[currentIdx];
-  const text = `✍️ 마음글씨 필사 "${q.text}" - 은평경찰서 꽃말쓰기`;
-
-  if (imgSrc && navigator.share && navigator.canShare) {
-    try {
-      // base64 → Blob → File
-      const res = await fetch(imgSrc);
-      const blob = await res.blob();
-      const file = new File([blob], 'maeumgulssi.jpg', { type: 'image/jpeg' });
-      if (navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], text });
-        return;
-      }
-    } catch(e) {}
-  }
-  // 이미지 공유 불가 시 텍스트만 공유
-  if (navigator.share) {
-    try { await navigator.share({ text }); return; } catch(e) {}
-  }
-  // 폴백: 이미지 다운로드
-  if (imgSrc) {
-    const a = document.createElement('a');
-    a.href = imgSrc;
-    a.download = 'maeumgulssi.jpg';
-    a.click();
-    alert('이미지를 저장했어요! 카카오톡이나 인스타그램에 직접 업로드해보세요 😊');
-  }
+  const text = `✍️ 마음글씨 필사\n"${q.text}"\n— 은평경찰서 꽃말쓰기`;
+  const imgSrc = localStorage.getItem('maeum_img_' + currentIdx);
+  openShareModal(text, imgSrc);
 }
 
 function completeQuote() {
@@ -5071,5 +5430,81 @@ if (document.readyState === 'loading') {
 
 // 페이지 로드 시에는 시작 페이지만 표시 (initCanvas/loadQuote는 startApp에서 실행)
 </script>
+<!-- ── 카드 디자이너 모달 ── -->
+<div class="card-designer-backdrop" id="cardDesignerBackdrop">
+  <div class="card-designer">
+    <div class="card-designer-title">🌱 꽃씨 카드 만들기</div>
+
+    <!-- 미리보기 캔버스 -->
+    <div class="card-preview-wrap">
+      <canvas id="cardPreviewCanvas" width="1080" height="1080"></canvas>
+    </div>
+
+    <!-- 배경 선택 -->
+    <div class="card-bg-label">배경 고르기</div>
+    <div class="card-bg-themes" id="cardBgThemes">
+      <div class="card-bg-swatch selected" data-theme="0"
+        style="background:linear-gradient(135deg,#f9a8d4,#fdba74,#86efac);" onclick="selectCardBg(0,this)"></div>
+      <div class="card-bg-swatch" data-theme="1"
+        style="background:linear-gradient(135deg,#a8edea,#fed6e3);" onclick="selectCardBg(1,this)"></div>
+      <div class="card-bg-swatch" data-theme="2"
+        style="background:linear-gradient(135deg,#fddb92,#d1fdff);" onclick="selectCardBg(2,this)"></div>
+      <div class="card-bg-swatch" data-theme="3"
+        style="background:linear-gradient(135deg,#c3cfe2,#f5f7fa);" onclick="selectCardBg(3,this)"></div>
+      <div class="card-bg-swatch" data-theme="4"
+        style="background:linear-gradient(135deg,#b2fefa,#0ed2f7);" onclick="selectCardBg(4,this)"></div>
+      <div class="card-bg-swatch" data-theme="5"
+        style="background:linear-gradient(135deg,#e0c3fc,#8ec5fc);" onclick="selectCardBg(5,this)"></div>
+      <div class="card-bg-swatch" data-theme="6"
+        style="background:linear-gradient(135deg,#f6d365,#fda085);" onclick="selectCardBg(6,this)"></div>
+      <!-- 이미지 업로드 -->
+      <label class="card-upload-btn" title="배경 이미지 업로드">
+        🖼️<input type="file" accept="image/*" style="display:none;" onchange="uploadCardBg(event)">
+      </label>
+    </div>
+
+    <button class="card-share-btn" onclick="shareCardImage()">📤 이 카드로 공유하기</button>
+    <button class="card-close-btn" onclick="closeCardDesigner()">취소</button>
+  </div>
+</div>
+
+<!-- ── 공유 모달 ── -->
+<div class="share-modal-backdrop" id="shareModalBackdrop" onclick="closeShareModal()">
+  <div class="share-modal" onclick="event.stopPropagation()">
+    <div class="share-modal-title" id="shareModalTitle">공유하기</div>
+    <div class="share-modal-btns">
+      <button class="share-icon-btn" onclick="doShareKakao()">
+        <div class="share-icon-circle" style="background:#FEE500;">
+          <svg width="30" height="30" viewBox="0 0 40 40" fill="none">
+            <path d="M20 4C11.163 4 4 9.82 4 17.022c0 4.636 2.97 8.713 7.46 11.12L9.9 35.6l7.14-4.62C18.35 31.15 19.17 31.2 20 31.2c8.837 0 16-5.82 16-13.178C36 9.82 28.837 4 20 4z" fill="#3A1D1D"/>
+          </svg>
+        </div>
+        <span class="share-icon-label">카카오톡</span>
+      </button>
+      <button class="share-icon-btn" onclick="doShareInstagram()">
+        <div class="share-icon-circle" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+        </div>
+        <span class="share-icon-label">인스타그램</span>
+      </button>
+      <button class="share-icon-btn" onclick="doShareOther()">
+        <div class="share-icon-circle" style="background:#f0f0f0;">
+          <span style="font-size:1.8rem;">⋯</span>
+        </div>
+        <span class="share-icon-label">더보기</span>
+      </button>
+      <button class="share-icon-btn" onclick="doShareCopy()">
+        <div class="share-icon-circle" style="background:#e8f4fd;">
+          <span style="font-size:1.8rem;">📋</span>
+        </div>
+        <span class="share-icon-label">복사하기</span>
+      </button>
+    </div>
+    <button class="share-modal-cancel" onclick="closeShareModal()">취소</button>
+  </div>
+</div>
+
 </body>
 </html>
