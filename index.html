@@ -3275,7 +3275,11 @@ function initCanvas() {
       wrapper.appendChild(div);
     });
   }
-  const w = wrapper.clientWidth;
+  let w = wrapper.clientWidth;
+  if (w === 0) {
+    const outer = document.getElementById('canvasScrollOuter');
+    w = outer ? outer.clientWidth : Math.max(window.innerWidth - 32, 280);
+  }
   const isMobile = window.innerWidth <= 600;
   const viewH = isMobile
     ? Math.max(Math.round(window.innerHeight * 0.75), 450)
@@ -3377,6 +3381,7 @@ function loadQuote(idx) {
   if (canvas.width === 0 || canvas.height === 0) {
     initCanvas();
   }
+  fitOuterToGuide();
 }
 
 function resetAll() {
@@ -3854,6 +3859,19 @@ canvas.addEventListener('touchcancel', (e) => {
   isPinching = false;
   isDrawing = false;
 });
+
+// ── 캔버스 outer를 가이드 글씨 실제 높이에 맞게 조정 ──
+function fitOuterToGuide() {
+  requestAnimationFrame(() => {
+    const guideSpan = document.getElementById('guideText');
+    const outer     = document.getElementById('canvasScrollOuter');
+    if (!guideSpan || !outer) return;
+    const pad = 32; // canvas-guide padding 1rem × 2
+    const textH = guideSpan.scrollHeight;
+    const newH  = Math.max(textH + pad, 180);
+    outer.style.height = newH + 'px';
+  });
+}
 
 function switchMode(mode) {
   currentMode = mode;
@@ -4857,6 +4875,7 @@ function setGuideFont(font) {
     };
   const btn = document.getElementById(idMap[font]);
   if (btn) btn.classList.add('active');
+  fitOuterToGuide();
 }
 
 // ── 캔버스 핀치 줌 & 드래그 ──
@@ -5193,17 +5212,19 @@ function showWritingHome() {
 }
 
 function goToCanvas() {
-  loadQuote(currentIdx);
   document.getElementById('writingHome').style.display = 'none';
   document.getElementById('mainApp').style.display = '';
   const qc = document.getElementById('quoteCard');
   if (qc) qc.style.display = 'none';
-  // mainApp가 표시된 다음 프레임에 initCanvas 실행 (width=0 방지)
+  // initCanvas가 정확한 너비를 측정하도록 canvasSection을 미리 visible로
+  const cs = document.getElementById('canvasSection');
+  if (cs) cs.classList.remove('hidden');
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       try {
         initCanvas();
-        resetAll();
+        loadQuote(currentIdx); // 내부에서 resetAll → switchMode('type') 호출
+        fitOuterToGuide();
       } catch(e) { console.error('goToCanvas:', e); }
     });
   });
