@@ -342,8 +342,8 @@
     border-radius: 16px;
     border: 1px solid rgba(201,168,76,0.25);
     box-shadow: 0 4px 24px rgba(139,69,19,0.10);
-    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    touch-action: none;
   }
   .canvas-scroll-outer::-webkit-scrollbar { display: none; }
   .canvas-wrapper {
@@ -351,6 +351,7 @@
     background: linear-gradient(145deg, #fffdf7 0%, #fef9ee 40%, #fdf4e3 100%);
     inset: 0 1px 0 rgba(255,255,255,0.9);
     flex: 1;
+    touch-action: none;
   }
   .canvas-scroll-btn {
     width: 36px;
@@ -616,6 +617,21 @@
     color: #888;
     cursor: pointer;
   }
+  /* ── 꽃씨 전달하기 인라인 툴박스 ── */
+  .seed-toolbox { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 0.2rem; }
+  .seed-tool-section {}
+  .seed-tool-label { font-family:'Jua',sans-serif; font-size:0.72rem; color:var(--sage); margin-bottom:0.3rem; letter-spacing:0.04em; }
+  .seed-bg-row { display:flex; gap:0.28rem; flex-wrap:nowrap; }
+  .seed-bg-swatch { width:30px; height:30px; border-radius:7px; border:2.5px solid transparent; cursor:pointer; transition:border-color 0.15s; flex-shrink:0; }
+  .seed-bg-swatch.selected { border-color:#333; }
+  .seed-bg-img { display:flex; align-items:center; justify-content:center; font-size:0.9rem; line-height:1; }
+  .seed-font-row { display:flex; gap:0.22rem; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
+  .seed-font-row::-webkit-scrollbar { display:none; }
+  .seed-font-btn { padding:0.18rem 0.38rem; border:1.5px solid rgba(139,69,19,0.2); border-radius:20px; background:var(--paper); font-size:0.68rem; cursor:pointer; color:var(--ink); transition:all 0.15s; white-space:nowrap; flex-shrink:0; }
+  .seed-font-btn.active { background:#d4763b; color:#fff; border-color:#d4763b; }
+  .seed-color-row { display:grid; grid-template-columns:repeat(10,1fr); gap:0.28rem; }
+  .seed-color-dot { width:100%; aspect-ratio:1; border-radius:50%; border:2px solid transparent; cursor:pointer; transition:border-color 0.15s; box-shadow:0 1px 3px rgba(0,0,0,0.18); }
+  .seed-color-dot.selected { border-color:#fff; box-shadow:0 0 0 2px #333, 0 1px 3px rgba(0,0,0,0.18); }
   .share-modal-backdrop {
     display: none;
     position: fixed; inset: 0;
@@ -2940,7 +2956,7 @@
   <!-- 통합 헤더: 오늘 심어볼 꽃씨 카드 -->
   <div class="mission-top">
     <div class="mission-top-inner">
-      <div class="mission-top-cop">🌱 오늘 심어볼 꽃씨 🌱</div>
+      <div class="mission-top-cop">🌱 오늘 심어볼 좋은 말 꽃씨 🌱</div>
       <div class="mission-top-msg" id="missionMsg">
         <div class="mission-top-quote" id="missionQuoteText"></div>
       </div>
@@ -2956,7 +2972,7 @@
       </button>
       <button id="missionTabShare" onclick="switchMissionTab('share')"
         style="flex:1;padding:0.5rem;border:none;border-radius:8px 8px 0 0;font-family:'Jua',sans-serif;font-size:0.95rem;cursor:pointer;transition:all 0.2s;background:var(--paper-warm);color:var(--sage);">
-        📤 공유하기
+        🌸 꽃씨 전달하기
       </button>
     </div>
 
@@ -2972,14 +2988,72 @@
       </div>
     </div>
 
-    <!-- 공유하기 패널 -->
-    <div id="missionPanelShare" class="mission-seed-card" style="display:none;border-radius:0 8px 8px 8px;margin-top:0;">
-      <div class="mission-seed-label">오늘 심어볼 꽃씨</div>
-      <div class="mission-seed-text" id="missionSeedText"></div>
-      <div style="margin-top:0.8rem;padding-top:0.6rem;border-top:1px solid rgba(134,239,172,0.35);">
-        <div class="mission-seed-desc">이 꽃씨를 친구에게 공유해보세요</div>
+    <!-- 꽃씨 전달하기 패널 (인라인 카드 에디터) -->
+    <div id="missionPanelShare" class="mission-seed-card" style="display:none;border-radius:0 8px 8px 8px;margin-top:0;padding:0.8rem 0.8rem 1rem;">
+      <!-- 카드 미리보기 -->
+      <div style="width:100%;aspect-ratio:1;border-radius:12px;overflow:hidden;margin-bottom:0.85rem;box-shadow:0 4px 16px rgba(0,0,0,0.13);">
+        <canvas id="seedCardPreview" width="1080" height="1080" style="width:100%;height:100%;display:block;"></canvas>
       </div>
-      <button class="cel-btn-share" style="margin-top:0.8rem;" onclick="shareSeedCard()">📤 SNS로 공유하기</button>
+      <!-- 툴박스 -->
+      <div class="seed-toolbox">
+        <!-- 배경 -->
+        <div class="seed-tool-section">
+          <div class="seed-tool-label">🎨 배경 고르기</div>
+          <div class="seed-bg-row">
+            <div class="seed-bg-swatch selected" data-idx="0" style="background:linear-gradient(135deg,#f9a8d4,#fdba74,#86efac);" onclick="selectSeedBg(0,this)" title="파스텔"></div>
+            <div class="seed-bg-swatch" data-idx="1" style="background:linear-gradient(135deg,#a8edea,#fed6e3);" onclick="selectSeedBg(1,this)" title="민트핑크"></div>
+            <div class="seed-bg-swatch" data-idx="2" style="background:linear-gradient(135deg,#fddb92,#d1fdff);" onclick="selectSeedBg(2,this)" title="옐로민트"></div>
+            <div class="seed-bg-swatch seed-bg-img" data-idx="3" style="background:linear-gradient(180deg,#87ceeb,#e8f4fd);" onclick="selectSeedBg(3,this)" title="구름">☁️</div>
+            <div class="seed-bg-swatch seed-bg-img" data-idx="4" style="background:#fce4ec;" onclick="selectSeedBg(4,this)" title="하트">🩷</div>
+            <div class="seed-bg-swatch seed-bg-img" data-idx="5" style="background:linear-gradient(135deg,#f8bbd9,#e8f5e9);" onclick="selectSeedBg(5,this)" title="봄꽃">🌸</div>
+            <div class="seed-bg-swatch seed-bg-img" data-idx="6" style="background:linear-gradient(135deg,#0d0d2b,#1a1a5e);" onclick="selectSeedBg(6,this)" title="별하늘">✨</div>
+            <div class="seed-bg-swatch seed-bg-img" data-idx="7" style="background:linear-gradient(135deg,#a5d6a7,#e8f5e9);" onclick="selectSeedBg(7,this)" title="꽃밭">🌼</div>
+          </div>
+        </div>
+        <!-- 글씨체 -->
+        <div class="seed-tool-section">
+          <div class="seed-tool-label">✍️ 글씨체 고르기</div>
+          <div class="seed-font-row">
+            <button class="seed-font-btn active" data-font="Gaegu" style="font-family:'Gaegu',cursive;" onclick="selectSeedFont('Gaegu',this)">가에구</button>
+            <button class="seed-font-btn" data-font="Nanum Pen Script" style="font-family:'Nanum Pen Script',cursive;" onclick="selectSeedFont('Nanum Pen Script',this)">펜글씨</button>
+            <button class="seed-font-btn" data-font="Yeon Sung" style="font-family:'Yeon Sung',cursive;" onclick="selectSeedFont('Yeon Sung',this)">연성</button>
+            <button class="seed-font-btn" data-font="Gugi" style="font-family:'Gugi',cursive;" onclick="selectSeedFont('Gugi',this)">구기</button>
+            <button class="seed-font-btn" data-font="Kirang Haerang" style="font-family:'Kirang Haerang',cursive;" onclick="selectSeedFont('Kirang Haerang',this)">키랑해랑</button>
+            <button class="seed-font-btn" data-font="Hi Melody" style="font-family:'Hi Melody',cursive;" onclick="selectSeedFont('Hi Melody',this)">하이멜로디</button>
+            <button class="seed-font-btn" data-font="Diphylleia" style="font-family:'Diphylleia',cursive;" onclick="selectSeedFont('Diphylleia',this)">디필레이아</button>
+          </div>
+        </div>
+        <!-- 글씨 색상 -->
+        <div class="seed-tool-section">
+          <div class="seed-tool-label">🖌️ 글씨 색상</div>
+          <div class="seed-color-row">
+            <!-- 1행: 그라디언트2 + 단색8 -->
+            <div class="seed-color-dot" data-color="pastel-grad" style="background:linear-gradient(135deg,#f9a8d4,#fdba74,#86efac);" onclick="selectSeedColor('pastel-grad',this)" title="파스텔그라디언트"></div>
+            <div class="seed-color-dot" data-color="rainbow-grad" style="background:linear-gradient(135deg,#e63946,#f7c325,#3bb043,#1e90ff,#8b3fbe);" onclick="selectSeedColor('rainbow-grad',this)" title="무지개그라디언트"></div>
+            <div class="seed-color-dot selected" data-color="#2d2d2d" style="background:#2d2d2d;" onclick="selectSeedColor('#2d2d2d',this)" title="먹색"></div>
+            <div class="seed-color-dot" data-color="#8b4513" style="background:#8b4513;" onclick="selectSeedColor('#8b4513',this)" title="브라운"></div>
+            <div class="seed-color-dot" data-color="#d94f7c" style="background:#d94f7c;" onclick="selectSeedColor('#d94f7c',this)" title="딥핑크"></div>
+            <div class="seed-color-dot" data-color="#3a8c6e" style="background:#3a8c6e;" onclick="selectSeedColor('#3a8c6e',this)" title="딥민트"></div>
+            <div class="seed-color-dot" data-color="#5b7fc4" style="background:#5b7fc4;" onclick="selectSeedColor('#5b7fc4',this)" title="딥블루"></div>
+            <div class="seed-color-dot" data-color="#f4a7b9" style="background:#f4a7b9;" onclick="selectSeedColor('#f4a7b9',this)" title="파스텔핑크"></div>
+            <div class="seed-color-dot" data-color="#f7b89c" style="background:#f7b89c;" onclick="selectSeedColor('#f7b89c',this)" title="파스텔피치"></div>
+            <div class="seed-color-dot" data-color="#f9c97c" style="background:#f9c97c;" onclick="selectSeedColor('#f9c97c',this)" title="파스텔옐로"></div>
+            <!-- 2행: 단색10 -->
+            <div class="seed-color-dot" data-color="#a8d8a8" style="background:#a8d8a8;" onclick="selectSeedColor('#a8d8a8',this)" title="파스텔그린"></div>
+            <div class="seed-color-dot" data-color="#a2c4e0" style="background:#a2c4e0;" onclick="selectSeedColor('#a2c4e0',this)" title="파스텔블루"></div>
+            <div class="seed-color-dot" data-color="#c9b1d9" style="background:#c9b1d9;" onclick="selectSeedColor('#c9b1d9',this)" title="파스텔라벤더"></div>
+            <div class="seed-color-dot" data-color="#e63946" style="background:#e63946;" onclick="selectSeedColor('#e63946',this)" title="빨강"></div>
+            <div class="seed-color-dot" data-color="#f4791f" style="background:#f4791f;" onclick="selectSeedColor('#f4791f',this)" title="주황"></div>
+            <div class="seed-color-dot" data-color="#f7c325" style="background:#f7c325;" onclick="selectSeedColor('#f7c325',this)" title="노랑"></div>
+            <div class="seed-color-dot" data-color="#3bb043" style="background:#3bb043;" onclick="selectSeedColor('#3bb043',this)" title="초록"></div>
+            <div class="seed-color-dot" data-color="#1e90ff" style="background:#1e90ff;" onclick="selectSeedColor('#1e90ff',this)" title="파랑"></div>
+            <div class="seed-color-dot" data-color="#4169e1" style="background:#4169e1;" onclick="selectSeedColor('#4169e1',this)" title="남색"></div>
+            <div class="seed-color-dot" data-color="#8b3fbe" style="background:#8b3fbe;" onclick="selectSeedColor('#8b3fbe',this)" title="보라"></div>
+          </div>
+        </div>
+      </div>
+      <!-- 공유 버튼 -->
+      <button class="card-share-btn" style="margin-top:0.9rem;" onclick="shareSeedCardDirect()">📤 SNS로 전달하기</button>
     </div>
 
     <button class="mission-done-btn" id="missionDoneBtn" onclick="completeMission()" disabled>
@@ -3516,16 +3590,16 @@ function toggleErase() {
 }
 
 function getPos(e) {
-  // canvasWrapper의 rect를 기준으로 잡아야 transform 영향 없이 정확한 좌표 계산 가능
   const wrapper = document.getElementById('canvasWrapper');
   const rect = wrapper.getBoundingClientRect();
-  let clientX, clientY;
-  if (e.touches) { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; }
-  else { clientX = e.clientX; clientY = e.clientY; }
-  // wrapper 기준 상대 좌표 → 줌 스케일/오프셋 보정으로 실제 캔버스 좌표 변환
+  // PointerEvent와 MouseEvent 모두 clientX/Y를 가짐
+  const clientX = e.clientX !== undefined ? e.clientX
+    : (e.touches ? e.touches[0].clientX : 0);
+  const clientY = e.clientY !== undefined ? e.clientY
+    : (e.touches ? e.touches[0].clientY : 0);
   return {
-    x: (clientX - rect.left - zoomOffsetX) / zoomScale,
-    y: (clientY - rect.top  - zoomOffsetY) / zoomScale
+    x: (clientX - rect.left  - zoomOffsetX) / zoomScale,
+    y: (clientY - rect.top   - zoomOffsetY) / zoomScale
   };
 }
 
@@ -3791,74 +3865,82 @@ function endDraw() {
   updateCoverageBar();
 }
 
-canvas.addEventListener('mousedown', startDraw);
-canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('mouseup', endDraw);
-canvas.addEventListener('mouseleave', endDraw);
+// ── Pointer Events 기반 드로잉 (마우스·터치 통합, 스크롤 충돌 없음) ──
+const activePointers = new Map(); // pointerId → {x, y}
 
-// 터치 통합 핸들러 - 1손가락: 그리기, 2손가락: 핀치줌
-canvas.addEventListener('touchstart', (e) => {
+canvas.addEventListener('pointerdown', (e) => {
   e.preventDefault();
-  if (e.touches.length === 2) {
+  canvas.setPointerCapture(e.pointerId);
+  activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+  if (activePointers.size === 2) {
+    // 두 번째 손가락 → 핀치줌 시작
     if (isDrawing) endDraw();
     isPinching = true;
-    lastPinchDist = getPinchDist(e.touches);
-    const mid = getPinchMid(e.touches);
-    lastMidX = mid.x; lastMidY = mid.y;
-  } else if (e.touches.length === 1) {
+    const pts = [...activePointers.values()];
+    lastPinchDist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+    lastMidX = (pts[0].x + pts[1].x) / 2;
+    lastMidY = (pts[0].y + pts[1].y) / 2;
+  } else if (activePointers.size === 1) {
     isPinching = false;
     lastPinchDist = null;
     startDraw(e);
   }
 }, { passive: false });
 
-canvas.addEventListener('touchmove', (e) => {
+canvas.addEventListener('pointermove', (e) => {
   e.preventDefault();
-  if (e.touches.length === 2) {
+  if (!activePointers.has(e.pointerId)) return;
+  activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+  if (activePointers.size === 2) {
     isPinching = true;
     if (isDrawing) endDraw();
-    const dist = getPinchDist(e.touches);
-    const mid = getPinchMid(e.touches);
+    const pts = [...activePointers.values()];
+    const dist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+    const midX = (pts[0].x + pts[1].x) / 2;
+    const midY = (pts[0].y + pts[1].y) / 2;
     if (lastPinchDist) {
       const ratio = dist / lastPinchDist;
       const newScale = Math.min(Math.max(zoomScale * ratio, 1), 4);
       const wrapper = document.getElementById('canvasWrapper');
       const rect = wrapper.getBoundingClientRect();
-      const pinchX = (mid.x - rect.left) / zoomScale;
-      const pinchY = (mid.y - rect.top)  / zoomScale;
+      const pinchX = (midX - rect.left) / zoomScale;
+      const pinchY = (midY - rect.top)  / zoomScale;
       zoomOffsetX += pinchX * (zoomScale - newScale);
       zoomOffsetY += pinchY * (zoomScale - newScale);
       zoomScale = newScale;
     }
-    zoomOffsetX += (mid.x - lastMidX);
-    zoomOffsetY += (mid.y - lastMidY);
+    zoomOffsetX += (midX - lastMidX);
+    zoomOffsetY += (midY - lastMidY);
     const minX = canvas.width  * (1 - zoomScale);
     const minY = canvas.height * (1 - zoomScale);
     zoomOffsetX = Math.min(0, Math.max(minX, zoomOffsetX));
     zoomOffsetY = Math.min(0, Math.max(minY, zoomOffsetY));
     applyZoomTransform();
     lastPinchDist = dist;
-    lastMidX = mid.x; lastMidY = mid.y;
-  } else if (e.touches.length === 1 && !isPinching) {
+    lastMidX = midX; lastMidY = midY;
+  } else if (activePointers.size === 1 && !isPinching) {
     draw(e);
   }
 }, { passive: false });
 
-canvas.addEventListener('touchend', (e) => {
-  if (e.touches.length < 2) {
+canvas.addEventListener('pointerup', (e) => {
+  activePointers.delete(e.pointerId);
+  if (activePointers.size < 2) {
     lastPinchDist = null;
     isPinching = false;
   }
-  if (e.touches.length === 0) {
-    endDraw();
-  }
+  if (activePointers.size === 0) endDraw();
 });
 
-canvas.addEventListener('touchcancel', (e) => {
+canvas.addEventListener('pointercancel', (e) => {
+  activePointers.delete(e.pointerId);
   lastPinchDist = null;
   isPinching = false;
   isDrawing = false;
 });
+
 
 // ── 캔버스 outer를 가이드 글씨 실제 높이에 맞게 조정 ──
 function fitOuterToGuide() {
@@ -4189,6 +4271,14 @@ function switchMissionTab(tab) {
     if (share) share.style.display = '';
     if (tabShare) { tabShare.style.background = '#d4763b'; tabShare.style.color = '#fff'; }
     if (tabVoice) { tabVoice.style.background = '#f5efe3'; tabVoice.style.color = '#6b7c6a'; }
+    // 카드 미리보기 초기화
+    const q = QUOTES[currentIdx];
+    _seedText = q ? (q.mission || q.text || '') : '';
+    _seedThemeIdx = 0; _seedFont = 'Gaegu'; _seedColor = '#2d2d2d';
+    document.querySelectorAll('.seed-bg-swatch').forEach((s,i) => s.classList.toggle('selected', i===0));
+    document.querySelectorAll('.seed-font-btn').forEach(b => b.classList.toggle('active', b.dataset.font==='Gaegu'));
+    document.querySelectorAll('.seed-color-dot').forEach(d => d.classList.toggle('selected', d.dataset.color==='#2d2d2d'));
+    requestAnimationFrame(renderSeedCardPreview);
   }
 }
 
@@ -4203,119 +4293,139 @@ const CARD_THEMES = [
   ['#f6d365','#fda085'],           // 선셋
 ];
 let _cardThemeIdx = 0;
-let _cardBgImage = null;
-let _cardSeedText = '';
+// ── 인라인 꽃씨 카드 에디터 ──
+let _seedThemeIdx = 0;
+let _seedFont     = 'Gaegu';
+let _seedColor    = '#2d2d2d';
+let _seedText     = '';
 
-function openCardDesigner(seedText) {
-  _cardSeedText = seedText;
-  _cardThemeIdx = 0;
-  _cardBgImage = null;
-  document.querySelectorAll('.card-bg-swatch').forEach((el,i) => {
-    el.classList.toggle('selected', i === 0);
-  });
-  document.getElementById('cardDesignerBackdrop').classList.add('show');
-  renderCardPreview();
-}
-
-function closeCardDesigner() {
-  document.getElementById('cardDesignerBackdrop').classList.remove('show');
-}
-
-function selectCardBg(idx, el) {
-  _cardThemeIdx = idx;
-  _cardBgImage = null;
-  document.querySelectorAll('.card-bg-swatch').forEach(s => s.classList.remove('selected'));
+function selectSeedBg(idx, el) {
+  _seedThemeIdx = idx;
+  document.querySelectorAll('.seed-bg-swatch').forEach(s => s.classList.remove('selected'));
   el.classList.add('selected');
-  renderCardPreview();
+  renderSeedCardPreview();
+}
+function selectSeedFont(font, el) {
+  _seedFont = font;
+  document.querySelectorAll('.seed-font-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderSeedCardPreview();
+}
+function selectSeedColor(color, el) {
+  _seedColor = color;
+  document.querySelectorAll('.seed-color-dot').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+  renderSeedCardPreview();
 }
 
-function uploadCardBg(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const img = new Image();
-    img.onload = () => {
-      _cardBgImage = img;
-      document.querySelectorAll('.card-bg-swatch').forEach(s => s.classList.remove('selected'));
-      renderCardPreview();
-    };
-    img.src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function renderCardPreview() {
-  const cv = document.getElementById('cardPreviewCanvas');
-  const ctx = cv.getContext('2d');
-  const W = 1080, H = 1080;
-
-  // 배경
-  if (_cardBgImage) {
-    // 이미지: cover 방식
-    const sc = Math.max(W / _cardBgImage.width, H / _cardBgImage.height);
-    const dw = _cardBgImage.width * sc, dh = _cardBgImage.height * sc;
-    ctx.drawImage(_cardBgImage, (W-dw)/2, (H-dh)/2, dw, dh);
-    // 반투명 오버레이
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
-    ctx.fillRect(0, 0, W, H);
-  } else {
-    const colors = CARD_THEMES[_cardThemeIdx];
-    const grad = ctx.createLinearGradient(0, 0, W, H);
-    colors.forEach((c, i) => grad.addColorStop(i / (colors.length - 1), c));
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
-  }
-
-  // 둥근 흰 카드 영역
-  const pad = 80, r = 40;
-  ctx.save();
-  ctx.beginPath();
-  ctx.roundRect(pad, pad, W-pad*2, H-pad*2, r);
-  ctx.fillStyle = 'rgba(255,255,255,0.82)';
-  ctx.fill();
-  ctx.restore();
-
-  // 🌱 상단 이모지
-  ctx.font = '90px serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('🌱', W/2, 260);
-
-  // 꽃씨 텍스트
-  ctx.fillStyle = '#2d4a35';
-  ctx.textAlign = 'center';
-  const lines = wrapCardText(_cardSeedText, 680);
-  const lineH = 100;
-  const startY = 420 - ((lines.length - 1) * lineH) / 2;
-  lines.forEach((line, i) => {
-    ctx.font = `bold 72px "Nanum Myeongjo", serif`;
-    ctx.fillText(line, W/2, startY + i * lineH);
+// ── 이미지 배경 드로잉 함수 ──
+function drawSeedBgCloud(ctx, W, H) {
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#87ceeb'); g.addColorStop(1, '#e8f4fd');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(255,255,255,0.88)';
+  [[220,180,130],[600,130,100],[420,80,75],[820,240,90],[110,360,65],[700,400,80],[300,320,55]].forEach(([x,y,s]) => {
+    ctx.beginPath();
+    ctx.arc(x,y,s,0,Math.PI*2); ctx.arc(x+s*.45,y-s*.18,s*.38,0,Math.PI*2);
+    ctx.arc(x-s*.42,y-s*.12,s*.32,0,Math.PI*2); ctx.arc(x+s*.78,y+s*.08,s*.32,0,Math.PI*2);
+    ctx.fill();
   });
-
-  // 구분선
-  ctx.strokeStyle = 'rgba(45,74,53,0.25)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(180, 800); ctx.lineTo(900, 800);
-  ctx.stroke();
-
-  // 하단: 은평경찰서 문구
-  ctx.fillStyle = '#4a6741';
-  ctx.font = 'bold 42px "Jua", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('🚔 은평경찰서 꽃말쓰기', W/2, 870);
-  ctx.font = '34px "Nanum Myeongjo", serif';
-  ctx.fillStyle = '#7a9a78';
-  ctx.fillText('청소년 언어문화 개선 프로그램', W/2, 930);
 }
+function drawSeedBgHeart(ctx, W, H) {
+  const g = ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,'#fce4ec'); g.addColorStop(1,'#fff0f5');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  const hearts = [[150,150,50,'#f48fb1'],[600,100,38,'#f06292'],[900,200,45,'#ec407a'],
+    [80,500,35,'#f8bbd0'],[400,420,55,'#f48fb1'],[800,500,40,'#f06292'],
+    [250,800,42,'#ec407a'],[700,750,48,'#f48fb1'],[950,700,30,'#f8bbd0'],
+    [500,680,36,'#f06292'],[130,900,44,'#ec407a'],[850,900,38,'#f48fb1']];
+  hearts.forEach(([hx,hy,hs,hc]) => {
+    ctx.fillStyle = hc+'88';
+    ctx.save(); ctx.translate(hx,hy); ctx.scale(hs/50,hs/50);
+    ctx.beginPath();
+    ctx.moveTo(0,15); ctx.bezierCurveTo(-5,5,-20,5,-20,-8);
+    ctx.bezierCurveTo(-20,-20,-5,-20,0,-10);
+    ctx.bezierCurveTo(5,-20,20,-20,20,-8);
+    ctx.bezierCurveTo(20,5,5,5,0,15);
+    ctx.fill(); ctx.restore();
+  });
+}
+function drawSeedBgBlossom(ctx, W, H) {
+  const g = ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,'#fce4ec'); g.addColorStop(.5,'#f8bbd9'); g.addColorStop(1,'#e8f5e9');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  const petals = [[200,200,28,'#f48fb1'],[500,150,22,'#f06292'],[800,180,26,'#ec407a'],
+    [100,500,20,'#f8bbd0'],[350,450,30,'#f48fb1'],[700,420,24,'#f06292'],
+    [900,500,28,'#ec407a'],[250,750,22,'#f48fb1'],[600,700,26,'#f06292'],
+    [850,800,30,'#ec407a'],[150,900,24,'#f48fb1'],[500,900,20,'#f8bbd0']];
+  petals.forEach(([px,py,pr,pc]) => {
+    for(let i=0;i<5;i++){
+      ctx.save(); ctx.translate(px,py); ctx.rotate(i*Math.PI*2/5);
+      ctx.fillStyle=pc+'99';
+      ctx.beginPath(); ctx.ellipse(0,-pr*.7,pr*.35,pr*.6,0,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    ctx.fillStyle='#fff59d99';
+    ctx.beginPath(); ctx.arc(px,py,pr*.22,0,Math.PI*2); ctx.fill();
+  });
+}
+function drawSeedBgStars(ctx, W, H) {
+  const g = ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,'#0d0d2b'); g.addColorStop(.5,'#1a1a5e'); g.addColorStop(1,'#0d2b45');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  const rng = (seed) => { let x=Math.sin(seed)*10000; return x-Math.floor(x); };
+  for(let i=0;i<120;i++){
+    const sx=rng(i*3)*W, sy=rng(i*3+1)*H, sr=rng(i*3+2)*3+0.5;
+    const alpha = 0.4+rng(i*7)*0.6;
+    ctx.fillStyle=`rgba(255,255,220,${alpha})`;
+    ctx.beginPath(); ctx.arc(sx,sy,sr,0,Math.PI*2); ctx.fill();
+  }
+  [[200,200,18],[700,300,22],[400,600,16],[850,150,20],[150,750,14],[600,800,18]].forEach(([sx,sy,ss])=>{
+    ctx.save(); ctx.translate(sx,sy);
+    ctx.fillStyle='rgba(255,255,200,0.9)';
+    for(let p=0;p<5;p++){
+      ctx.beginPath(); ctx.moveTo(0,0);
+      ctx.rotate(Math.PI*2/5); ctx.lineTo(0,-ss); ctx.lineTo(ss*.38,-ss*.28);
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  });
+}
+function drawSeedBgMeadow(ctx, W, H) {
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#b3e5fc'); g.addColorStop(.45,'#e8f5e9'); g.addColorStop(1,'#a5d6a7');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  const flowers = [
+    [120,700,30,'#ffee58'],[300,750,24,'#f48fb1'],[550,680,28,'#ce93d8'],[750,720,26,'#80deea'],
+    [900,760,22,'#ffcc02'],[200,900,26,'#f48fb1'],[450,850,30,'#ffee58'],[680,900,24,'#ce93d8'],
+    [850,870,28,'#80deea'],[50,820,20,'#ffcc02'],[970,820,22,'#f48fb1'],[380,920,18,'#ffee58']
+  ];
+  flowers.forEach(([fx,fy,fr,fc])=>{
+    for(let p=0;p<6;p++){
+      ctx.save(); ctx.translate(fx,fy); ctx.rotate(p*Math.PI/3);
+      ctx.fillStyle=fc+'bb';
+      ctx.beginPath(); ctx.ellipse(0,-fr*.75,fr*.35,fr*.55,0,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    ctx.fillStyle='#fff59dcc';
+    ctx.beginPath(); ctx.arc(fx,fy,fr*.28,0,Math.PI*2); ctx.fill();
+  });
+  ctx.fillStyle='rgba(76,175,80,0.7)';
+  ctx.fillRect(0,H*.82,W,H*.18);
+  for(let i=0;i<30;i++){
+    const gx=i*(W/29), gh=40+Math.sin(i*1.7)*20;
+    ctx.fillStyle='rgba(56,142,60,0.6)';
+    ctx.beginPath(); ctx.moveTo(gx,H); ctx.lineTo(gx-8,H-gh); ctx.lineTo(gx+8,H-gh); ctx.closePath(); ctx.fill();
+  }
+}
+
+const SEED_BG_DRAWERS = [null,null,null, drawSeedBgCloud, drawSeedBgHeart, drawSeedBgBlossom, drawSeedBgStars, drawSeedBgMeadow];
 
 function wrapCardText(text, maxWidth) {
-  // 글자 수 기준으로 줄바꿈 (폰트 측정 대신)
   const MAX_CHARS = 14;
-  const words = text.split('');
   const lines = [];
   let line = '';
-  for (let ch of words) {
+  for (const ch of [...(text || '')]) {
     if (line.length >= MAX_CHARS || ch === '\n') {
       if (line) lines.push(line.trim());
       line = ch === '\n' ? '' : ch;
@@ -4327,17 +4437,106 @@ function wrapCardText(text, maxWidth) {
   return lines;
 }
 
-async function shareCardImage() {
-  renderCardPreview();
-  const cv = document.getElementById('cardPreviewCanvas');
+function renderSeedCardPreview() {
+  const cv = document.getElementById('seedCardPreview');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = 1080, H = 1080;
+
+  // _seedText 없으면 현재 글귀로 fallback
+  const text = (_seedText && _seedText.trim())
+    ? _seedText
+    : (QUOTES[currentIdx] ? (QUOTES[currentIdx].mission || QUOTES[currentIdx].text) : '');
+
+  // 배경: 그라디언트(0-2) 또는 이미지 패턴(3-7)
+  if (_seedThemeIdx <= 2) {
+    const colors = CARD_THEMES[_seedThemeIdx];
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    colors.forEach((c, i) => grad.addColorStop(i / (colors.length - 1), c));
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+  } else {
+    const drawFn = SEED_BG_DRAWERS[_seedThemeIdx];
+    if (drawFn) drawFn(ctx, W, H);
+  }
+
+  // 흰 카드 내부
+  const pad = 80, r = 40;
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(pad, pad, W - pad * 2, H - pad * 2, r);
+  ctx.fillStyle = 'rgba(255,255,255,0.82)';
+  ctx.fill();
+  ctx.restore();
+
+  // 글귀 텍스트 (카드 중앙 배치, 그라디언트 색상 지원)
+  const lines = wrapCardText(text, 680);
+  const lineH = 110;
+  const textAreaCenterY = 460;
+  const startY = textAreaCenterY - ((lines.length - 1) * lineH) / 2;
+
+  if (_seedColor === 'pastel-grad') {
+    const tg = ctx.createLinearGradient(pad+60, 0, W-pad-60, 0);
+    tg.addColorStop(0,'#f9a8d4'); tg.addColorStop(.5,'#fdba74'); tg.addColorStop(1,'#86efac');
+    ctx.fillStyle = tg;
+  } else if (_seedColor === 'rainbow-grad') {
+    const tg = ctx.createLinearGradient(pad+60, 0, W-pad-60, 0);
+    tg.addColorStop(0,'#e63946'); tg.addColorStop(.25,'#f7c325');
+    tg.addColorStop(.5,'#3bb043'); tg.addColorStop(.75,'#1e90ff'); tg.addColorStop(1,'#8b3fbe');
+    ctx.fillStyle = tg;
+  } else {
+    ctx.fillStyle = _seedColor;
+  }
+  ctx.textAlign = 'center';
+  lines.forEach((line, i) => {
+    ctx.font = `bold 72px "${_seedFont}", serif`;
+    ctx.fillText(line, W / 2, startY + i * lineH);
+  });
+
+  // 구분선
+  ctx.strokeStyle = 'rgba(45,74,53,0.22)';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(180, 800); ctx.lineTo(900, 800); ctx.stroke();
+
+  // 하단 문구 (이모지 제외)
+  ctx.fillStyle = '#4a6741';
+  ctx.font = `bold 42px "Jua", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('은평경찰서 꽃말쓰기', W / 2, 870);
+  ctx.font = `34px "Nanum Myeongjo", serif`;
+  ctx.fillStyle = '#7a9a78';
+  ctx.fillText('청소년 언어문화 개선 프로그램', W / 2, 930);
+}
+
+async function shareSeedCardDirect() {
+  renderSeedCardPreview();
+  const cv = document.getElementById('seedCardPreview');
   cv.toBlob(async blob => {
-    const file = new File([blob], 'eunpyeong-flower.png', { type: 'image/png' });
-    closeCardDesigner();
-    // 이미지 파일로 공유 모달 열기
-    _shareImg = file;
-    document.getElementById('shareModalBackdrop').classList.add('show');
+    const file = new File([blob], 'kkotmal-flower.png', { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ title: '꽃씨 전달하기 🌱', files: [file] });
+        return;
+      } catch(e) {}
+    }
+    // 파일 공유 불가 시 이미지 다운로드
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'kkotmal-flower.png'; a.click();
+    URL.revokeObjectURL(url);
   }, 'image/png');
 }
+
+// ── 구 카드 디자이너 함수 (cel 공유 등 다른 곳에서 사용) ──
+let _cardBgImage = null;
+let _cardSeedText = '';
+
+function openCardDesigner(seedText) {
+  _cardSeedText = seedText;
+}
+function closeCardDesigner() {}
+
+
+
 
 // ── 공유 모달 ──
 let _shareText = '';
@@ -4421,15 +4620,6 @@ function doShareCopy() {
   closeShareModal();
 }
 
-async function shareSeedCard() {
-  const q = QUOTES[currentIdx];
-  const seedText = q.mission || q.text;
-  openCardDesigner(seedText);
-  // 공유 완료 → 미션 완료 버튼 활성화
-  const db = document.getElementById('missionDoneBtn');
-  if (db) db.disabled = false;
-}
-
 // ── 미션 페이지 ──
 let missionRec = null;
 let missionListening = false;
@@ -4451,6 +4641,8 @@ function showMissionPage() {
     }
     const missionSeedText = document.getElementById('missionSeedText');
     if (missionSeedText) missionSeedText.textContent = '\u201c' + (q.mission || q.text) + '\u201d';
+    // _seedText를 미션 텍스트로 미리 설정 (꽃씨 전달하기 탭 열 때 사용)
+    _seedText = q.mission || q.text;
     // 탭 초기화: 따라읽기 기본
     switchMissionTab('voice');
     missionTranscripts2 = [];
@@ -5547,44 +5739,6 @@ if (document.readyState === 'loading') {
 
 // 페이지 로드 시에는 시작 페이지만 표시 (initCanvas/loadQuote는 startApp에서 실행)
 </script>
-<!-- ── 카드 디자이너 모달 ── -->
-<div class="card-designer-backdrop" id="cardDesignerBackdrop">
-  <div class="card-designer">
-    <div class="card-designer-title">🌱 꽃씨 카드 만들기</div>
-
-    <!-- 미리보기 캔버스 -->
-    <div class="card-preview-wrap">
-      <canvas id="cardPreviewCanvas" width="1080" height="1080"></canvas>
-    </div>
-
-    <!-- 배경 선택 -->
-    <div class="card-bg-label">배경 고르기</div>
-    <div class="card-bg-themes" id="cardBgThemes">
-      <div class="card-bg-swatch selected" data-theme="0"
-        style="background:linear-gradient(135deg,#f9a8d4,#fdba74,#86efac);" onclick="selectCardBg(0,this)"></div>
-      <div class="card-bg-swatch" data-theme="1"
-        style="background:linear-gradient(135deg,#a8edea,#fed6e3);" onclick="selectCardBg(1,this)"></div>
-      <div class="card-bg-swatch" data-theme="2"
-        style="background:linear-gradient(135deg,#fddb92,#d1fdff);" onclick="selectCardBg(2,this)"></div>
-      <div class="card-bg-swatch" data-theme="3"
-        style="background:linear-gradient(135deg,#c3cfe2,#f5f7fa);" onclick="selectCardBg(3,this)"></div>
-      <div class="card-bg-swatch" data-theme="4"
-        style="background:linear-gradient(135deg,#b2fefa,#0ed2f7);" onclick="selectCardBg(4,this)"></div>
-      <div class="card-bg-swatch" data-theme="5"
-        style="background:linear-gradient(135deg,#e0c3fc,#8ec5fc);" onclick="selectCardBg(5,this)"></div>
-      <div class="card-bg-swatch" data-theme="6"
-        style="background:linear-gradient(135deg,#f6d365,#fda085);" onclick="selectCardBg(6,this)"></div>
-      <!-- 이미지 업로드 -->
-      <label class="card-upload-btn" title="배경 이미지 업로드">
-        🖼️<input type="file" accept="image/*" style="display:none;" onchange="uploadCardBg(event)">
-      </label>
-    </div>
-
-    <button class="card-share-btn" onclick="shareCardImage()">📤 이 카드로 공유하기</button>
-    <button class="card-close-btn" onclick="closeCardDesigner()">취소</button>
-  </div>
-</div>
-
 <!-- ── 공유 모달 ── -->
 <div class="share-modal-backdrop" id="shareModalBackdrop" onclick="closeShareModal()">
   <div class="share-modal" onclick="event.stopPropagation()">
