@@ -337,18 +337,15 @@
   /* 캔버스 스크롤 외부 컨테이너 */
   .canvas-scroll-outer {
     margin: 0 1rem;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     border-radius: 16px;
     border: 1px solid rgba(201,168,76,0.25);
     box-shadow: 0 4px 24px rgba(139,69,19,0.10);
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(201,168,76,0.5) rgba(201,168,76,0.1);
+    scrollbar-width: none;
   }
-  .canvas-scroll-outer::-webkit-scrollbar { width: 5px; }
-  .canvas-scroll-outer::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.5); border-radius: 3px; }
-  .canvas-scroll-outer::-webkit-scrollbar-track { background: rgba(201,168,76,0.08); }
+  .canvas-scroll-outer::-webkit-scrollbar { display: none; }
   .canvas-wrapper {
     position: relative;
     background: linear-gradient(145deg, #fffdf7 0%, #fef9ee 40%, #fdf4e3 100%);
@@ -408,49 +405,41 @@
   }
   .canvas-guide span {
     font-family: 'Jua', sans-serif;
-    font-size: 3.2rem;
+    font-size: 6.5rem;
     font-weight: 400;
     color: rgba(139,69,19,0.039);
-    letter-spacing: 0.05em;
+    letter-spacing: 0em;
     text-align: center;
-    line-height: 2.2;
-    word-break: keep-all;
+    line-height: 1.05;
+    word-break: break-all;
     user-select: none;
     width: 100%;
     white-space: normal;
     overflow-wrap: break-word;
   }
-  .coverage-bar-wrap {
-    margin-top: 0.5rem;
-    padding: 0 0.8rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .coverage-track {
-    flex: 1;
-    height: 5px;
-    background: rgba(139,69,19,0.12);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .coverage-fill {
-    height: 100%;
-    background: #d85a30;
-    border-radius: 3px;
-    width: 0%;
-    transition: width 0.3s ease, background 0.3s ease;
-  }
-  .coverage-fill.ok { background: #639922; }
-  .coverage-label {
-    font-size: 0.68rem;
-    color: var(--sage);
-    white-space: nowrap;
-    min-width: 80px;
-    text-align: right;
-  }
   .voice-section { margin: 0.7rem 1rem 0; display: block; }
   .voice-section.hidden { display: none; }
+  /* ── 따라 치기 섹션 ── */
+  .type-section { margin: 0.7rem 1rem 0; display: block; }
+  .type-section.hidden { display: none; }
+  .type-input {
+    width: 100%;
+    min-height: 5rem;
+    padding: 0.7rem 0.8rem;
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.05rem;
+    border: 1.5px solid rgba(139,69,19,0.22);
+    border-radius: 4px;
+    background: rgba(255,255,255,0.85);
+    resize: none;
+    outline: none;
+    color: var(--ink);
+    line-height: 1.8;
+    margin-bottom: 0.5rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+  .type-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(139,69,19,0.08); }
   .voice-box {
     background: var(--paper-warm);
     border: 1px solid rgba(201,168,76,0.3);
@@ -528,6 +517,11 @@
   .match-words span { display: inline-block; padding: 1px 3px; margin: 1px; border-radius: 2px; font-size: 0.88rem; }
   .match-words .hit { background: rgba(99,153,34,0.18); color: #3b6d11; }
   .match-words .miss { background: rgba(232,75,74,0.1); color: #a32d2d; }
+  /* 따라 치기 글자 하이라이트 */
+  .type-char { display: inline; font-family: 'Nanum Myeongjo', serif; font-size: 0.92rem; }
+  .type-char.hit   { color: #3b6d11; background: rgba(99,153,34,0.15); border-radius: 2px; padding: 0 1px; }
+  .type-char.wrong { color: #a32d2d; background: rgba(232,75,74,0.12); border-radius: 2px; padding: 0 1px; }
+  .type-char.miss  { color: #bbb; }
   /* ── 카드 디자이너 모달 ── */
   .card-designer-backdrop {
     display: none;
@@ -2468,7 +2462,7 @@
     background: linear-gradient(135deg, var(--mint-deep) 0%, var(--peach-deep) 100%);
     color: white;
     font-family: 'Jua', sans-serif;
-    font-size: 4rem;
+    font-size: 6.4rem;
     letter-spacing: 0.7rem;
     cursor: pointer;
     box-shadow: 0 5px 18px rgba(52,211,153,0.35);
@@ -2509,7 +2503,7 @@
     .wh-mission-text { font-size: 1rem; }
 
     /* 필사하러 가기 버튼 */
-    .wh-start-btn { font-size: 0.92rem; padding: 0.85rem; }
+    .wh-start-btn { font-size: 1.47rem; padding: 0.85rem; }
 
     /* 툴카드 라벨 */
     .tool-group-label { font-size: 0.65rem; }
@@ -2700,7 +2694,8 @@
     <div class="quote-source" id="quoteSource"></div>
   </div>
   <div class="mode-tabs">
-    <button class="mode-tab active" id="tabWrite" onclick="switchMode('write')">✏️ 따라 쓰기</button>
+    <button class="mode-tab" id="tabType"  onclick="switchMode('type')">⌨️ 따라 치기</button>
+    <button class="mode-tab active" id="tabWrite" onclick="switchMode('write')">✏️ 따라 그리기</button>
     <button class="mode-tab" id="tabVoice" onclick="switchMode('voice')">🎤 따라 읽기</button>
   </div>
 
@@ -2821,13 +2816,22 @@
         <canvas id="drawCanvas"></canvas>
       </div>
     </div>
-    <div class="coverage-bar-wrap">
-      <div class="coverage-track"><div class="coverage-fill" id="coverageFill"></div></div>
-      <div class="coverage-label" id="coverageLabel">필사량: 0%</div>
-    </div>
+
 
     <div style="text-align:center;margin-top:0.5rem;">
       
+    </div>
+  </div>
+
+  <!-- 따라 치기 패널 -->
+  <div class="type-section hidden" id="typeSection">
+    <div class="voice-box">
+      <div class="voice-prompt">아래 글귀를 키보드로 직접 따라 쳐보세요</div>
+      <div class="voice-target" id="typeTarget"></div>
+      <textarea class="type-input" id="typeInput" placeholder="여기에 입력하세요..." oninput="onTypeInput()"></textarea>
+      <div class="voice-status" id="typeStatus">입력을 시작하세요</div>
+      <div class="voice-result" id="typeResult"></div>
+      <div class="voice-match-pct" id="typeMatchPct"></div>
     </div>
   </div>
 
@@ -3241,6 +3245,7 @@ let strokeCount = 0;
 let totalDist   = 0;
 const undoStack = []; // 획 시작 전 캔버스 상태 저장
 let voiceAccepted = false;
+let typeAccepted  = false;
 let recognition = null;
 let isListening = false;
 let finalTranscript = '';
@@ -3275,7 +3280,7 @@ function initCanvas() {
   const viewH = isMobile
     ? Math.max(Math.round(window.innerHeight * 0.75), 450)
     : Math.min(Math.max(w * 0.87, 360), 600);
-  const canvasH = Math.round(viewH * 1.6);
+  const canvasH = Math.round(viewH * 2.1);
   canvas.width = w;
   canvas.height = canvasH;
   canvas.style.width = w + 'px';
@@ -3306,12 +3311,6 @@ function calcWriteScore() {
 
 function updateCoverageBar() {
   coverage = calcWriteScore();
-  const fill  = document.getElementById('coverageFill');
-  const label = document.getElementById('coverageLabel');
-  const pct   = Math.min(coverage, 100);
-  fill.style.width  = pct + '%';
-  fill.className    = 'coverage-fill' + (pct >= 80 ? ' ok' : '');
-  label.textContent = '필사량: ' + pct + '%';
   checkCompleteEligibility();
 }
 
@@ -3328,7 +3327,17 @@ function checkCompleteEligibility() {
     } else {
       btn.classList.remove('ready');
       btn.style.opacity = '0.55';
-      hint.textContent = '조금 더 써보세요 (' + coverage + '%)';
+      hint.textContent = '조금 더 그려보세요 (' + coverage + '%)';
+    }
+  } else if (currentMode === 'type') {
+    if (typeAccepted) {
+      btn.classList.add('ready');
+      btn.style.opacity = '1';
+      hint.textContent = '';
+    } else {
+      btn.classList.remove('ready');
+      btn.style.opacity = '0.55';
+      hint.textContent = '글귀를 입력해주세요';
     }
   } else {
     if (voiceAccepted) {
@@ -3351,11 +3360,14 @@ function loadQuote(idx) {
   document.getElementById('guideText').textContent = q.text;
   const gs = document.getElementById('guideText');
   gs.style.fontFamily = "'" + currentGuideFont + "', sans-serif";
-  const cfg = fontSizeMap[currentGuideFont] || { size: '3.2rem', lineHeight: '1.7', transform: '' };
+  const cfg = fontSizeMap[currentGuideFont] || { size: '6.5rem', lineHeight: '1.05', letterSpacing: '0em', transform: '' };
   gs.style.fontSize = cfg.size;
   gs.style.lineHeight = cfg.lineHeight;
+  gs.style.letterSpacing = cfg.letterSpacing || '0em';
+  gs.style.wordBreak = 'break-all';
   gs.style.transform = cfg.transform || '';
   document.getElementById('voiceTarget').textContent = q.text;
+  document.getElementById('typeTarget').textContent  = q.text;
   updateNav();
   updateProgress();
   resetAll();
@@ -3373,12 +3385,21 @@ function resetAll() {
   clearCanvas();
   undoStack.length = 0;
   voiceAccepted = false;
+  typeAccepted  = false;
   finalTranscript = '';
   accumulatedTranscripts = [];
   document.getElementById('voiceResult').textContent = '';
   document.getElementById('voiceResult').className = 'voice-result';
   document.getElementById('matchPct').textContent = '';
   document.getElementById('voiceStatus').textContent = '버튼을 눌러 시작하세요';
+  const typeInput = document.getElementById('typeInput');
+  if (typeInput) typeInput.value = '';
+  const typeResult = document.getElementById('typeResult');
+  if (typeResult) { typeResult.textContent = ''; typeResult.className = 'voice-result'; }
+  const typeStatus = document.getElementById('typeStatus');
+  if (typeStatus) typeStatus.textContent = '입력을 시작하세요';
+  const typeMatchPct = document.getElementById('typeMatchPct');
+  if (typeMatchPct) typeMatchPct.textContent = '';
   const hintEl = document.getElementById('hint');
   if (hintEl) hintEl.classList.remove('hidden');
   stopMic();
@@ -3403,11 +3424,8 @@ function clearCanvas() {
   resetCanvasScroll();
   const outer = document.getElementById('canvasScrollOuter');
   if (outer) outer.scrollTop = 0;
+  coverage    = 0;
   if (currentMode === 'write') {
-    const fill = document.getElementById('coverageFill');
-    fill.style.width  = '0%';
-    fill.className    = 'coverage-fill';
-    document.getElementById('coverageLabel').textContent = '필사량: 0%';
     checkCompleteEligibility();
   }
 }
@@ -3839,10 +3857,12 @@ canvas.addEventListener('touchcancel', (e) => {
 
 function switchMode(mode) {
   currentMode = mode;
+  document.getElementById('tabType').className  = 'mode-tab' + (mode === 'type'  ? ' active' : '');
   document.getElementById('tabWrite').className = 'mode-tab' + (mode === 'write' ? ' active' : '');
   document.getElementById('tabVoice').className = 'mode-tab' + (mode === 'voice' ? ' active' : '');
   document.getElementById('canvasSection').className = 'canvas-section' + (mode === 'write' ? '' : ' hidden');
-  document.getElementById('voiceSection').className = 'voice-section' + (mode === 'voice' ? '' : ' hidden');
+  document.getElementById('typeSection').className   = 'type-section'   + (mode === 'type'  ? '' : ' hidden');
+  document.getElementById('voiceSection').className  = 'voice-section'  + (mode === 'voice' ? '' : ' hidden');
   stopMic();
   checkCompleteEligibility();
 }
@@ -3850,6 +3870,17 @@ function switchMode(mode) {
 function handleClear() {
   if (currentMode === 'write') {
     clearCanvas();
+  } else if (currentMode === 'type') {
+    typeAccepted = false;
+    const typeInput = document.getElementById('typeInput');
+    if (typeInput) typeInput.value = '';
+    const typeResult = document.getElementById('typeResult');
+    if (typeResult) { typeResult.textContent = ''; typeResult.className = 'voice-result'; }
+    const typeStatus = document.getElementById('typeStatus');
+    if (typeStatus) typeStatus.textContent = '입력을 시작하세요';
+    const typeMatchPct = document.getElementById('typeMatchPct');
+    if (typeMatchPct) typeMatchPct.textContent = '';
+    checkCompleteEligibility();
   } else {
     voiceAccepted = false;
     finalTranscript = '';
@@ -3869,6 +3900,69 @@ function normalize(str) {
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
+}
+
+// ── 따라 치기 로직 ──
+function calcTypingMatch(input, target) {
+  const tChars = [...target.replace(/\s/g, '')];
+  const iChars = [...input.replace(/\s/g, '')];
+  if (tChars.length === 0) return 0;
+  let matched = 0;
+  const len = Math.min(tChars.length, iChars.length);
+  for (let i = 0; i < len; i++) {
+    if (tChars[i] === iChars[i]) matched++;
+  }
+  return Math.round(matched / tChars.length * 100);
+}
+
+function makeTypingHighlight(input, target) {
+  const tChars = [...target];
+  const iChars = [...input];
+  let html = '';
+  for (let i = 0; i < tChars.length; i++) {
+    if (i >= iChars.length) {
+      html += '<span class="type-char miss">' + tChars[i] + '</span>';
+    } else if (tChars[i] === ' ') {
+      html += '<span class="type-char">' + (iChars[i] === ' ' ? ' ' : iChars[i]) + '</span>';
+    } else if (tChars[i] === iChars[i]) {
+      html += '<span class="type-char hit">' + tChars[i] + '</span>';
+    } else {
+      html += '<span class="type-char wrong">' + iChars[i] + '</span>';
+    }
+  }
+  return html;
+}
+
+function onTypeInput() {
+  const input  = document.getElementById('typeInput').value;
+  const target = QUOTES[currentIdx].text;
+  const normInput  = normalize(input);
+  const normTarget = normalize(target);
+  const pct = calcTypingMatch(normInput, normTarget);
+
+  const result    = document.getElementById('typeResult');
+  const matchPct  = document.getElementById('typeMatchPct');
+  const statusEl  = document.getElementById('typeStatus');
+
+  matchPct.textContent = '일치율: ' + pct + '%';
+
+  if (pct >= 80) {
+    typeAccepted = true;
+    result.className = 'voice-result match';
+    result.innerHTML = makeTypingHighlight(input, target);
+    statusEl.textContent = '훌륭해요! 글귀를 잘 따라 쳤어요 ✓';
+  } else if (pct >= 30) {
+    typeAccepted = false;
+    result.className = 'voice-result partial';
+    result.innerHTML = makeTypingHighlight(input, target);
+    statusEl.textContent = pct + '% 일치 · 조금 더 써보세요';
+  } else {
+    typeAccepted = false;
+    result.className = 'voice-result';
+    result.innerHTML = input ? makeTypingHighlight(input, target) : '';
+    statusEl.textContent = '계속 입력하세요';
+  }
+  checkCompleteEligibility();
 }
 
 function decompose(char) {
@@ -4725,31 +4819,33 @@ function setPenType(type, el) {
   if (el) el.classList.add('active');
 }
 const fontSizeMap = {
-  'Jua':                { size: '3.2rem', lineHeight: '1.7', transform: '' },
-  'Nanum Pen Script':   { size: '3.8rem', lineHeight: '1.5', transform: '' },
-  'Gaegu':              { size: '3.0rem', lineHeight: '1.5', transform: '' },
-  'Yeon Sung':          { size: '3.3rem', lineHeight: '1.7', transform: '' },
-  'Gugi':               { size: '2.86rem', lineHeight: '1.7', transform: '' },
-  'Single Day':         { size: '3.4rem', lineHeight: '1.5', transform: '' },
-  'Kirang Haerang':     { size: '3.0rem', lineHeight: '1.6', transform: '' },
-  'Hi Melody':          { size: '3.2rem', lineHeight: '1.6', transform: '', weight: '900' },
-  'Do Hyeon':           { size: '3.2rem', lineHeight: '1.7', transform: '' },
-  'Black Han Sans':     { size: '2.6rem', lineHeight: '1.7', transform: '' },
-  'Cute Font':          { size: '3.0rem', lineHeight: '1.7', transform: '' },
-  'Diphylleia':         { size: '3.2rem', lineHeight: '1.6', transform: '', weight: '900' }
+  'Jua':                { size: '6.5rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Nanum Pen Script':   { size: '7.7rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Gaegu':              { size: '6.1rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Yeon Sung':          { size: '6.7rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Gugi':               { size: '5.8rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Single Day':         { size: '6.9rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Kirang Haerang':     { size: '6.1rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Hi Melody':          { size: '6.5rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '', weight: '900' },
+  'Do Hyeon':           { size: '6.5rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Black Han Sans':     { size: '5.3rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Cute Font':          { size: '6.1rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Diphylleia':         { size: '6.5rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '', weight: '900' }
 };
 
 function setGuideFont(font) {
   currentGuideFont = font;
   const guideSpan = document.getElementById('guideText');
   if (guideSpan) {
-    const cfg = fontSizeMap[font] || { size: '3.2rem', lineHeight: '1.7', transform: '' };
+    const cfg = fontSizeMap[font] || { size: '6.5rem', lineHeight: '1.05', letterSpacing: '0em', transform: '' };
     guideSpan.style.fontFamily = "'" + font + "', sans-serif";
     guideSpan.style.fontSize = cfg.size;
     guideSpan.style.lineHeight = cfg.lineHeight;
+    guideSpan.style.letterSpacing = cfg.letterSpacing || '0em';
     guideSpan.style.transform = cfg.transform || '';
     guideSpan.style.fontWeight = cfg.weight || '';
     guideSpan.style.display = cfg.transform ? 'block' : '';
+    guideSpan.style.wordBreak = 'break-all';
   }
   document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
   const idMap = {
