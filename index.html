@@ -4501,10 +4501,10 @@ function renderSeedCardPreview() {
   ctx.fillStyle = '#4a6741';
   ctx.font = `bold 42px "Jua", sans-serif`;
   ctx.textAlign = 'center';
-  ctx.fillText('은평경찰서 꽃말쓰기', W / 2, 870);
+  ctx.fillText('꽃처럼 피어나는 말쓰기', W / 2, 870);
   ctx.font = `34px "Nanum Myeongjo", serif`;
   ctx.fillStyle = '#7a9a78';
-  ctx.fillText('청소년 언어문화 개선 프로그램', W / 2, 930);
+  ctx.fillText('은평경찰서 언어폭력예방 필사캠페인', W / 2, 930);
 }
 
 async function shareSeedCardDirect() {
@@ -4512,17 +4512,23 @@ async function shareSeedCardDirect() {
   const cv = document.getElementById('seedCardPreview');
   cv.toBlob(async blob => {
     const file = new File([blob], 'kkotmal-flower.png', { type: 'image/png' });
+    let shared = false;
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
         await navigator.share({ title: '꽃씨 전달하기 🌱', files: [file] });
-        return;
+        shared = true;
       } catch(e) {}
     }
-    // 파일 공유 불가 시 이미지 다운로드
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'kkotmal-flower.png'; a.click();
-    URL.revokeObjectURL(url);
+    if (!shared) {
+      // 파일 공유 불가 시 이미지 다운로드
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'kkotmal-flower.png'; a.click();
+      URL.revokeObjectURL(url);
+    }
+    // 공유(또는 다운로드) 완료 → 미션완료 버튼 활성화
+    const db = document.getElementById('missionDoneBtn');
+    if (db) db.disabled = false;
   }, 'image/png');
 }
 
