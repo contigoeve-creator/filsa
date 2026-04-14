@@ -233,14 +233,12 @@
   .mode-tabs {
     margin: 1rem 1rem 0;
     display: flex;
-    border: 1px solid rgba(139,69,19,0.2);
-    border-radius: 4px;
-    overflow: hidden;
+    gap: 0.35rem;
   }
   .mode-tab {
     flex: 1;
     padding: 0.55rem;
-    border: none;
+    border: 1px solid rgba(139,69,19,0.2);
     background: var(--paper-warm);
     font-family: 'Jua', sans-serif;
     font-size: 1.48rem;
@@ -248,10 +246,12 @@
     cursor: pointer;
     transition: all 0.2s;
     letter-spacing: 0.04em;
+    border-radius: 10px 10px 0 0;
   }
   .mode-tab.active {
     background: #d4763b;
     color: #fff;
+    border-color: #d4763b;
   }
   .canvas-section { margin: 0.2rem 0 0; display: block; }
   .canvas-section.hidden { display: none; }
@@ -399,7 +399,7 @@
     z-index: 0;
     pointer-events: none;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: 1rem 0.6rem;
   }
@@ -2694,8 +2694,8 @@
     <div class="quote-source" id="quoteSource"></div>
   </div>
   <div class="mode-tabs">
-    <button class="mode-tab" id="tabType"  onclick="switchMode('type')">⌨️ 따라 치기</button>
-    <button class="mode-tab active" id="tabWrite" onclick="switchMode('write')">✏️ 따라 그리기</button>
+    <button class="mode-tab active" id="tabType"  onclick="switchMode('type')">⌨️ 따라 쓰기</button>
+    <button class="mode-tab" id="tabWrite" onclick="switchMode('write')">✏️ 따라 그리기</button>
     <button class="mode-tab" id="tabVoice" onclick="switchMode('voice')">🎤 따라 읽기</button>
   </div>
 
@@ -3380,8 +3380,8 @@ function loadQuote(idx) {
 }
 
 function resetAll() {
-  currentMode = 'write';
-  switchMode('write');
+  currentMode = 'type';
+  switchMode('type');
   clearCanvas();
   undoStack.length = 0;
   voiceAccepted = false;
