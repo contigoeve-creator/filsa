@@ -4215,7 +4215,7 @@ function setupRecognition() {
   r.onstart = () => {
     isListening = true;
     document.getElementById('micBtn').classList.add('listening');
-    document.getElementById('voiceStatus').textContent = '듣고 있어요... 글귀를 읽어주세요';
+    if (!voiceAccepted) document.getElementById('voiceStatus').textContent = '듣고 있어요... 끝까지 천천히 읽어주세요 (다 읽으면 🎤 다시 누르기)';
   };
 
   r.onresult = (e) => {
@@ -4237,19 +4237,26 @@ function setupRecognition() {
     }
     if (sessionFinal) {
       accumulatedTranscripts.push(sessionFinal);
+      // 긴 문장은 중간에 끊겨 여러 조각으로 인식되므로, 조각을 이어 붙인 문장도 함께 평가
+      const candidates = accumulatedTranscripts.slice();
+      candidates.push(accumulatedTranscripts.join(' '));
       let bestOverall = sessionFinal;
-      let bestPct = 0;
-      accumulatedTranscripts.forEach(t => {
+      let bestPct = -1;
+      candidates.forEach(t => {
         const p = evaluateMatch(t);
         if (p > bestPct) { bestPct = p; bestOverall = t; }
       });
       evaluateMatch(bestOverall);
+      if (voiceAccepted) stopMic(); // 통과하면 마이크 자동 종료
     } else if (interim) {
       document.getElementById('voiceResult').textContent = interim;
     }
   };
 
   r.onerror = (e) => {
+    // 잠깐 말이 끊겨서 생기는 오류는 무시하고 계속 듣기 (onend에서 자동 재시작)
+    if (voiceKeepAlive && (e.error === 'no-speech' || e.error === 'aborted' || e.error === 'network')) return;
+    voiceKeepAlive = false;
     isListening = false;
     document.getElementById('micBtn').classList.remove('listening');
     if (e.error === 'not-allowed') {
@@ -4263,11 +4270,16 @@ function setupRecognition() {
   };
 
   r.onend = () => {
-    isListening = false;
-    document.getElementById('micBtn').classList.remove('listening');
-    if (!voiceAccepted && accumulatedTranscripts.length === 0) {
-      document.getElementById('voiceStatus').textContent = '다시 눌러 시도해보세요';
+    // 사용자가 끄지 않았으면 마이크를 다시 켜서 계속 듣기 (폰은 잠깐만 쉬어도 자동으로 꺼짐)
+    if (voiceKeepAlive && !voiceAccepted) {
+      setTimeout(() => {
+        if (!voiceKeepAlive || voiceAccepted) { finishVoiceListening(); return; }
+        try { recognition = setupRecognition(); recognition.start(); }
+        catch(e) { finishVoiceListening(); }
+      }, 200);
+      return;
     }
+    finishVoiceListening();
   };
   return r;
 }
@@ -4711,6 +4723,9 @@ function doShareCopy() {
 let missionRec = null;
 let missionListening = false;
 let missionTranscripts2 = [];
+let missionKeepAlive = false;
+let missionMaxTimer = null;
+let missionAccepted = false;
 
 function showMissionPage() {
   try {
@@ -4734,6 +4749,8 @@ function showMissionPage() {
     switchMissionTab('voice');
     missionTranscripts2 = [];
     missionListening = false;
+    missionKeepAlive = false;
+    missionAccepted = false;
     const r2 = document.getElementById('missionResult2');
     const p2 = document.getElementById('missionPct2');
     const s2 = document.getElementById('missionStatus2');
@@ -4771,8 +4788,13 @@ function toggleMissionMic(step) {
   }
 }
 
-function startMissionRec() {
+function startMissionRec(isRestart) {
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!isRestart) {
+    missionKeepAlive = true;
+    clearTimeout(missionMaxTimer);
+    missionMaxTimer = setTimeout(() => stopMissionMicAll(), VOICE_MAX_MS);
+  }
   missionRec = new SpeechRec();
   missionRec.lang = 'ko-KR';
   missionRec.continuous = false;
@@ -4788,7 +4810,7 @@ function startMissionRec() {
   missionRec.onstart = () => {
     missionListening = true;
     micBtn.classList.add('listening');
-    statusEl.textContent = '듣고 있어요... 읽어주세요';
+    if (!missionAccepted) statusEl.textContent = '듣고 있어요... 끝까지 말해주세요 (다 말하면 🎤 다시 누르기)';
   };
 
   missionRec.onresult = (e) => {
@@ -4806,12 +4828,17 @@ function startMissionRec() {
     }
     if (sessionFinal) {
       missionTranscripts2.push(sessionFinal);
-      let bestT = sessionFinal, bestP = 0;
-      missionTranscripts2.forEach(t => { const p = evalMissionText(t, target, null, null); if (p > bestP) { bestP = p; bestT = t; } });
+      // 끊겨서 인식된 조각들을 이어 붙인 문장도 함께 평가
+      const cands = missionTranscripts2.slice();
+      cands.push(missionTranscripts2.join(' '));
+      let bestT = sessionFinal, bestP = -1;
+      cands.forEach(t => { const p = evalMissionText(t, target, null, null); if (p > bestP) { bestP = p; bestT = t; } });
       const pct = evalMissionText(bestT, target, resultEl, pctEl);
       if (pct >= MISSION_VOICE_THRESHOLD) {
+        missionAccepted = true;
         statusEl.textContent = '훌륭해요! 꽃씨를 심었어요 🌸';
         document.getElementById('missionDoneBtn').disabled = false;
+        stopMissionMicAll(); // 통과하면 마이크 자동 종료
       } else {
         statusEl.textContent = '조금 더 또렷하게 말해볼까요? (' + pct + '%, ' + MISSION_VOICE_THRESHOLD + '% 이상 필요)';
       }
@@ -4819,12 +4846,23 @@ function startMissionRec() {
   };
 
   missionRec.onerror = (e) => {
+    if (missionKeepAlive && (e.error === 'no-speech' || e.error === 'aborted' || e.error === 'network')) return;
+    missionKeepAlive = false;
     missionListening = false;
     micBtn.classList.remove('listening');
     if (e.error === 'no-speech') statusEl.textContent = '소리가 감지되지 않았어요. 다시 눌러보세요.';
+    else if (e.error === 'not-allowed') statusEl.textContent = '마이크 권한이 필요해요.';
   };
 
   missionRec.onend = () => {
+    // 사용자가 끄지 않았으면 다시 켜서 계속 듣기
+    if (missionKeepAlive && !missionAccepted) {
+      setTimeout(() => {
+        if (!missionKeepAlive || missionAccepted) { stopMissionMicAll(); return; }
+        try { startMissionRec(true); } catch(e) { stopMissionMicAll(); }
+      }, 200);
+      return;
+    }
     missionListening = false;
     micBtn.classList.remove('listening');
   };
@@ -4865,8 +4903,13 @@ function evalMissionText(spokenRaw, targetText, resultEl, pctEl) {
 }
 
 function stopMissionMicAll() {
-  if (missionRec && missionListening) { try { missionRec.stop(); } catch(e) {} }
+  const wasMissionListening = missionListening || missionKeepAlive;
+  missionKeepAlive = false;
+  clearTimeout(missionMaxTimer);
+  if (missionRec) { try { missionRec.stop(); } catch(e) {} }
   missionListening = false;
+  const st = document.getElementById('missionStatus2');
+  if (st && wasMissionListening && !missionAccepted && missionTranscripts2.length > 0) st.textContent = '🎤 버튼을 다시 눌러 이어서 말할 수 있어요';
   ['missionMicBtn1','missionMicBtn2'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.classList.remove('listening');
@@ -5344,7 +5387,26 @@ function toggleMic() {
   }
 }
 
+// ── 따라 읽기: 마이크 계속 듣기 상태 ──
+let voiceKeepAlive = false;
+let voiceMaxTimer = null;
+const VOICE_MAX_MS = 60000; // 최대 60초까지 듣기
+
+function finishVoiceListening(updateStatus = true) {
+  voiceKeepAlive = false;
+  clearTimeout(voiceMaxTimer);
+  isListening = false;
+  document.getElementById('micBtn').classList.remove('listening');
+  if (updateStatus && !voiceAccepted) {
+    document.getElementById('voiceStatus').textContent =
+      accumulatedTranscripts.length === 0 ? '다시 눌러 시도해보세요' : '🎤 버튼을 다시 눌러 이어서 읽을 수 있어요';
+  }
+}
+
 function startRecognition() {
+  voiceKeepAlive = true;
+  clearTimeout(voiceMaxTimer);
+  voiceMaxTimer = setTimeout(() => stopMic(), VOICE_MAX_MS);
   recognition = setupRecognition();
   if (!recognition) {
     document.getElementById('voiceStatus').textContent =
@@ -5417,9 +5479,11 @@ function showPermissionBanner(isIOS, isAndroid) {
 }
 
 function stopMic() {
-  if (recognition && isListening) { try { recognition.stop(); } catch(e) {} }
-  isListening = false;
-  document.getElementById('micBtn').classList.remove('listening');
+  const wasListening = isListening || voiceKeepAlive;
+  voiceKeepAlive = false;
+  clearTimeout(voiceMaxTimer);
+  if (recognition) { try { recognition.stop(); } catch(e) {} }
+  finishVoiceListening(wasListening);
 }
 
 // ── 축하 페이지 탭 전환 ──
