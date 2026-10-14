@@ -336,7 +336,10 @@
   /* ── 캔버스 래퍼: 줄 없는 예쁜 필사 캔버스 ── */
   /* 캔버스 스크롤 외부 컨테이너 */
   .canvas-scroll-outer {
-    margin: 0 1rem;
+    margin: 0 auto 0 1rem;          /* 왼쪽 정렬 */
+    width: 350px;                   /* 따라 그리기 캔버스 가로 350px */
+    max-width: calc(100% - 1rem);   /* 아주 좁은 폰에서는 화면 밖으로 넘치지 않게 */
+    box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
     border-radius: 16px;
@@ -3244,7 +3247,7 @@ const QUOTES = [
     source: "— 와이즈먼",
     emoji: "🌍",
     msg: "말 한마디가 쌓여 우리가 사는 학교의 분위기가 됩니다. 따뜻한 말이 넘치는 교실은 그 말들이 만든 세계입니다. 오늘 어떤 세계를 만들고 싶으신가요?",
-    mission: "넌 말투가 다정해서 너랑 대화하면 늘 기분이 좋아 고마워"
+    mission: "넌 말투가 다정해서 너랑 대화하면 늘 기분이 좋아"
   },
   {
     text: "사랑한다는 말을 아끼지 마라. 그 말이 누군가를 살리기도 한다.",
@@ -3362,7 +3365,7 @@ function initCanvas() {
   const viewH = isMobile
     ? Math.max(Math.round(window.innerHeight * 0.75), 450)
     : Math.min(Math.max(w * 0.87, 360), 600);
-  const canvasH = Math.max(Math.round(viewH * 2.1), 700); // 따라 그리기 캔버스 세로 700px 보장
+  const canvasH = Math.max(Math.round(viewH * 2.1), 450); // 따라 그리기 캔버스 세로 450px 보장
   canvas.width = w;
   canvas.height = canvasH;
   canvas.style.width = w + 'px';
@@ -3370,7 +3373,7 @@ function initCanvas() {
   wrapper.style.height = canvasH + 'px';
   // outer(스크롤 컨테이너)에만 viewH 적용
   const outer = document.getElementById('canvasScrollOuter');
-  if (outer) outer.style.height = '700px'; // 따라 그리기 캔버스 세로 700px
+  if (outer) outer.style.height = '450px'; // 따라 그리기 캔버스 세로 450px
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 }
@@ -3953,9 +3956,16 @@ function fitOuterToGuide() {
     const outer     = document.getElementById('canvasScrollOuter');
     if (!guideSpan || !outer) return;
     const pad = 32; // canvas-guide padding 1rem × 2
-    const textH = guideSpan.scrollHeight;
-    const newH  = Math.max(textH + pad, 700); // 따라 그리기 캔버스 세로 700px
-    outer.style.height = newH + 'px';
+    const FIX_H = 450; // 따라 그리기 캔버스 세로 450px 고정
+    outer.style.height = FIX_H + 'px';
+    // 긴 글귀는 예시 문구가 450px 안에 다 들어가도록 글씨만 조금씩 줄임
+    let size = parseFloat(getComputedStyle(guideSpan).fontSize);
+    let guard = 0;
+    while (guideSpan.scrollHeight + pad > FIX_H && size > 12 && guard < 40) {
+      size = size * 0.95;
+      guideSpan.style.fontSize = size + 'px';
+      guard++;
+    }
   });
 }
 
