@@ -2924,7 +2924,7 @@
       <span class="incomplete-hint" id="completeHint">조금 더 써보세요</span>
     </button>
   </div>
-  <div class="save-area">
+  <div class="save-area" id="saveArea" style="display:none;">
     <button class="btn-save-writing" onclick="saveWritingImage()">💾 글씨 저장하기</button>
   </div>
 
@@ -3328,7 +3328,8 @@ const QUOTES = [
   }
 ];
 
-const VOICE_THRESHOLD = 40;
+const COMPLETE_THRESHOLD = 90; // 따라 쓰기·그리기 완성 기준 (90% 이상)
+const VOICE_THRESHOLD = 80; // 따라 읽기만 80% 이상 (음성 인식 오차 고려)
 
 const STROKES_PER_CHAR = 4.8;
 const DIST_PER_CHAR   = 175;
@@ -3425,7 +3426,7 @@ function checkCompleteEligibility() {
   const hint = document.getElementById('completeHint');
   if (!btn) return;
   if (currentMode === 'write') {
-    if (coverage >= 80) {
+    if (coverage >= COMPLETE_THRESHOLD) {
       btn.classList.add('ready');
       btn.style.opacity = '1';
       btn.style.background = '';
@@ -3433,7 +3434,7 @@ function checkCompleteEligibility() {
     } else {
       btn.classList.remove('ready');
       btn.style.opacity = '0.55';
-      hint.textContent = '조금 더 그려보세요 (' + coverage + '%)';
+      hint.textContent = '조금 더 그려보세요 (' + coverage + '% / ' + COMPLETE_THRESHOLD + '%)';
     }
   } else if (currentMode === 'type') {
     if (typeAccepted) {
@@ -3443,7 +3444,7 @@ function checkCompleteEligibility() {
     } else {
       btn.classList.remove('ready');
       btn.style.opacity = '0.55';
-      hint.textContent = '글귀를 입력해주세요';
+      hint.textContent = '글귀를 ' + COMPLETE_THRESHOLD + '% 이상 똑같이 입력해주세요';
     }
   } else {
     if (voiceAccepted) {
@@ -3453,7 +3454,7 @@ function checkCompleteEligibility() {
     } else {
       btn.classList.remove('ready');
       btn.style.opacity = '0.55';
-      hint.textContent = '글귀를 읽어주세요';
+      hint.textContent = '글귀를 ' + VOICE_THRESHOLD + '% 이상 정확히 읽어주세요';
     }
   }
 }
@@ -3996,6 +3997,12 @@ function switchMode(mode) {
   document.getElementById('tabWrite').className = 'mode-tab' + (mode === 'write' ? ' active' : '');
   document.getElementById('tabVoice').className = 'mode-tab' + (mode === 'voice' ? ' active' : '');
   document.getElementById('canvasSection').className = 'canvas-section' + (mode === 'write' ? '' : ' hidden');
+  // '글씨 저장하기' 버튼은 따라 그리기에서만 표시
+  const saveArea = document.getElementById('saveArea');
+  if (saveArea) saveArea.style.display = (mode === 'write') ? '' : 'none';
+  // 저장 버튼이 없을 때는 하단 메뉴에 가리지 않도록 버튼 줄 아래 여백 확보
+  const actionArea = document.querySelector('.action-area');
+  if (actionArea) actionArea.style.paddingBottom = (mode === 'write') ? '0' : '80px';
   document.getElementById('typeSection').className   = 'type-section'   + (mode === 'type'  ? '' : ' hidden');
   document.getElementById('voiceSection').className  = 'voice-section'  + (mode === 'voice' ? '' : ' hidden');
   stopMic();
@@ -4079,9 +4086,9 @@ function onTypeInput() {
   const matchPct  = document.getElementById('typeMatchPct');
   const statusEl  = document.getElementById('typeStatus');
 
-  matchPct.textContent = '일치율: ' + pct + '%';
+  matchPct.textContent = '일치율: ' + pct + '%  (기준: ' + COMPLETE_THRESHOLD + '% 이상)';
 
-  if (pct >= 80) {
+  if (pct >= COMPLETE_THRESHOLD) {
     typeAccepted = true;
     result.className = 'voice-result match';
     result.innerHTML = makeTypingHighlight(input, target);
@@ -5046,7 +5053,7 @@ function buildWritingImage() {
   const viewH = outer ? outer.clientHeight : canvas.height;
   const scrollTop = outer ? outer.scrollTop : 0;
   const S = 2; // 선명하게 2배 크기로 저장
-  const W = canvas.width, footH = 70;
+  const W = canvas.width, footH = 48;
   const out = document.createElement('canvas');
   out.width = W * S; out.height = (viewH + footH) * S;
   const c = out.getContext('2d');
@@ -5058,16 +5065,10 @@ function buildWritingImage() {
   c.strokeStyle = 'rgba(201,168,76,0.45)';
   c.lineWidth = 1;
   c.beginPath(); c.moveTo(16, viewH + 8); c.lineTo(W - 16, viewH + 8); c.stroke();
-  const q = QUOTES[currentIdx];
-  const d = new Date();
-  const date = d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
   c.textAlign = 'center';
-  c.fillStyle = '#8b4513';
-  c.font = '13px "Jua", sans-serif';
-  c.fillText('글귀 ' + (currentIdx + 1) + ' · ' + q.source.replace(/^—\s*/, '') + ' · ' + date, W / 2, viewH + 32);
   c.fillStyle = 'rgba(76,29,107,0.65)';
   c.font = 'bold 12px "Nanum Myeongjo", serif';
-  c.fillText('🌸 은평경찰서 언어폭력예방 필사캠페인 🌸', W / 2, viewH + 54);
+  c.fillText('🌸 은평경찰서 언어폭력예방 필사캠페인 🌸', W / 2, viewH + 32);
   return out;
 }
 
@@ -5485,7 +5486,24 @@ function completeQuote() {
   showCelebratePage();
 }
 
+function isCurrentModeComplete() {
+  if (currentMode === 'write') return coverage >= COMPLETE_THRESHOLD;
+  if (currentMode === 'type')  return typeAccepted === true;
+  return voiceAccepted === true;
+}
+
 function tryComplete() {
+  // 따라 쓰기·그리기·읽기 모두 완성률 90% 이상일 때만 다음 단계로
+  if (!isCurrentModeComplete()) {
+    const msg = currentMode === 'write'
+      ? '조금 더 그려보세요! 완성률 ' + coverage + '% (' + COMPLETE_THRESHOLD + '% 이상 필요)'
+      : currentMode === 'type'
+        ? '글귀를 ' + COMPLETE_THRESHOLD + '% 이상 똑같이 입력해야 완성할 수 있어요'
+        : '글귀를 ' + VOICE_THRESHOLD + '% 이상 정확히 읽어야 완성할 수 있어요';
+    if (typeof showSaveToast === 'function') showSaveToast(msg); else alert(msg);
+    checkCompleteEligibility();
+    return;
+  }
   showMissionPage();
 }
 
