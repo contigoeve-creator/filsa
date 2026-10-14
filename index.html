@@ -3330,6 +3330,7 @@ const QUOTES = [
 
 const COMPLETE_THRESHOLD = 90; // 따라 쓰기·그리기 완성 기준 (90% 이상)
 const VOICE_THRESHOLD = 80; // 따라 읽기만 80% 이상 (음성 인식 오차 고려)
+const MISSION_VOICE_THRESHOLD = 70; // '오늘 해볼 좋은 말' 말해 보기 완료 기준 (70% 이상)
 
 const STROKES_PER_CHAR = 4.8;
 const DIST_PER_CHAR   = 175;
@@ -4808,11 +4809,11 @@ function startMissionRec() {
       let bestT = sessionFinal, bestP = 0;
       missionTranscripts2.forEach(t => { const p = evalMissionText(t, target, null, null); if (p > bestP) { bestP = p; bestT = t; } });
       const pct = evalMissionText(bestT, target, resultEl, pctEl);
-      if (pct >= 40) {
+      if (pct >= MISSION_VOICE_THRESHOLD) {
         statusEl.textContent = '훌륭해요! 꽃씨를 심었어요 🌸';
         document.getElementById('missionDoneBtn').disabled = false;
       } else {
-        statusEl.textContent = '조금 더 또렷하게 읽어볼까요? (' + pct + '%)';
+        statusEl.textContent = '조금 더 또렷하게 말해볼까요? (' + pct + '%, ' + MISSION_VOICE_THRESHOLD + '% 이상 필요)';
       }
     } else if (interim) { resultEl.textContent = interim; }
   };
@@ -4857,9 +4858,9 @@ function evalMissionText(spokenRaw, targetText, resultEl, pctEl) {
     targetWords.forEach((w, i) => { html += '<span class="' + (hitIdx.has(i) ? 'hit' : 'miss') + '">' + w + '</span> '; });
     html += '</span>';
     resultEl.innerHTML = html;
-    resultEl.className = 'mission-voice-result' + (pct >= 40 ? ' match' : ' partial');
+    resultEl.className = 'mission-voice-result' + (pct >= MISSION_VOICE_THRESHOLD ? ' match' : ' partial');
   }
-  if (pctEl) pctEl.textContent = '일치율: ' + pct + '% (40% 이상이면 완료)';
+  if (pctEl) pctEl.textContent = '일치율: ' + pct + '% (' + MISSION_VOICE_THRESHOLD + '% 이상이면 완료)';
   return pct;
 }
 
