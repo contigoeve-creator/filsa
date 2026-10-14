@@ -710,8 +710,26 @@
     margin: 0.8rem 1rem 0;
     display: flex;
     gap: 0.5rem;
+  }
+  /* 글씨 저장하기 버튼 (완성했어요 아래) */
+  .save-area {
+    margin: 0.55rem 1rem 0;
     padding-bottom: 80px;
   }
+  .btn-save-writing {
+    width: 100%;
+    padding: 0.7rem;
+    border: 1.5px solid #d4763b;
+    border-radius: 4px;
+    background: #fff;
+    color: #d4763b;
+    font-family: 'Jua', sans-serif;
+    font-size: 1.2rem;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: all 0.2s;
+  }
+  .btn-save-writing:active { background: #fdf0e6; }
   .btn-clear {
     flex: 1;
     padding: 0.7rem;
@@ -2906,6 +2924,9 @@
       <span class="incomplete-hint" id="completeHint">조금 더 써보세요</span>
     </button>
   </div>
+  <div class="save-area">
+    <button class="btn-save-writing" onclick="saveWritingImage()">💾 글씨 저장하기</button>
+  </div>
 
 </div><!-- /canvasSection -->
 </div><!-- /mainApp -->
@@ -3365,7 +3386,7 @@ function initCanvas() {
   const viewH = isMobile
     ? Math.max(Math.round(window.innerHeight * 0.75), 450)
     : Math.min(Math.max(w * 0.87, 360), 600);
-  const canvasH = Math.max(Math.round(viewH * 2.1), 500); // 따라 그리기 캔버스 세로 500px 보장
+  const canvasH = Math.max(Math.round(viewH * 2.1), 550); // 따라 그리기 캔버스 세로 550px 보장
   canvas.width = w;
   canvas.height = canvasH;
   canvas.style.width = w + 'px';
@@ -3373,7 +3394,7 @@ function initCanvas() {
   wrapper.style.height = canvasH + 'px';
   // outer(스크롤 컨테이너)에만 viewH 적용
   const outer = document.getElementById('canvasScrollOuter');
-  if (outer) outer.style.height = '500px'; // 따라 그리기 캔버스 세로 500px
+  if (outer) outer.style.height = '550px'; // 따라 그리기 캔버스 세로 550px
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 }
@@ -3956,9 +3977,9 @@ function fitOuterToGuide() {
     const outer     = document.getElementById('canvasScrollOuter');
     if (!guideSpan || !outer) return;
     const pad = 32; // canvas-guide padding 1rem × 2
-    const FIX_H = 500; // 따라 그리기 캔버스 세로 500px 고정
+    const FIX_H = 550; // 따라 그리기 캔버스 세로 550px 고정
     outer.style.height = FIX_H + 'px';
-    // 긴 글귀는 예시 문구가 500px 안에 다 들어가도록 글씨만 조금씩 줄임
+    // 긴 글귀는 예시 문구가 550px 안에 다 들어가도록 글씨만 조금씩 줄임
     let size = parseFloat(getComputedStyle(guideSpan).fontSize);
     let guard = 0;
     while (guideSpan.scrollHeight + pad > FIX_H && size > 12 && guard < 40) {
@@ -5017,6 +5038,82 @@ function buildShareCanvas() {
   tmpCtx.fillText('🌸 은평경찰서 언어폭력 예방 필사 캠페인 🌸', tmpCanvas.width / 2, by + bannerH / 2);
 
   return tmpCanvas;
+}
+
+// ── 글씨 저장하기: 캔버스에 보이는 부분 + 하단 캠페인 문구를 이미지로 저장 ──
+function buildWritingImage() {
+  const outer = document.getElementById('canvasScrollOuter');
+  const viewH = outer ? outer.clientHeight : canvas.height;
+  const scrollTop = outer ? outer.scrollTop : 0;
+  const S = 2; // 선명하게 2배 크기로 저장
+  const W = canvas.width, footH = 70;
+  const out = document.createElement('canvas');
+  out.width = W * S; out.height = (viewH + footH) * S;
+  const c = out.getContext('2d');
+  c.scale(S, S);
+  c.fillStyle = '#fffdf7';
+  c.fillRect(0, 0, W, viewH + footH);
+  c.drawImage(canvas, 0, scrollTop, W, viewH, 0, 0, W, viewH);
+  // 하단 캠페인 문구
+  c.strokeStyle = 'rgba(201,168,76,0.45)';
+  c.lineWidth = 1;
+  c.beginPath(); c.moveTo(16, viewH + 8); c.lineTo(W - 16, viewH + 8); c.stroke();
+  const q = QUOTES[currentIdx];
+  const d = new Date();
+  const date = d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
+  c.textAlign = 'center';
+  c.fillStyle = '#8b4513';
+  c.font = '13px "Jua", sans-serif';
+  c.fillText('글귀 ' + (currentIdx + 1) + ' · ' + q.source.replace(/^—\s*/, '') + ' · ' + date, W / 2, viewH + 32);
+  c.fillStyle = 'rgba(76,29,107,0.65)';
+  c.font = 'bold 12px "Nanum Myeongjo", serif';
+  c.fillText('🌸 은평경찰서 언어폭력예방 필사캠페인 🌸', W / 2, viewH + 54);
+  return out;
+}
+
+function saveWritingImage() {
+  if (!canvas.width || !canvas.height) return;
+  const out = buildWritingImage();
+  const fileName = '마음글씨_' + (currentIdx + 1) + '번_' + Date.now() + '.png';
+  const dataUrl = out.toDataURL('image/png');
+  const ua = navigator.userAgent || '';
+  const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const inApp = /KAKAOTALK|Instagram|FBAN|FBAV|Line\/|NAVER|DaumApps/i.test(ua);
+  if (isIOS || inApp) {
+    // 아이폰·카카오톡 등에서는 파일 다운로드가 막혀 있어 이미지를 길게 눌러 저장하도록 안내
+    showSaveOverlay(dataUrl);
+    return;
+  }
+  try {
+    const a = document.createElement('a');
+    a.href = dataUrl; a.download = fileName;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    showSaveToast('사진이 저장됐어요 📥 다운로드 폴더나 갤러리에서 확인하세요');
+  } catch(e) {
+    showSaveOverlay(dataUrl);
+  }
+}
+
+function showSaveOverlay(dataUrl) {
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:99999;display:flex;flex-direction:column;align-items:center;overflow-y:auto;-webkit-overflow-scrolling:touch;';
+  const bar = document.createElement('div');
+  bar.style.cssText = 'width:100%;padding:0.8rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#111;';
+  bar.innerHTML = '<span style="color:#fff;font-size:0.9rem;">👆 이미지를 길게 눌러 저장하세요</span><button style="background:#fff;border:none;border-radius:16px;padding:0.4rem 1rem;font-size:0.9rem;cursor:pointer;">닫기</button>';
+  bar.querySelector('button').onclick = () => ov.remove();
+  const img = document.createElement('img');
+  img.src = dataUrl;
+  img.style.cssText = 'width:min(92%,420px);margin:1rem auto;display:block;border-radius:8px;';
+  ov.appendChild(bar); ov.appendChild(img);
+  document.body.appendChild(ov);
+}
+
+function showSaveToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:rgba(60,40,30,0.92);color:#fff;padding:0.65rem 1rem;border-radius:20px;font-size:0.85rem;z-index:99999;max-width:90%;text-align:center;';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2600);
 }
 
 // 저장하기 - 이미지를 화면에 크게 보여주고 스크린샷 유도
