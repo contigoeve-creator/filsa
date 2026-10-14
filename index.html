@@ -406,7 +406,7 @@
   }
   .canvas-guide span {
     font-family: 'Jua', sans-serif;
-    font-size: 6.5rem;
+    font-size: 4.875rem;
     font-weight: 400;
     color: rgba(139,69,19,0.039);
     letter-spacing: 0em;
@@ -2563,6 +2563,38 @@
     .intro-magic-title { font-size: 1rem; }
     .intro-magic-body { font-size: 0.82rem; }
   }
+
+  /* ══════════════════════════════════════════════════
+     미션완료(축하) 페이지 간소화 레이아웃 — 상단 2배 확대 & 재배치
+     (#celebratePage 안에서만 적용)
+  ══════════════════════════════════════════════════ */
+  #celebratePage .cel-top {
+    min-height: 448px;
+    padding: 2.4rem 1.6rem 2.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 0 28px 28px;
+    box-shadow: 0 6px 24px rgba(139,69,19,0.08);
+  }
+  #celebratePage .cel-level-row { gap: 2.2rem; margin-bottom: 0.9rem; }
+  #celebratePage .cel-level-badge { font-size: 1.15rem; padding: 0.3rem 1rem; }
+  #celebratePage .cel-level-name { font-size: 1.75rem; }
+  #celebratePage .cel-level-art { font-size: 5.2rem; margin: 0.4rem 0 1.1rem; }
+  #celebratePage .cel-title { font-size: 1.3rem; margin-bottom: 0.4rem; word-break: keep-all; }
+  #celebratePage .cel-level-msg {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-top: 0.9rem;
+    padding: 0.8rem 1.1rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.55);
+    max-width: 340px;
+  }
+  #celebratePage .cel-body { padding: 2rem 1.4rem 1.6rem; }
+  #celebratePage .cel-btn-main { padding: 1.15rem; font-size: 1.3rem; border-radius: 14px; }
+  #celebratePage .cel-footer-wrap { margin-top: 1.6rem; }
 </style>
 </head>
 <body>
@@ -3079,34 +3111,6 @@
   </div>
   <div class="cel-body">
 
-    <!-- 두 버튼 탭 -->
-    <div style="display:flex;gap:0.3rem;margin-bottom:0.6rem;">
-      <button id="celTabWriting" onclick="switchCelTab('writing')"
-        style="flex:1;padding:0.5rem;border:none;border-radius:8px 8px 0 0;font-family:'Jua',sans-serif;font-size:0.9rem;cursor:pointer;transition:all 0.2s;background:#d4763b;color:#fff;">
-        ✍️ 내가 쓴 글씨
-      </button>
-      <button id="celTabSeed" onclick="switchCelTab('seed')"
-        style="flex:1;padding:0.5rem;border:none;border-radius:8px 8px 0 0;font-family:'Jua',sans-serif;font-size:0.9rem;cursor:pointer;transition:all 0.2s;background:var(--paper-warm);color:var(--sage);">
-        🌱 내가 심은 꽃씨
-      </button>
-    </div>
-
-    <!-- 내가 쓴 글씨 패널 -->
-    <div id="celPanelWriting" style="background:var(--paper-warm);border-radius:0 8px 8px 8px;padding:0.8rem;margin-bottom:0.8rem;">
-      <img id="celMyWriting" src="" alt="내가 쓴 글씨"
-        style="width:100%;border-radius:10px;border:1px solid rgba(201,168,76,0.3);box-shadow:0 3px 14px rgba(139,69,19,0.1);display:none;background:#fff;">
-      <div id="celNoWriting" style="padding:1.5rem;color:var(--sage);font-size:0.85rem;text-align:center;display:none;">아직 저장된 글씨가 없어요</div>
-      <button class="cel-btn-share" style="margin-top:0.7rem;" onclick="shareMyWriting()">📤 내가 쓴 글씨 공유하기</button>
-    </div>
-
-    <!-- 내가 심은 꽃씨 패널 -->
-    <div id="celPanelSeed" style="display:none;background:linear-gradient(135deg,rgba(134,239,172,0.2),rgba(253,230,138,0.2));border:1.5px solid rgba(134,239,172,0.4);border-radius:0 8px 8px 8px;padding:1rem 1.2rem;margin-bottom:0.8rem;text-align:center;">
-      <div class="mission-seed-label">오늘 심은 꽃씨</div>
-      <div class="mission-seed-text" id="celSeedText"></div>
-      <div style="margin-top:0.8rem;font-size:0.78rem;color:#4a6741;">이 말을 오늘 실제로 친구에게 건네보세요 🌱</div>
-      <button class="cel-btn-share" style="margin-top:0.7rem;" onclick="shareCelSeed()">📤 꽃씨 공유하기</button>
-    </div>
-
     <div class="cel-btns">
       <button class="cel-btn-main" id="celBtnMain" onclick="nextQuote()">다음 글귀 쓰기 →</button>
     </div>
@@ -3358,7 +3362,7 @@ function initCanvas() {
   const viewH = isMobile
     ? Math.max(Math.round(window.innerHeight * 0.75), 450)
     : Math.min(Math.max(w * 0.87, 360), 600);
-  const canvasH = Math.max(Math.round(viewH * 2.1), 800); // 따라 그리기 캔버스 세로 800px 보장
+  const canvasH = Math.max(Math.round(viewH * 2.1), 700); // 따라 그리기 캔버스 세로 700px 보장
   canvas.width = w;
   canvas.height = canvasH;
   canvas.style.width = w + 'px';
@@ -3366,7 +3370,7 @@ function initCanvas() {
   wrapper.style.height = canvasH + 'px';
   // outer(스크롤 컨테이너)에만 viewH 적용
   const outer = document.getElementById('canvasScrollOuter');
-  if (outer) outer.style.height = '800px'; // 따라 그리기 캔버스 세로 800px
+  if (outer) outer.style.height = '700px'; // 따라 그리기 캔버스 세로 700px
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 }
@@ -3438,7 +3442,7 @@ function loadQuote(idx) {
   document.getElementById('guideText').textContent = q.text;
   const gs = document.getElementById('guideText');
   gs.style.fontFamily = "'" + currentGuideFont + "', sans-serif";
-  const cfg = fontSizeMap[currentGuideFont] || { size: '6.5rem', lineHeight: '1.05', letterSpacing: '0em', transform: '' };
+  const cfg = fontSizeMap[currentGuideFont] || { size: '4.875rem', lineHeight: '1.05', letterSpacing: '0em', transform: '' };
   gs.style.fontSize = cfg.size;
   gs.style.lineHeight = cfg.lineHeight;
   gs.style.letterSpacing = cfg.letterSpacing || '0em';
@@ -3950,7 +3954,7 @@ function fitOuterToGuide() {
     if (!guideSpan || !outer) return;
     const pad = 32; // canvas-guide padding 1rem × 2
     const textH = guideSpan.scrollHeight;
-    const newH  = Math.max(textH + pad, 800); // 따라 그리기 캔버스 세로 800px
+    const newH  = Math.max(textH + pad, 700); // 따라 그리기 캔버스 세로 700px
     outer.style.height = newH + 'px';
   });
 }
@@ -4805,9 +4809,17 @@ function skipMission() {
   completeQuote();
 }
 
+// 21개 글귀(0~20번)가 하나도 빠짐없이 완료됐는지 정확히 확인
+function isAllQuotesDone() {
+  for (let i = 0; i < QUOTES.length; i++) {
+    if (!completedSet.has(i)) return false;
+  }
+  return true;
+}
+
 function showCelebratePage() {
   const q = QUOTES[currentIdx];
-  const isAllDone = completedSet.size === QUOTES.length;
+  const isAllDone = isAllQuotesDone();
   document.getElementById('celTitle').textContent = isAllDone ? '꽃이 피었습니다! 🌸 글귀를 모두 새겼어요' : '훌륭해요! 글귀를 마음에 새겼어요';
   const lvData = getLevelData(completedSet.size);
   document.getElementById('celLevelBadge').textContent = 'Lv.' + lvData.lv;
@@ -5035,25 +5047,25 @@ function setPenType(type, el) {
   if (el) el.classList.add('active');
 }
 const fontSizeMap = {
-  'Jua':                { size: '6.5rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
-  'Nanum Pen Script':   { size: '7.7rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
-  'Gaegu':              { size: '6.1rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
-  'Yeon Sung':          { size: '6.7rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
-  'Gugi':               { size: '5.8rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
-  'Single Day':         { size: '6.9rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
-  'Kirang Haerang':     { size: '6.1rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
-  'Hi Melody':          { size: '6.5rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '', weight: '900' },
-  'Do Hyeon':           { size: '6.5rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
-  'Black Han Sans':     { size: '5.3rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
-  'Cute Font':          { size: '6.1rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
-  'Diphylleia':         { size: '6.5rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '', weight: '900' }
+  'Jua':                { size: '4.875rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Nanum Pen Script':   { size: '5.775rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Gaegu':              { size: '4.575rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Yeon Sung':          { size: '5.025rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Gugi':               { size: '4.35rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Single Day':         { size: '5.175rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Kirang Haerang':     { size: '4.575rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Hi Melody':          { size: '4.875rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '', weight: '900' },
+  'Do Hyeon':           { size: '4.875rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Black Han Sans':     { size: '3.975rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Cute Font':          { size: '4.575rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '' },
+  'Diphylleia':         { size: '4.875rem', lineHeight: '1.05', letterSpacing: '0em',    transform: '', weight: '900' }
 };
 
 function setGuideFont(font) {
   currentGuideFont = font;
   const guideSpan = document.getElementById('guideText');
   if (guideSpan) {
-    const cfg = fontSizeMap[font] || { size: '6.5rem', lineHeight: '1.05', letterSpacing: '0em', transform: '' };
+    const cfg = fontSizeMap[font] || { size: '4.875rem', lineHeight: '1.05', letterSpacing: '0em', transform: '' };
     guideSpan.style.fontFamily = "'" + font + "', sans-serif";
     guideSpan.style.fontSize = cfg.size;
     guideSpan.style.lineHeight = cfg.lineHeight;
@@ -5563,6 +5575,8 @@ function makeDateStamp(dateShort) {
 }
 
 function showDoneScreen() {
+  // 21개를 모두 완성하지 않았으면 완료 화면 대신 다음 글귀로
+  if (!isAllQuotesDone()) { nextQuote(); return; }
   document.getElementById('celebratePage').classList.remove('show');
 
   // doneTreeArt 요소가 있을 때만 접근
@@ -5704,7 +5718,8 @@ function loadProgress() {
     if (!raw) return false;
     const data = JSON.parse(raw);
     if (data.completed && Array.isArray(data.completed)) {
-      completedSet = new Set(data.completed.map(Number));
+      // 0~20번 범위의 올바른 글귀 번호만 복원 (예전 버전의 잘못된 기록 제거)
+      completedSet = new Set(data.completed.map(Number).filter(n => Number.isInteger(n) && n >= 0 && n < QUOTES.length));
     }
     if (data.dates) completionDates = data.dates;
     if (completedSet.size > 0) {
