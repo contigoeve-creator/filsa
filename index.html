@@ -2911,14 +2911,14 @@
 <!-- 탭2: 나의 필사 갤러리 -->
   <div class="tab-page" id="tabGallery">
     <div class="gallery-header">
-      <h2>🖼️ 나의 필사</h2>
-      <p>내가 직접 쓴 글귀들을 모아봤어요</p>
-      <div class="gallery-progress-pill" id="galleryProgressPill">0 / 21 완료</div>
+      <h2>🖼️ 나의 공유</h2>
+      <p>내가 공유한 꽃씨 카드를 모아봤어요</p>
+      <div class="gallery-progress-pill" id="galleryProgressPill">0장 공유</div>
     </div>
     <div id="galleryContent">
       <div class="gallery-empty">
-        <div class="empty-icon">✍️</div>
-        <p>아직 완성한 필사가 없어요<br>오늘의 필사 탭에서 첫 글귀를 써보세요!</p>
+        <div class="empty-icon">📤</div>
+        <p>아직 공유한 카드가 없어요<br>미션의 '공유하기'에서 꽃씨 카드를 보내보세요!</p>
       </div>
     </div>
   </div>
@@ -2957,7 +2957,7 @@
   </button>
   <button class="nav-tab-btn" id="navGallery" onclick="switchTab('gallery')">
     <span class="nav-icon">🖼️</span>
-    <span>나의 필사</span>
+    <span>나의 공유</span>
   </button>
   <button class="nav-tab-btn" id="navRecords" onclick="switchTab('records')">
     <span class="nav-icon">📋</span>
@@ -4511,6 +4511,42 @@ function renderSeedCardPreview() {
   ctx.fillText('은평경찰서 언어폭력예방 필사캠페인', W / 2, 930);
 }
 
+// ── 나의 공유: 공유한 카드 이미지 저장 (글귀별 가장 최근 1장) ──
+const SHARE_STORE_KEY = 'maeum_shared_list';
+function getSharedList() {
+  try {
+    const list = JSON.parse(localStorage.getItem(SHARE_STORE_KEY) || '[]');
+    return Array.isArray(list) ? list : [];
+  } catch(e) { return []; }
+}
+function saveSharedImage(srcCanvas) {
+  try {
+    // 저장 용량을 줄이기 위해 540px로 축소해서 JPEG로 저장
+    const size = 540;
+    const c = document.createElement('canvas');
+    c.width = size; c.height = size;
+    const cx = c.getContext('2d');
+    cx.fillStyle = '#ffffff';
+    cx.fillRect(0, 0, size, size);
+    cx.drawImage(srcCanvas, 0, 0, size, size);
+    const img = c.toDataURL('image/jpeg', 0.8);
+    const d = new Date();
+    const date = d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
+    let list = getSharedList().filter(it => it.idx !== currentIdx);
+    list.unshift({ idx: currentIdx, date: date, time: d.getTime(), img: img });
+    list = list.slice(0, QUOTES.length);
+    try {
+      localStorage.setItem(SHARE_STORE_KEY, JSON.stringify(list));
+    } catch(e) {
+      // 저장 공간이 부족하면 오래된 것부터 지우고 다시 시도
+      while (list.length > 1) {
+        list.pop();
+        try { localStorage.setItem(SHARE_STORE_KEY, JSON.stringify(list)); break; } catch(e2) {}
+      }
+    }
+  } catch(e) { console.warn('공유 이미지 저장 실패:', e); }
+}
+
 async function shareSeedCardDirect() {
   renderSeedCardPreview();
   const cv = document.getElementById('seedCardPreview');
@@ -4523,8 +4559,10 @@ async function shareSeedCardDirect() {
         shared = true;
       } catch(e) {}
     }
+    if (shared) saveSharedImage(cv);
     if (!shared) {
       // 파일 공유 불가 시 이미지 다운로드
+      saveSharedImage(cv);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url; a.download = 'kkotmal-flower.png'; a.click();
@@ -5495,30 +5533,25 @@ function switchTab(tab) {
 
 /* ── 갤러리 렌더링 ── */
 function renderGallery() {
+  const list = getSharedList();
   const pill = document.getElementById('galleryProgressPill');
-  if (pill) pill.textContent = completedSet.size + ' / ' + QUOTES.length + ' 완료';
+  if (pill) pill.textContent = list.length + '장 공유';
   const container = document.getElementById('galleryContent');
   if (!container) return;
-  const completed = Array.from(completedSet).sort((a,b) => a-b);
-  if (completed.length === 0) {
-    container.innerHTML = '<div class="gallery-empty"><div class="empty-icon">✍️</div><p>아직 완성한 필사가 없어요<br>오늘의 필사 탭에서 첫 글귀를 써보세요!</p></div>';
+  if (list.length === 0) {
+    container.innerHTML = '<div class="gallery-empty"><div class="empty-icon">📤</div><p>아직 공유한 카드가 없어요<br>미션의 \'공유하기\'에서 꽃씨 카드를 보내보세요!</p></div>';
     return;
   }
   let html = '<div class="gallery-grid">';
-  completed.forEach(idx => {
-    const q = QUOTES[idx];
-    const img = localStorage.getItem('maeum_img_' + idx);
-    const date = completionDates[idx] || '';
+  list.forEach(it => {
+    const q = QUOTES[it.idx];
+    if (!q || !it.img) return;
     html += '<div class="gallery-item">';
-    if (img) {
-      html += '<img src="' + img + '" alt="필사 ' + (idx+1) + '">';
-    } else {
-      html += '<div style="aspect-ratio:1;background:var(--paper-warm);display:flex;align-items:center;justify-content:center;font-size:2rem;">✍️</div>';
-    }
+    html += '<img src="' + it.img + '" alt="공유한 카드 ' + (it.idx+1) + '">';
     html += '<div class="gallery-item-info">';
-    html += '<div class="gallery-item-num">글귀 ' + (idx+1) + '</div>';
-    html += '<div class="gallery-item-text">' + q.text + '</div>';
-    if (date) html += '<div class="gallery-item-date">' + date + '</div>';
+    html += '<div class="gallery-item-num">글귀 ' + (it.idx+1) + '</div>';
+    html += '<div class="gallery-item-text">' + (q.mission || q.text) + '</div>';
+    if (it.date) html += '<div class="gallery-item-date">' + it.date + '</div>';
     html += '</div></div>';
   });
   html += '</div>';
