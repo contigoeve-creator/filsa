@@ -2956,7 +2956,7 @@
   <!-- 통합 헤더: 오늘 심어볼 꽃씨 카드 -->
   <div class="mission-top">
     <div class="mission-top-inner">
-      <div class="mission-top-cop">🌱 오늘 심어볼 좋은 말 꽃씨 🌱</div>
+      <div class="mission-top-cop">🌱 오늘 해볼 좋은 말 🌱</div>
       <div class="mission-top-msg" id="missionMsg">
         <div class="mission-top-quote" id="missionQuoteText"></div>
       </div>
@@ -2968,11 +2968,11 @@
     <div style="display:flex;gap:0.3rem;margin-bottom:0.7rem;">
       <button id="missionTabVoice" onclick="switchMissionTab('voice')"
         style="flex:1;padding:0.5rem;border:none;border-radius:8px 8px 0 0;font-family:'Jua',sans-serif;font-size:0.95rem;cursor:pointer;transition:all 0.2s;background:#d4763b;color:#fff;">
-        🎤 따라 읽기
+        🎤 말해 보기
       </button>
       <button id="missionTabShare" onclick="switchMissionTab('share')"
         style="flex:1;padding:0.5rem;border:none;border-radius:8px 8px 0 0;font-family:'Jua',sans-serif;font-size:0.95rem;cursor:pointer;transition:all 0.2s;background:var(--paper-warm);color:var(--sage);">
-        🌸 꽃씨 전달하기
+        🌸 공유하기
       </button>
     </div>
 
@@ -3358,7 +3358,7 @@ function initCanvas() {
   const viewH = isMobile
     ? Math.max(Math.round(window.innerHeight * 0.75), 450)
     : Math.min(Math.max(w * 0.87, 360), 600);
-  const canvasH = Math.round(viewH * 2.1);
+  const canvasH = Math.max(Math.round(viewH * 2.1), 800); // 따라 그리기 캔버스 세로 800px 보장
   canvas.width = w;
   canvas.height = canvasH;
   canvas.style.width = w + 'px';
@@ -3366,7 +3366,7 @@ function initCanvas() {
   wrapper.style.height = canvasH + 'px';
   // outer(스크롤 컨테이너)에만 viewH 적용
   const outer = document.getElementById('canvasScrollOuter');
-  if (outer) outer.style.height = viewH + 'px';
+  if (outer) outer.style.height = '800px'; // 따라 그리기 캔버스 세로 800px
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 }
@@ -3950,7 +3950,7 @@ function fitOuterToGuide() {
     if (!guideSpan || !outer) return;
     const pad = 32; // canvas-guide padding 1rem × 2
     const textH = guideSpan.scrollHeight;
-    const newH  = Math.max(textH + pad, 180);
+    const newH  = Math.max(textH + pad, 800); // 따라 그리기 캔버스 세로 800px
     outer.style.height = newH + 'px';
   });
 }
